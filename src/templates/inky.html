@@ -73,6 +73,47 @@
             </a>
         </header>
 
+        {% if power_save_status and power_save_status.is_active %}
+        <div id="powerSaveBanner" style="background-color: #2e7d32; color: #fff; padding: 10px 14px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.9rem;">
+            <div>
+                <span>🔋 <strong>{{ _('Power Saving Active') }}:</strong></span>
+                <span id="awakeTimer">
+                    {% if power_save_status.remaining_awake_seconds > 0 %}
+                        {{ _('Awake for %(seconds)ds before low-power sleep', seconds=power_save_status.remaining_awake_seconds) }}
+                    {% else %}
+                        {{ _('Active') }}
+                    {% endif %}
+                </span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" onclick="extendAwake(900)" style="background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.4); color: #fff; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">
+                    +15 {{ _('Min Awake') }}
+                </button>
+                <a href="{{ url_for('settings.settings_page') }}" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 0.85rem;">
+                    {{ _('Settings') }}
+                </a>
+            </div>
+        </div>
+        <script>
+            async function extendAwake(seconds) {
+                try {
+                    const res = await fetch("{{ url_for('settings.power_save_keep_awake') }}", {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({seconds: seconds})
+                    });
+                    const d = await res.json();
+                    if (res.ok) {
+                        alert(d.message);
+                        window.location.reload();
+                    }
+                } catch(e) {
+                    console.error(e);
+                }
+            }
+        </script>
+        {% endif %}
+
         <!-- Display the current image -->
         <div class="image-container">
             <img src="{{ url_for('static', filename='images/current_image.png') }}" alt="Current Image">

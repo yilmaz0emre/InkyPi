@@ -33,6 +33,7 @@ from blueprints.apikeys import apikeys_bp
 from jinja2 import ChoiceLoader, FileSystemLoader
 from plugins.plugin_registry import load_plugins
 from utils import i18n
+from utils.power_manager import PowerManager
 from waitress import serve
 
 
@@ -63,8 +64,9 @@ app.jinja_loader = ChoiceLoader([FileSystemLoader(directory) for directory in te
 
 device_config = Config()
 i18n.init_app(app, device_config)
+power_manager = PowerManager(device_config, dev_mode=DEV_MODE)
 display_manager = DisplayManager(device_config)
-refresh_task = RefreshTask(device_config, display_manager)
+refresh_task = RefreshTask(device_config, display_manager, power_manager)
 
 load_plugins(device_config.get_plugins())
 
@@ -72,6 +74,7 @@ load_plugins(device_config.get_plugins())
 app.config['DEVICE_CONFIG'] = device_config
 app.config['DISPLAY_MANAGER'] = display_manager
 app.config['REFRESH_TASK'] = refresh_task
+app.config['POWER_MANAGER'] = power_manager
 
 # Set additional parameters
 app.config['MAX_FORM_PARTS'] = 10_000

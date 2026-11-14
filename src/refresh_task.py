@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 class RefreshTask:
     """Handles the logic for refreshing the display using a background thread."""
 
-    def __init__(self, device_config, display_manager):
+    def __init__(self, device_config, display_manager, power_manager=None):
         self.device_config = device_config
         self.display_manager = display_manager
+        self.power_manager = power_manager
 
         self.thread = None
         self.lock = threading.Lock()
@@ -73,10 +74,37 @@ class RefreshTask:
         while True:
             try:
                 with self.condition:
-                    sleep_time = self.device_config.get_config("plugin_cycle_interval_seconds", default=60*60)
+                    if self.power_manager and self.power_manager.is_active:
+                        ps_cfg = self.power_manager.get_config()
+                        awake_mult = 60 if ps_cfg.get("awake_unit") == "minute" else 1
+                        awake_seconds = max(10, int(ps_cfg.get("awake_duration", 3)) * awake_mult)
 
-                    # Wait for sleep_time or until notified
-                    self.condition.wait(timeout=sleep_time)
+                        sleep_mult = 3600 if ps_cfg.get("sleep_unit") == "hour" else 60
+                        sleep_seconds = max(10, int(ps_cfg.get("sleep_duration", 1)) * sleep_mult)
+
+                        # Maintain the awake window
+                        now = time.time()
+                        if self.power_manager.keep_awake_until < now:
+                            self.power_manager.keep_awake_until = now + awake_seconds
+
+                        while time.time() < self.power_manager.keep_awake_until and self.running:
+                            rem = self.power_manager.keep_awake_until - time.time()
+                            self.condition.wait(timeout=max(0.2, min(5.0, rem)))
+                            if self.manual_update_request or not self.running or not self.power_manager.is_active:
+                                break
+
+                        # Enter deep low-power idle if still active and no manual update
+                        if self.running and self.power_manager.is_active and not self.manual_update_request:
+                            self.power_manager.enter_low_power_mode()
+                            self.condition.wait(timeout=sleep_seconds)
+
+                        # Restore hardware before performing refresh
+                        if self.power_manager.is_in_low_power:
+                            self.power_manager.exit_low_power_mode()
+                    else:
+                        sleep_time = self.device_config.get_config("plugin_cycle_interval_seconds", default=60*60)
+                        self.condition.wait(timeout=sleep_time)
+
                     self.refresh_result = {}
                     self.refresh_event.clear()
 
@@ -126,6 +154,12 @@ class RefreshTask:
                         # update latest refresh data in the device config
                         self.device_config.refresh_info = RefreshInfo(**refresh_info)
                         self.device_config.write_config()
+
+                        if self.power_manager and self.power_manager.is_active:
+                            ps_cfg = self.power_manager.get_config()
+                            awake_mult = 60 if ps_cfg.get("awake_unit") == "minute" else 1
+                            awake_seconds = max(10, int(ps_cfg.get("awake_duration", 3)) * awake_mult)
+                            self.power_manager.keep_awake_until = time.time() + awake_seconds
 
             except Exception as e:
                 logger.exception('Exception during refresh')

@@ -29,8 +29,10 @@ settings_bp = Blueprint("settings", __name__)
 @settings_bp.route('/settings')
 def settings_page():
     device_config = current_app.config['DEVICE_CONFIG']
+    power_manager = current_app.config.get('POWER_MANAGER')
+    power_save_status = power_manager.get_status() if power_manager else {}
     timezones = sorted(pytz.all_timezones_set)
-    return render_template('settings.html', device_settings=device_config.get_config(), timezones = timezones)
+    return render_template('settings.html', device_settings=device_config.get_config(), timezones=timezones, power_save_status=power_save_status)
 
 @settings_bp.route('/save_settings', methods=['POST'])
 def save_settings():
@@ -74,17 +76,82 @@ def save_settings():
         }
         if "inky_saturation" in form_data:
             settings["image_settings"]["inky_saturation"] = float(form_data.get("inky_saturation", "0.5"))
+
+        # Power save configuration
+        power_manager = current_app.config.get('POWER_MANAGER')
+        try:
+            ps_awake_duration = int(form_data.get("ps_awake_duration", 3))
+        except (ValueError, TypeError):
+            ps_awake_duration = 3
+        ps_awake_unit = form_data.get("ps_awake_unit", "minute")
+
+        try:
+            ps_sleep_duration = int(form_data.get("ps_sleep_duration", 1))
+        except (ValueError, TypeError):
+            ps_sleep_duration = 1
+        ps_sleep_unit = form_data.get("ps_sleep_unit", "hour")
+
+        ps_config = {
+            "awake_duration": max(1, ps_awake_duration),
+            "awake_unit": ps_awake_unit if ps_awake_unit in ["second", "minute"] else "minute",
+            "sleep_duration": max(1, ps_sleep_duration),
+            "sleep_unit": ps_sleep_unit if ps_sleep_unit in ["minute", "hour"] else "hour",
+            "turn_off_wifi": form_data.get("ps_turn_off_wifi") == "on",
+            "turn_off_bluetooth": form_data.get("ps_turn_off_bluetooth") == "on",
+            "turn_off_hdmi": form_data.get("ps_turn_off_hdmi") == "on",
+            "turn_off_led": form_data.get("ps_turn_off_led") == "on",
+        }
+        settings["power_save_config"] = ps_config
+
+        if power_manager:
+            if form_data.get("ps_active_now") == "on":
+                power_manager.set_active(True)
+            elif "ps_active_now_submitted" in form_data:
+                power_manager.set_active(False)
+
         device_config.update_config(settings)
 
-        if plugin_cycle_interval_seconds != previous_interval_seconds:
-            # wake the background thread up to signal interval config change
-            refresh_task = current_app.config['REFRESH_TASK']
-            refresh_task.signal_config_change()
+        refresh_task = current_app.config['REFRESH_TASK']
+        refresh_task.signal_config_change()
     except RuntimeError as e:
         return jsonify({"error": str(e)}), 500
     except Exception as e:
         return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
     return jsonify({"success": True, "message": _("Saved settings.")})
+
+@settings_bp.route('/power_save/toggle', methods=['POST'])
+def power_save_toggle():
+    power_manager = current_app.config.get('POWER_MANAGER')
+    refresh_task = current_app.config.get('REFRESH_TASK')
+    if not power_manager:
+        return jsonify({"error": _("Power manager not available")}), 500
+
+    data = request.get_json() or {}
+    active = data.get("active", not power_manager.is_active)
+    power_manager.set_active(active)
+    if refresh_task:
+        refresh_task.signal_config_change()
+
+    msg = _("Power save mode activated.") if active else _("Power save mode deactivated.")
+    return jsonify({"success": True, "active": power_manager.is_active, "message": msg, "status": power_manager.get_status()})
+
+@settings_bp.route('/power_save/keep_awake', methods=['POST'])
+def power_save_keep_awake():
+    power_manager = current_app.config.get('POWER_MANAGER')
+    if not power_manager:
+        return jsonify({"error": _("Power manager not available")}), 500
+
+    data = request.get_json() or {}
+    seconds = int(data.get("seconds", 300))
+    power_manager.request_keep_awake(seconds)
+    return jsonify({"success": True, "message": _("Extended awake duration by %(minutes)d minutes.", minutes=seconds//60), "status": power_manager.get_status()})
+
+@settings_bp.route('/power_save/status')
+def power_save_status():
+    power_manager = current_app.config.get('POWER_MANAGER')
+    if not power_manager:
+        return jsonify({"is_active": False})
+    return jsonify(power_manager.get_status())
 
 @settings_bp.route('/shutdown', methods=['POST'])
 def shutdown():

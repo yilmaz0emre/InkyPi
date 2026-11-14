@@ -8,7 +8,9 @@ main_bp = Blueprint("main", __name__)
 @main_bp.route('/')
 def main_page():
     device_config = current_app.config['DEVICE_CONFIG']
-    return render_template('inky.html', config=device_config.get_config(), plugins=device_config.get_plugins())
+    power_manager = current_app.config.get('POWER_MANAGER')
+    power_save_status = power_manager.get_status() if power_manager else {}
+    return render_template('inky.html', config=device_config.get_config(), plugins=device_config.get_plugins(), power_save_status=power_save_status)
 
 @main_bp.route('/api/current_image')
 def get_current_image():

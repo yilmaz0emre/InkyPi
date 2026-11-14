@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-14 22:14+0300\n"
+"POT-Creation-Date: 2026-11-14 23:07+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -36,11 +36,11 @@ msgstr ""
 msgid "Failed to write .env file"
 msgstr ".env dosyası yazılamadı"
 
-#: src/blueprints/main.py:19
+#: src/blueprints/main.py:21
 msgid "Image not found"
 msgstr "Görsel bulunamadı"
 
-#: src/blueprints/main.py:55
+#: src/blueprints/main.py:57
 msgid "Order must be a list"
 msgstr "Sıralama bir liste olmalıdır"
 
@@ -70,7 +70,7 @@ msgstr "'%(instance_name)s' adlı eklenti örneği zaten mevcut"
 msgid "Refresh interval unit is required"
 msgstr "Yenileme aralığı birimi gereklidir"
 
-#: src/blueprints/playlist.py:46 src/blueprints/settings.py:46
+#: src/blueprints/playlist.py:46 src/blueprints/settings.py:48
 msgid "Refresh interval is required"
 msgstr "Yenileme aralığı gereklidir"
 
@@ -85,7 +85,7 @@ msgstr "Oynatma listesine eklenemedi"
 #: src/blueprints/playlist.py:68 src/blueprints/playlist.py:114
 #: src/blueprints/plugin.py:62 src/blueprints/plugin.py:154
 #: src/blueprints/plugin.py:201 src/blueprints/plugin.py:226
-#: src/blueprints/plugin.py:257 src/blueprints/settings.py:86
+#: src/blueprints/plugin.py:257 src/blueprints/settings.py:119
 #, python-format
 msgid "An error occurred: %(error)s"
 msgstr "Bir hata oluştu: %(error)s"
@@ -204,25 +204,42 @@ msgstr "Ekran güncellendi"
 msgid "Plugin '%(plugin_id)s' not found"
 msgstr "'%(plugin_id)s' eklentisi bulunamadı"
 
-#: src/blueprints/settings.py:44
+#: src/blueprints/settings.py:46
 msgid "Plugin cycle interval unit is required"
 msgstr "Eklenti döngü aralığı birimi gereklidir"
 
-#: src/blueprints/settings.py:48
+#: src/blueprints/settings.py:50
 msgid "Time Zone is required"
 msgstr "Saat dilimi gereklidir"
 
-#: src/blueprints/settings.py:50
+#: src/blueprints/settings.py:52
 msgid "Time format is required"
 msgstr "Saat biçimi gereklidir"
 
-#: src/blueprints/settings.py:54
+#: src/blueprints/settings.py:56
 msgid "Plugin cycle interval must be less than 24 hours"
 msgstr "Eklenti döngü aralığı 24 saatten az olmalıdır"
 
-#: src/blueprints/settings.py:87
+#: src/blueprints/settings.py:120
 msgid "Saved settings."
 msgstr "Ayarlar kaydedildi."
+
+#: src/blueprints/settings.py:127 src/blueprints/settings.py:142
+msgid "Power manager not available"
+msgstr "Güç yöneticisi mevcut değil"
+
+#: src/blueprints/settings.py:135
+msgid "Power save mode activated."
+msgstr "Güç tasarruf modu aktif edildi."
+
+#: src/blueprints/settings.py:135
+msgid "Power save mode deactivated."
+msgstr "Güç tasarruf modu devre dışı bırakıldı."
+
+#: src/blueprints/settings.py:147
+#, python-format
+msgid "Extended awake duration by %(minutes)d minutes."
+msgstr "Uyanık kalma süresi %(minutes)d dakika uzatıldı."
 
 #: src/plugins/ai_image/settings.html:2 src/plugins/ai_text/settings.html:24
 msgid "Text Prompt:"
@@ -237,7 +254,7 @@ msgstr "Metin İstemi:"
 #: src/plugins/rss/settings.html:28 src/plugins/screenshot/settings.html:3
 #: src/plugins/todo_list/settings.html:37 src/plugins/unsplash/settings.html:3
 #: src/plugins/weather/settings.html:41 src/templates/playlist.html:481
-#: src/templates/plugin.html:455 src/templates/settings.html:129
+#: src/templates/plugin.html:455 src/templates/settings.html:167
 msgid "Type something..."
 msgstr "Bir şeyler yazın..."
 
@@ -315,12 +332,12 @@ msgstr "Çoklu Hafta"
 msgid "Month"
 msgstr "Ay"
 
-#: src/plugins/calendar/settings.html:15 src/templates/inky.html:88
-#: src/templates/inky.html:121
+#: src/plugins/calendar/settings.html:15 src/templates/inky.html:129
+#: src/templates/inky.html:162
 msgid "List"
 msgstr "Liste"
 
-#: src/plugins/calendar/settings.html:20 src/templates/settings.html:137
+#: src/plugins/calendar/settings.html:20 src/templates/settings.html:175
 msgid "Language:"
 msgstr "Dil:"
 
@@ -558,7 +575,7 @@ msgid "Newspaper:"
 msgstr "Gazete:"
 
 #: src/plugins/newspaper/settings.html:12
-#: src/plugins/newspaper/settings.html:34 src/templates/settings.html:169
+#: src/plugins/newspaper/settings.html:34 src/templates/settings.html:207
 msgid "Type to search..."
 msgstr "Aramak için yazın..."
 
@@ -708,7 +725,7 @@ msgstr "Camgöbeği"
 msgid "Blue"
 msgstr "Mavi"
 
-#: src/plugins/unsplash/settings.html:41 src/templates/settings.html:146
+#: src/plugins/unsplash/settings.html:41 src/templates/settings.html:184
 msgid "Orientation:"
 msgstr "Yönlendirme:"
 
@@ -796,7 +813,7 @@ msgstr "Tahmin"
 msgid "days"
 msgstr "gün"
 
-#: src/plugins/weather/settings.html:99 src/templates/settings.html:162
+#: src/plugins/weather/settings.html:99 src/templates/settings.html:200
 msgid "Time Zone:"
 msgstr "Saat Dilimi:"
 
@@ -809,10 +826,10 @@ msgid "Use Local Time Zone"
 msgstr "Yerel Saat Dilimini Kullan"
 
 #: src/plugins/weather/settings.html:114 src/templates/apikeys.html:252
-#: src/templates/inky.html:142 src/templates/playlist.html:491
+#: src/templates/inky.html:183 src/templates/playlist.html:491
 #: src/templates/playlist.html:508 src/templates/plugin.html:407
 #: src/templates/plugin.html:432 src/templates/plugin.html:463
-#: src/templates/settings.html:291
+#: src/templates/settings.html:426
 msgid "Save"
 msgstr "Kaydet"
 
@@ -858,7 +875,7 @@ msgid "API Keys"
 msgstr "API Anahtarları"
 
 #: src/templates/apikeys.html:196 src/templates/playlist.html:387
-#: src/templates/plugin.html:293 src/templates/settings.html:104
+#: src/templates/plugin.html:293 src/templates/settings.html:142
 msgid "← Back"
 msgstr "← Geri"
 
@@ -934,32 +951,49 @@ msgstr "Koyu Temayı Aç/Kapat"
 msgid "Playlists"
 msgstr "Oynatma Listeleri"
 
-#: src/templates/inky.html:72 src/templates/settings.html:6
-#: src/templates/settings.html:110
+#: src/templates/inky.html:72 src/templates/inky.html:93
+#: src/templates/settings.html:6 src/templates/settings.html:148
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: src/templates/inky.html:85
+#: src/templates/inky.html:79
+msgid "Power Saving Active"
+msgstr "Güç Tasarrufu Aktif"
+
+#: src/templates/inky.html:82
+#, python-format
+msgid "Awake for %(seconds)ds before low-power sleep"
+msgstr "Düşük güç uykusuna geçmeden önce %(seconds)d sn uyanık"
+
+#: src/templates/inky.html:84
+msgid "Active"
+msgstr "Aktif"
+
+#: src/templates/inky.html:90 src/templates/settings.html:277
+msgid "Min Awake"
+msgstr "Dk Uyanık"
+
+#: src/templates/inky.html:126
 msgid "Plugins"
 msgstr "Eklentiler"
 
-#: src/templates/inky.html:87
+#: src/templates/inky.html:128
 msgid "Reorder plugins"
 msgstr "Eklentileri sırala"
 
-#: src/templates/inky.html:87 src/templates/inky.html:160
+#: src/templates/inky.html:128 src/templates/inky.html:201
 msgid "Sort"
 msgstr "Sırala"
 
-#: src/templates/inky.html:88
+#: src/templates/inky.html:129
 msgid "Switch view"
 msgstr "Görünümü değiştir"
 
-#: src/templates/inky.html:92
+#: src/templates/inky.html:133
 msgid "Drag plugins to reorder. Click \"Save\" when done."
 msgstr "Sıralamak için eklentileri sürükleyin. Bitince \"Kaydet\"e tıklayın."
 
-#: src/templates/inky.html:118
+#: src/templates/inky.html:159
 msgid "Grid"
 msgstr "Izgara"
 
@@ -1087,7 +1121,7 @@ msgstr "Yenileme"
 msgid "Determines how often the data and image should be refreshed."
 msgstr "Veri ve görselin ne sıklıkla yenileneceğini belirler."
 
-#: src/templates/refresh_settings_form.html:8 src/templates/settings.html:192
+#: src/templates/refresh_settings_form.html:8 src/templates/settings.html:230
 msgid "Every"
 msgstr "Her"
 
@@ -1095,11 +1129,13 @@ msgstr "Her"
 msgid "Enter a number"
 msgstr "Bir sayı girin"
 
-#: src/templates/refresh_settings_form.html:11 src/templates/settings.html:195
+#: src/templates/refresh_settings_form.html:11 src/templates/settings.html:233
+#: src/templates/settings.html:298 src/templates/settings.html:312
 msgid "Minute"
 msgstr "Dakika"
 
-#: src/templates/refresh_settings_form.html:12 src/templates/settings.html:196
+#: src/templates/refresh_settings_form.html:12 src/templates/settings.html:234
+#: src/templates/settings.html:311
 msgid "Hour"
 msgstr "Saat"
 
@@ -1147,79 +1183,170 @@ msgstr ""
 "Sistem kapatılıyor. Cihaz manuel olarak açılana kadar arayüze "
 "erişilemeyecektir."
 
-#: src/templates/settings.html:113
+#: src/templates/settings.html:151
 msgid "Download Logs"
 msgstr "Günlükleri İndir"
 
-#: src/templates/settings.html:114
+#: src/templates/settings.html:152
 msgid "Reboot"
 msgstr "Yeniden Başlat"
 
-#: src/templates/settings.html:115
+#: src/templates/settings.html:153
 msgid "Shutdown"
 msgstr "Kapat"
 
-#: src/templates/settings.html:125
+#: src/templates/settings.html:163
 msgid "Device Name:"
 msgstr "Cihaz Adı:"
 
-#: src/templates/settings.html:148
+#: src/templates/settings.html:186
 msgid "Horizontal"
 msgstr "Yatay"
 
-#: src/templates/settings.html:149
+#: src/templates/settings.html:187
 msgid "Vertical"
 msgstr "Dikey"
 
-#: src/templates/settings.html:154
+#: src/templates/settings.html:192
 msgid "Invert Image"
 msgstr "Görseli Ters Çevir"
 
-#: src/templates/settings.html:181
+#: src/templates/settings.html:219
 msgid "Time Format:"
 msgstr "Saat Biçimi:"
 
-#: src/templates/settings.html:183
+#: src/templates/settings.html:221
 msgid "12 Hour (AM/PM)"
 msgstr "12 Saat (ÖÖ/ÖS)"
 
-#: src/templates/settings.html:184
+#: src/templates/settings.html:222
 msgid "24 Hour"
 msgstr "24 Saat"
 
-#: src/templates/settings.html:190
+#: src/templates/settings.html:228
 msgid "Plugin Cycle Interval:"
 msgstr "Eklenti Geçiş Aralığı:"
 
-#: src/templates/settings.html:191
+#: src/templates/settings.html:229
 msgid "Determines how often the display switches to a new plugin."
 msgstr "Ekranın ne sıklıkla yeni bir eklentiye geçeceğini belirler."
 
-#: src/templates/settings.html:201
+#: src/templates/settings.html:239
 msgid "Log System Stats"
 msgstr "Sistem İstatistiklerini Günlüğe Kaydet"
 
-#: src/templates/settings.html:209
+#: src/templates/settings.html:248
+msgid "Battery & Power Management"
+msgstr "Batarya ve Güç Yönetimi"
+
+#: src/templates/settings.html:255
+msgid "Mode Status:"
+msgstr "Mod Durumu:"
+
+#: src/templates/settings.html:258
+msgid "ACTIVE"
+msgstr "AKTİF"
+
+#: src/templates/settings.html:262
+#, python-format
+msgid "Awake for %(seconds)ds"
+msgstr "%(seconds)d sn uyanık"
+
+#: src/templates/settings.html:267
+msgid "INACTIVE (Normal Mode)"
+msgstr "KAPALI (Sürekli Güç Modu)"
+
+#: src/templates/settings.html:274
+msgid "Deactivate Mode"
+msgstr "Modu Kapat"
+
+#: src/templates/settings.html:281
+msgid "Activate Mode Now"
+msgstr "Modu Şimdi Başlat"
+
+#: src/templates/settings.html:287
+msgid "Physical Power-off / Boot Safety:"
+msgstr "Fiziksel Güç Kesintisi / İlk Açılış Güvenliği:"
+
+#: src/templates/settings.html:287
+msgid ""
+"Whenever Raspberry Pi physically loses power or restarts, this mode is "
+"automatically kept OFF. You will always be able to access the web "
+"interface and Wi-Fi on boot. You can enable it again here whenever you "
+"wish."
+msgstr ""
+"Raspberry Pi fiziksel olarak enerjisiz kaldığında veya yeniden "
+"başladığında bu mod daima KAPALI başlar. Böylece ilk açılışta Wi-Fi ve "
+"web arayüzüne her zaman erişebilirsiniz. İstediğiniz zaman bu menüden "
+"modu tekrar kurabilirsiniz."
+
+#: src/templates/settings.html:293
+msgid "Awake Duration (Bekleme Süresi):"
+msgstr "Bekleme Süresi (Uyanık Kalma):"
+
+#: src/templates/settings.html:294
+msgid ""
+"How long the device stays fully awake with Wi-Fi on after a refresh for "
+"web access and configurations."
+msgstr ""
+"Ekran yenilendikten sonra cihazın web erişimi ve ayarlar için Wi-Fi açık "
+"şekilde uyanık kaldığı süre."
+
+#: src/templates/settings.html:299
+msgid "Second"
+msgstr "Saniye"
+
+#: src/templates/settings.html:306
+msgid "Sleep Duration (Uyku Süresi):"
+msgstr "Uyku Süresi (Düşük Güç):"
+
+#: src/templates/settings.html:307
+msgid "How long the device enters low-power sleep between display refreshes."
+msgstr ""
+"Ekran yenilemeleri arasında cihazın donanımları kapatıp derin enerji "
+"tasarrufunda uyuduğu süre."
+
+#: src/templates/settings.html:319
+msgid "Sleep Hardware Controls:"
+msgstr "Uykuda Kapatılacak Donanımlar:"
+
+#: src/templates/settings.html:323
+msgid "Turn off Wi-Fi"
+msgstr "Wi-Fi Bağlantısını Kapat"
+
+#: src/templates/settings.html:327
+msgid "Turn off Bluetooth"
+msgstr "Bluetooth'u Kapat"
+
+#: src/templates/settings.html:331
+msgid "Turn off HDMI"
+msgstr "HDMI Çıkışını Kapat"
+
+#: src/templates/settings.html:335
+msgid "Turn off Status LEDs"
+msgstr "Durum LED'lerini Kapat"
+
+#: src/templates/settings.html:344
 msgid "Image Settings"
 msgstr "Görsel Ayarları"
 
-#: src/templates/settings.html:213
+#: src/templates/settings.html:348
 msgid "Saturation:"
 msgstr "Doygunluk:"
 
-#: src/templates/settings.html:227
+#: src/templates/settings.html:362
 msgid "Contrast:"
 msgstr "Kontrast:"
 
-#: src/templates/settings.html:241
+#: src/templates/settings.html:376
 msgid "Sharpness:"
 msgstr "Keskinlik:"
 
-#: src/templates/settings.html:255
+#: src/templates/settings.html:390
 msgid "Brightness:"
 msgstr "Parlaklık:"
 
-#: src/templates/settings.html:270
+#: src/templates/settings.html:405
 msgid "Inky Driver Saturation:"
 msgstr "Inky Sürücü Doygunluğu:"
 

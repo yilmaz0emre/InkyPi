@@ -39,7 +39,7 @@
             contentHeight: '100%',
             slotDuration: '01:00:00',
             expandRows: true,
-            locale: "{{ plugin_settings.language or 'en' }}",
+            locale: "{{ plugin_settings.language or language or 'en' }}",
             firstDay: "{{ plugin_settings.weekStartDay or 0}}",
             slotLabelFormat: timeFormat,
             slotMinTime: "{{ plugin_settings.startTimeInterval or 00}}:00:00",

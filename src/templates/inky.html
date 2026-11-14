@@ -61,15 +61,15 @@
         <!-- Page Title -->
         <header class="header">
             <h1>{{ config.name }}</h1>
-            <button class="settings-button dark-mode-toggle" title="Toggle Dark Mode" aria-label="Toggle Dark Mode"></button>
-            <a href="{{ url_for('apikeys.apikeys_page') }}" class="settings-button" title="API Keys">
+            <button class="settings-button dark-mode-toggle" title="{{ _('Toggle Dark Mode') }}" aria-label="{{ _('Toggle Dark Mode') }}"></button>
+            <a href="{{ url_for('apikeys.apikeys_page') }}" class="settings-button" title="{{ _('API Keys') }}">
                 <span style="font-size: 20px;">🔑</span>
             </a>
             <a href="{{ url_for('playlist.playlists') }}" class="settings-button">
-                <img src="{{ url_for('static', filename='icons/playlist.png') }}" title="Playlists" alt="playlists icon" class="icon-image">
+                <img src="{{ url_for('static', filename='icons/playlist.png') }}" title="{{ _('Playlists') }}" alt="playlists icon" class="icon-image">
             </a>
             <a href="{{ url_for('settings.settings_page') }}" class="settings-button">
-                <img src="{{ url_for('static', filename='icons/settings.png') }}" title="Settings" alt="settings icon" class="icon-image">
+                <img src="{{ url_for('static', filename='icons/settings.png') }}" title="{{ _('Settings') }}" alt="settings icon" class="icon-image">
             </a>
         </header>
 
@@ -82,26 +82,26 @@
         <div class="separator"></div>
 
         <div class="plugins-header">
-            <h2 class="plugins-title">Plugins</h2>
+            <h2 class="plugins-title">{{ _('Plugins') }}</h2>
             <div class="plugins-controls">
-                <button class="sort-toggle" id="sortToggle" title="Reorder plugins">Sort</button>
-                <button class="view-toggle" id="viewToggle" title="Switch view">List</button>
+                <button class="sort-toggle" id="sortToggle" title="{{ _('Reorder plugins') }}">{{ _('Sort') }}</button>
+                <button class="view-toggle" id="viewToggle" title="{{ _('Switch view') }}">{{ _('List') }}</button>
             </div>
         </div>
 
-        <div class="sort-hint" id="sortHint">Drag plugins to reorder. Click "Save" when done.</div>
+        <div class="sort-hint" id="sortHint">{{ _('Drag plugins to reorder. Click "Save" when done.') }}</div>
 
         <div class="plugins-container" id="pluginsContainer">
             {% for plugin in plugins %}
             <a href="{{ url_for('plugin.plugin_page', plugin_id=plugin.id) }}"
                class="plugin-item"
                data-plugin-id="{{ plugin.id }}"
-               title="{{ plugin.display_name }}"
+               title="{{ _(plugin.display_name) }}"
                draggable="false">
                 <img src="{{ url_for('plugin.image', plugin_id=plugin.id, filename='icon.png') }}"
-                     alt="{{ plugin.display_name }}"
+                     alt="{{ _(plugin.display_name) }}"
                      class="icon-image">
-                <span class="plugin-name">{{ plugin.display_name }}</span>
+                <span class="plugin-name">{{ _(plugin.display_name) }}</span>
             </a>
             {% endfor %}
         </div>
@@ -115,10 +115,10 @@
             function updateView() {
                 if (currentView === 'list') {
                     pluginsContainer.classList.add('list-view');
-                    viewToggle.textContent = 'Grid';
+                    viewToggle.textContent = "{{ _('Grid') }}";
                 } else {
                     pluginsContainer.classList.remove('list-view');
-                    viewToggle.textContent = 'List';
+                    viewToggle.textContent = "{{ _('List') }}";
                 }
             }
 
@@ -139,7 +139,7 @@
             function enableSorting() {
                 isSorting = true;
                 sortToggle.classList.add('active');
-                sortToggle.textContent = 'Save';
+                sortToggle.textContent = "{{ _('Save') }}";
                 sortHint.classList.add('visible');
                 pluginsContainer.classList.add('sorting');
 
@@ -157,7 +157,7 @@
             function disableSorting() {
                 isSorting = false;
                 sortToggle.classList.remove('active');
-                sortToggle.textContent = 'Sort';
+                sortToggle.textContent = "{{ _('Sort') }}";
                 sortHint.classList.remove('visible');
                 pluginsContainer.classList.remove('sorting');
 
@@ -248,5 +248,6 @@
             });
         </script>
     </div>
+    {% include 'response_modal.html' %}
 </body>
 </html>

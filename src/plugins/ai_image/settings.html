@@ -1,6 +1,6 @@
 <div class="form-group">
-    <label for="textPrompt" class="form-label">Text Prompt:</label>
-    <input type="text" id="textPrompt" name="textPrompt" placeholder="Type something..." required class="form-input">
+    <label for="textPrompt" class="form-label">{{ _('Text Prompt:') }}</label>
+    <input type="text" id="textPrompt" name="textPrompt" placeholder="{{ _('Type something...') }}" required class="form-input">
 </div>
 
 
@@ -8,7 +8,7 @@
 <div class="form-group dropdown-container">
     <!-- Image Model Dropdown -->
     <div class="form-group">
-        <label for="imageModel" class="form-label">Image Model:</label>
+        <label for="imageModel" class="form-label">{{ _('Image Model:') }}</label>
         <select id="imageModel" name="imageModel" class="form-input" onchange="toggleQualityDropdown()">
             <option value="gpt-image-1" selected>GPT Image 1</option>
             <option value="gpt-image-2">GPT Image 2</option>
@@ -17,14 +17,14 @@
 
     <!-- Quality Dropdown -->
     <div class="form-group">
-        <label for="quality" class="form-label">Quality:</label>
+        <label for="quality" class="form-label">{{ _('Quality:') }}</label>
         <select id="quality" name="quality" class="form-input">
         </select>
     </div>
 </div>
 
 <div class="form-group">
-    <label for="randomizePrompt" class="form-label">Randomize Text Prompt:</label>
+    <label for="randomizePrompt" class="form-label">{{ _('Randomize Text Prompt:') }}</label>
     <div class="toggle-container">
         <input type="checkbox" id="randomizePrompt" name="randomizePrompt" class="toggle-checkbox" value="false" onclick="this.value=this.checked ? 'true' : 'false';">
         <label for="randomizePrompt" class="toggle-label"></label>

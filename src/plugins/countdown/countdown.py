@@ -32,9 +32,10 @@ class Countdown(BasePlugin):
         day_count = (countdown_date.date() - current_time.date()).days
         label = "Days Left" if day_count > 0 else "Days Passed"
 
+        from utils import i18n
         template_params = {
             "title": title,
-            "date": countdown_date.strftime("%B %d, %Y"),
+            "date": i18n.format_date(countdown_date, skeleton="yMMMMd"),
             "day_count": abs(day_count),
             "label": label,
             "plugin_settings": settings

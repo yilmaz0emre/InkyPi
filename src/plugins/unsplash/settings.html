@@ -1,48 +1,48 @@
 <div class="form-group">
-    <label for="search_query" class="form-label">Search Query:</label>
-    <input type="text" id="search_query" name="search_query" placeholder="Type something..." class="form-input">
-    <small style="width: 100%; color: var(--text-primary);">Optional: Search for an image on Unsplash. If not provided, a random image will be fetched.</small>
+    <label for="search_query" class="form-label">{{ _('Search Query:') }}</label>
+    <input type="text" id="search_query" name="search_query" placeholder="{{ _('Type something...') }}" class="form-input">
+    <small style="width: 100%; color: var(--text-primary);">{{ _('Optional: Search for an image on Unsplash. If not provided, a random image will be fetched.') }}</small>
 </div>
 
 <div class="form-group">
-    <label for="collections" class="form-label">Collections:</label>
+    <label for="collections" class="form-label">{{ _('Collections:') }}</label>
     <input type="text" id="collections" name="collections" placeholder="e.g. 1234,5678" class="form-input">
-    <small style="width: 100%; color: var(--text-primary);">Optional: Comma-separated list of Unsplash collection IDs.</small>
+    <small style="width: 100%; color: var(--text-primary);">{{ _('Optional: Comma-separated list of Unsplash collection IDs.') }}</small>
 </div>
 
 <div class="form-group">
     <div class="form-group">
-        <label for="content_filter" class="form-label">Content Filter:</label>
+        <label for="content_filter" class="form-label">{{ _('Content Filter:') }}</label>
         <select id="content_filter" name="content_filter" class="form-input">
-            <option value="low">Avoid nudity and violence</option>
-            <option value="high">No filtering</option>
+            <option value="low">{{ _('Avoid nudity and violence') }}</option>
+            <option value="high">{{ _('No filtering') }}</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label for="color" class="form-label">Color:</label>
+        <label for="color" class="form-label">{{ _('Color:') }}</label>
         <select id="color" name="color" class="form-input">
-            <option value="">Any</option>
-            <option value="black_and_white">Black and White</option>
-            <option value="black">Black</option>
-            <option value="white">White</option>
-            <option value="yellow">Yellow</option>
-            <option value="orange">Orange</option>
-            <option value="red">Red</option>
-            <option value="purple">Purple</option>
-            <option value="magenta">Magenta</option>
-            <option value="green">Green</option>
-            <option value="teal">Teal</option>
-            <option value="blue">Blue</option>
+            <option value="">{{ _('Any') }}</option>
+            <option value="black_and_white">{{ _('Black and White') }}</option>
+            <option value="black">{{ _('Black') }}</option>
+            <option value="white">{{ _('White') }}</option>
+            <option value="yellow">{{ _('Yellow') }}</option>
+            <option value="orange">{{ _('Orange') }}</option>
+            <option value="red">{{ _('Red') }}</option>
+            <option value="purple">{{ _('Purple') }}</option>
+            <option value="magenta">{{ _('Magenta') }}</option>
+            <option value="green">{{ _('Green') }}</option>
+            <option value="teal">{{ _('Teal') }}</option>
+            <option value="blue">{{ _('Blue') }}</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label for="orientation" class="form-label">Orientation:</label>
+        <label for="orientation" class="form-label">{{ _('Orientation:') }}</label>
         <select id="orientation" name="orientation" class="form-input">
-            <option value="">Any</option>
-            <option value="landscape">Landscape</option>
-            <option value="portrait">Portrait</option>
+            <option value="">{{ _('Any') }}</option>
+            <option value="landscape">{{ _('Landscape') }}</option>
+            <option value="portrait">{{ _('Portrait') }}</option>
         </select>
     </div>
 </div>

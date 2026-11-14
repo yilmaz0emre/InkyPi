@@ -3,6 +3,8 @@ import os
 from utils.app_utils import resolve_path, get_fonts
 from utils.image_utils import take_screenshot_html
 from utils.image_loader import AdaptiveImageLoader
+from utils import i18n
+from utils.i18n import N_
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
 import asyncio
@@ -17,19 +19,19 @@ BASE_PLUGIN_RENDER_DIR = os.path.join(BASE_PLUGIN_DIR, "render")
 
 FRAME_STYLES = [
     {
-        "name": "None",
+        "name": N_("None"),
         "icon": "frames/blank.png"
     },
     {
-        "name": "Corner",
+        "name": N_("Corner"),
         "icon": "frames/corner.png"
     },
     {
-        "name": "Top and Bottom",
+        "name": N_("Top and Bottom"),
         "icon": "frames/top_and_bottom.png"
     },
     {
-        "name": "Rectangle",
+        "name": N_("Rectangle"),
         "icon": "frames/rectangle.png"
     }
 ]
@@ -48,8 +50,16 @@ class BasePlugin:
             loader = FileSystemLoader([self.render_dir, BASE_PLUGIN_RENDER_DIR])
             self.env = Environment(
                 loader=loader,
-                autoescape=select_autoescape(['html', 'xml'])
+                autoescape=select_autoescape(['html', 'xml']),
+                extensions=['jinja2.ext.i18n']
             )
+            # resolve the language on every call so changes in settings apply immediately
+            self.env.install_gettext_callables(
+                lambda message: i18n.get_translations(i18n.get_language()).gettext(message),
+                lambda singular, plural, num: i18n.get_translations(i18n.get_language()).ngettext(singular, plural, num),
+                newstyle=True
+            )
+            self.env.globals["format_date"] = i18n.format_date
 
     def generate_image(self, settings, device_config):
         raise NotImplementedError("generate_image must be implemented by subclasses")
@@ -96,6 +106,7 @@ class BasePlugin:
         template_params["height"] = dimensions[1]
         template_params["font_faces"] = get_fonts()
         template_params["static_dir"] = STATIC_DIR
+        template_params["language"] = i18n.get_language()
 
         # load and render the given html template
         template = self.env.get_template(html_file)

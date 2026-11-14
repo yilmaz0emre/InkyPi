@@ -41,9 +41,21 @@
         "active_playlist": null
     },
     "refresh_info": {
-        "refresh_time": null,
-        "image_hash": null,
-        "refresh_type": null,
-        "plugin_id": null
+        "refresh_time": "2026-11-14T22:38:05.251736+03:00",
+        "image_hash": "78023bf13aa0ebe720a7c763a15c83e84a81a7167c65649b8cb04643ad34b598",
+        "refresh_type": "Manual Update",
+        "plugin_id": "year_progress"
+    },
+    "language": "tr",
+    "inverted_image": null,
+    "log_system_stats": null,
+    "timezone": "Europe/Istanbul",
+    "time_format": "24h",
+    "plugin_cycle_interval_seconds": 3600,
+    "image_settings": {
+        "saturation": 1.0,
+        "brightness": 1.0,
+        "sharpness": 1.0,
+        "contrast": 1.0
     }
 }

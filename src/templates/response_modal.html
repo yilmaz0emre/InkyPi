@@ -5,3 +5,18 @@
         <p id="modalMessage"></p>
     </div>
 </div>
+<script>
+window.I18N = window.I18N || {};
+Object.assign(window.I18N, {
+    "Please select a refresh type": "{{ _('Please select a refresh type') }}",
+    "Please enter a valid interval": "{{ _('Please enter a valid interval') }}",
+    "Please select a time unit": "{{ _('Please select a time unit') }}",
+    "Please select a refresh time": "{{ _('Please select a refresh time') }}",
+    "An error occurred while processing your request.": "{{ _('An error occurred while processing your request.') }}",
+    "Toggle Dark Mode": "{{ _('Toggle Dark Mode') }}",
+    "Toggle Light Mode": "{{ _('Toggle Light Mode') }}"
+});
+window._t = function(msg) {
+    return (window.I18N && window.I18N[msg]) || msg;
+};
+</script>

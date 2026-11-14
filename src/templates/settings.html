@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
+    <title>{{ _('Settings') }}</title>
     <script>
         (function() {
             const theme = localStorage.getItem('inkypi-theme') || 
@@ -30,6 +30,7 @@
                 const result = await response.json();
                 if (response.ok) {
                     showResponseModal('success', `Success! ${result.message}`);
+                    setTimeout(() => window.location.reload(), 1200);
                 } else {
                     showResponseModal('failure', `Error!  ${result.error}`);
                     form.reset();
@@ -74,9 +75,9 @@
 
         async function handleShutdown(reboot) {
             if (reboot) {
-                showResponseModal('success', 'The system is rebooting. The UI will be unavailable until the reboot is complete.');
+                showResponseModal('success', "{{ _('The system is rebooting. The UI will be unavailable until the reboot is complete.') }}");
             } else {
-                showResponseModal('success', 'The system is shutting down. The UI will remain unavailable until it is manually restarted.');
+                showResponseModal('success', "{{ _('The system is shutting down. The UI will remain unavailable until it is manually restarted.') }}");
             }
             await new Promise(resolve => setTimeout(resolve, 1000));
             // we cannot await a response here
@@ -100,18 +101,18 @@
 <body>
     <div class="frame">
         <!-- Back Button -->
-        <button onclick="history.back()" class="back-button">← Back</button>
+        <button onclick="history.back()" class="back-button">{{ _('← Back') }}</button>
         <!-- Settings Header -->
         <div class="app-header">
             <div class="header-content">
                 <div class="title-container">
                     <img src="{{ url_for('static', filename='icons/settings.png') }}" alt="settings icon" class="app-icon">
-                    <h1 class="app-title">Settings</h1>
+                    <h1 class="app-title">{{ _('Settings') }}</h1>
                 </div>
                 <div>
-                    <a class="header-button" style="text-decoration: none; background-color: #2c66b1; color: #fff;" href="{{ url_for('settings.download_logs', hours=24) }}" download>Download Logs</a>
-                    <button class="header-button" style="background-color: #FFD600; color: #333;" onclick="handleShutdown(true)">Reboot</button>
-                    <button class="header-button" style="background-color: #E53935; color: #fff;" onclick="handleShutdown(false)">Shutdown</button>
+                    <a class="header-button" style="text-decoration: none; background-color: #2c66b1; color: #fff;" href="{{ url_for('settings.download_logs', hours=24) }}" download>{{ _('Download Logs') }}</a>
+                    <button class="header-button" style="background-color: #FFD600; color: #333;" onclick="handleShutdown(true)">{{ _('Reboot') }}</button>
+                    <button class="header-button" style="background-color: #E53935; color: #fff;" onclick="handleShutdown(false)">{{ _('Shutdown') }}</button>
                 </div>
             </div>
         </div>
@@ -121,27 +122,36 @@
             <div id="settings-container">
                 <!-- Device Name -->
                 <div class="form-group">
-                    <label for="deviceName" class="form-label">Device Name:</label>
+                    <label for="deviceName" class="form-label">{{ _('Device Name:') }}</label>
                     <input type="text" 
                            id="deviceName" 
                            name="deviceName" 
-                           placeholder="Type something..." 
+                           placeholder="{{ _('Type something...') }}" 
                            value="{{ device_settings.name }}" 
                            required 
                            class="form-input">
                 </div>
                 <div class="form-group nowrap">
+                    <!-- Language Dropdown -->
+                    <div class="form-group">
+                        <label for="language" class="form-label">{{ _('Language:') }}</label>
+                        <select id="language" name="language" class="form-input">
+                            {% for code, name in supported_languages.items() %}
+                            <option value="{{ code }}" {% if device_settings.get('language', 'en') == code %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <!-- Orientation Dropdown -->
                     <div class="form-group">
-                        <label for="orientation" class="form-label">Orientation:</label>
+                        <label for="orientation" class="form-label">{{ _('Orientation:') }}</label>
                         <select id="orientation" name="orientation" class="form-input">
-                            <option value="horizontal" {% if device_settings.orientation == "horizontal" %}selected{% endif %}>Horizontal</option>
-                            <option value="vertical" {% if device_settings.orientation == "vertical" %}selected{% endif %}>Vertical</option>
+                            <option value="horizontal" {% if device_settings.orientation == "horizontal" %}selected{% endif %}>{{ _('Horizontal') }}</option>
+                            <option value="vertical" {% if device_settings.orientation == "vertical" %}selected{% endif %}>{{ _('Vertical') }}</option>
                         </select>
                     </div>
                     <div class="form-group nowrap">
                         <!-- Invert Image Checkbox -->
-                        <label class="form-label" for="invertImage">Invert Image</label>
+                        <label class="form-label" for="invertImage">{{ _('Invert Image') }}</label>
                         <input type="checkbox" id="invertImage" name="invertImage" {% if device_settings.inverted_image %}checked{% endif %}>
                         </label>
                     </div>
@@ -149,14 +159,14 @@
                 <div class="form-group">
                     <!-- Timezone Dropdown -->
                     <div class="form-group nowrap">
-                        <label for="timezone" class="form-label">Time Zone:</label>
+                        <label for="timezone" class="form-label">{{ _('Time Zone:') }}</label>
                         <input
                             type="text"
                             id="timezone"
                             name="timezoneName"
                             class="form-input"
                             list="timezoneList"
-                            placeholder="Type to search..."
+                            placeholder="{{ _('Type to search...') }}"
                             value="{{ device_settings.timezone }}"
                         />
                         <datalist id="timezoneList">
@@ -168,27 +178,27 @@
 
                     <!-- Time Format Dropdown -->
                     <div class="form-group nowrap">
-                        <label for="timeFormat" class="form-label">Time Format:</label>
+                        <label for="timeFormat" class="form-label">{{ _('Time Format:') }}</label>
                         <select id="timeFormat" name="timeFormat" class="form-input">
-                            <option value="12h" {% if device_settings.time_format == "12h" %}selected{% endif %}>12 Hour (AM/PM)</option>
-                            <option value="24h" {% if device_settings.time_format == "24h" %}selected{% endif %}>24 Hour</option>
+                            <option value="12h" {% if device_settings.time_format == "12h" %}selected{% endif %}>{{ _('12 Hour (AM/PM)') }}</option>
+                            <option value="24h" {% if device_settings.time_format == "24h" %}selected{% endif %}>{{ _('24 Hour') }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="form-group">
-                        <label for="interval">Plugin Cycle Interval:</label>
-                        <span title="Determines how often the display switches to a new plugin.">ⓘ</span>
-                        <span>Every</span>
+                        <label for="interval">{{ _('Plugin Cycle Interval:') }}</label>
+                        <span title="{{ _('Determines how often the display switches to a new plugin.') }}">ⓘ</span>
+                        <span>{{ _('Every') }}</span>
                         <input type="number" id="interval" name="interval" class="form-input" required min="1">
                         <select id="unit" name="unit" class="form-input" required>
-                            <option value="minute">Minute</option>
-                            <option value="hour">Hour</option>
+                            <option value="minute">{{ _('Minute') }}</option>
+                            <option value="hour">{{ _('Hour') }}</option>
                         </select>
                     </div>
 
                     <div class="form-group nowrap">
-                        <label class="form-label" for="logSystemStats">Log System Stats</label>
+                        <label class="form-label" for="logSystemStats">{{ _('Log System Stats') }}</label>
                             <input type="checkbox" id="logSystemStats" name="logSystemStats" {% if device_settings.log_system_stats %}checked{% endif %}>
                         </label>
                     </div>
@@ -196,11 +206,11 @@
 
                 <div class="collapsible">
                     <button type="button" class="collapsible-header" onclick="toggleCollapsible(this)">
-                        Image Settings <span class="collapsible-icon">▼</span>
+                        {{ _('Image Settings') }} <span class="collapsible-icon">▼</span>
                     </button>
                     <div class="settings-container collapsible-content">
                         <div class="form-group">
-                            <label for="saturation" class="form-label" style="min-width: 100px;">Saturation:</label>
+                            <label for="saturation" class="form-label" style="min-width: 100px;">{{ _('Saturation:') }}</label>
                             <span id="saturation-value">{{ device_settings.get('image_settings', {}).get('saturation', 1.0) }}</span>
                             <input
                                 type="range"
@@ -214,7 +224,7 @@
                             />
                         </div>
                         <div class="form-group">
-                            <label for="contrast" class="form-label" style="min-width: 100px;">Contrast:</label>
+                            <label for="contrast" class="form-label" style="min-width: 100px;">{{ _('Contrast:') }}</label>
                             <span id="contrast-value">{{ device_settings.get('image_settings', {}).get('contrast', 1.0) }}</span>
                             <input
                                 type="range"
@@ -228,7 +238,7 @@
                             />
                          </div>
                         <div class="form-group">
-                            <label for="sharpness" class="form-label" style="min-width: 100px;">Sharpness:</label>
+                            <label for="sharpness" class="form-label" style="min-width: 100px;">{{ _('Sharpness:') }}</label>
                             <span id="sharpness-value">{{ device_settings.get('image_settings', {}).get('sharpness', 1.0) }}</span>
                             <input
                                 type="range"
@@ -242,7 +252,7 @@
                             />
                         </div>
                         <div class="form-group">
-                            <label for="brightness" class="form-label" style="min-width: 100px;">Brightness:</label>
+                            <label for="brightness" class="form-label" style="min-width: 100px;">{{ _('Brightness:') }}</label>
                             <span id="brightness-value">{{ device_settings.get('image_settings', {}).get('brightness', 1.0) }}</span>
                             <input
                                 type="range"
@@ -257,7 +267,7 @@
                         </div>
                         {% if device_settings.get('display_type', 'inky') == 'inky' %}
                         <div class="form-group">
-                            <label for="inky_saturation" class="form-label" style="min-width: 100px;">Inky Driver Saturation:</label>
+                            <label for="inky_saturation" class="form-label" style="min-width: 100px;">{{ _('Inky Driver Saturation:') }}</label>
                             <span id="inky_saturation-value">{{ device_settings.get('image_settings', {}).get('inky_saturation', 0.5) }}</span>
                             <input
                                 type="range"
@@ -278,7 +288,7 @@
  
         <!-- Buttons -->
         <div class="buttons-container">
-            <button type="button" onclick="handleAction()" class="action-button">Save</button>
+            <button type="button" onclick="handleAction()" class="action-button">{{ _('Save') }}</button>
         </div>
     </div>
     <!-- Success/Error Modal -->

@@ -1,3 +1,4 @@
+from flask_babel import gettext as _
 from flask import Blueprint, request, jsonify, current_app, render_template, send_from_directory
 from plugins.plugin_registry import get_plugin_instance
 from utils.app_utils import resolve_path, handle_request_files, parse_form
@@ -48,7 +49,7 @@ def plugin_page(plugin_id):
             if plugin_instance_name:
                 plugin_instance = playlist_manager.find_plugin(plugin_id, plugin_instance_name)
                 if not plugin_instance:
-                    return jsonify({"error": f"Plugin instance: {plugin_instance_name} does not exist"}), 500
+                    return jsonify({"error": _("Plugin instance: %(plugin_instance_name)s does not exist", plugin_instance_name=plugin_instance_name)}), 500
 
                 # add plugin instance settings to the template to prepopulate
                 template_params["plugin_settings"] = plugin_instance.settings
@@ -58,7 +59,7 @@ def plugin_page(plugin_id):
             template_params["playlists"] = playlist_manager.get_playlist_names()
         except Exception as e:
             logger.exception("EXCEPTION CAUGHT: " + str(e))
-            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+            return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
         return render_template('plugin.html', plugin=plugin_config, **template_params)
     else:
         return "Plugin not found", 404
@@ -131,28 +132,28 @@ def delete_plugin_instance():
     try:
         playlist = playlist_manager.get_playlist(playlist_name)
         if not playlist:
-            return jsonify({"success": False, "message": "Playlist not found"}), 400
+            return jsonify({"success": False, "message": _("Playlist not found")}), 400
 
         # Get the plugin instance to find associated images
         plugin_instance_obj = playlist.find_plugin(plugin_id, plugin_instance)
         if not plugin_instance_obj:
-            return jsonify({"success": False, "message": "Plugin instance not found"}), 400
+            return jsonify({"success": False, "message": _("Plugin instance not found")}), 400
 
         # Delete associated images before removing from playlist
         _delete_plugin_instance_images(device_config, plugin_instance_obj)
 
         result = playlist.delete_plugin(plugin_id, plugin_instance)
         if not result:
-            return jsonify({"success": False, "message": "Plugin instance not found"}), 400
+            return jsonify({"success": False, "message": _("Plugin instance not found")}), 400
 
         # save changes to device config file
         device_config.write_config()
 
     except Exception as e:
         logger.exception("EXCEPTION CAUGHT: " + str(e))
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
 
-    return jsonify({"success": True, "message": "Deleted plugin instance."})
+    return jsonify({"success": True, "message": _("Deleted plugin instance.")})
 
 @plugin_bp.route('/update_plugin_instance/<string:instance_name>', methods=['PUT'])
 def update_plugin_instance(instance_name):
@@ -168,7 +169,7 @@ def update_plugin_instance(instance_name):
         plugin_id = form_data.pop("plugin_id")
         plugin_instance = playlist_manager.find_plugin(plugin_id, instance_name)
         if not plugin_instance:
-            return jsonify({"error": f"Plugin instance: {instance_name} does not exist"}), 500
+            return jsonify({"error": _("Plugin instance: %(instance_name)s does not exist", instance_name=instance_name)}), 500
 
         # Handle refresh settings if provided
         refresh_settings_json = form_data.pop("refresh_settings", None)
@@ -197,8 +198,8 @@ def update_plugin_instance(instance_name):
 
         device_config.write_config()
     except Exception as e:
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
-    return jsonify({"success": True, "message": f"Updated plugin instance {instance_name}."})
+        return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
+    return jsonify({"success": True, "message": _("Updated plugin instance %(instance_name)s.", instance_name=instance_name)})
 
 @plugin_bp.route('/display_plugin_instance', methods=['POST'])
 def display_plugin_instance():
@@ -214,17 +215,17 @@ def display_plugin_instance():
     try:
         playlist = playlist_manager.get_playlist(playlist_name)
         if not playlist:
-            return jsonify({"success": False, "message": f"Playlist {playlist_name} not found"}), 400
+            return jsonify({"success": False, "message": _("Playlist %(playlist_name)s not found", playlist_name=playlist_name)}), 400
 
         plugin_instance = playlist.find_plugin(plugin_id, plugin_instance_name)
         if not plugin_instance:
-            return jsonify({"success": False, "message": f"Plugin instance '{plugin_instance_name}' not found"}), 400
+            return jsonify({"success": False, "message": _("Plugin instance '%(plugin_instance_name)s' not found", plugin_instance_name=plugin_instance_name)}), 400
 
         refresh_task.manual_update(PlaylistRefresh(playlist, plugin_instance, force=True))
     except Exception as e:
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
 
-    return jsonify({"success": True, "message": "Display updated"}), 200
+    return jsonify({"success": True, "message": _("Display updated")}), 200
 
 @plugin_bp.route('/update_now', methods=['POST'])
 def update_now():
@@ -245,7 +246,7 @@ def update_now():
             logger.info("Refresh task not running, updating display directly")
             plugin_config = device_config.get_plugin(plugin_id)
             if not plugin_config:
-                return jsonify({"error": f"Plugin '{plugin_id}' not found"}), 404
+                return jsonify({"error": _("Plugin '%(plugin_id)s' not found", plugin_id=plugin_id)}), 404
 
             plugin = get_plugin_instance(plugin_config)
             image = plugin.generate_image(plugin_settings, device_config)
@@ -253,6 +254,6 @@ def update_now():
 
     except Exception as e:
         logger.exception(f"Error in update_now: {str(e)}")
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
 
-    return jsonify({"success": True, "message": "Display updated"}), 200
+    return jsonify({"success": True, "message": _("Display updated")}), 200

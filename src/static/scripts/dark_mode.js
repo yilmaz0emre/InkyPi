@@ -51,7 +51,8 @@
     function updateToggleButtonText(theme) {
         const toggleButton = document.querySelector('.dark-mode-toggle');
         if (toggleButton) {
-            const hoverText = theme === DARK_THEME ? 'Toggle Light Mode' : 'Toggle Dark Mode';
+            const _t = window._t || (m => m);
+            const hoverText = theme === DARK_THEME ? _t('Toggle Light Mode') : _t('Toggle Dark Mode');
             toggleButton.setAttribute('data-hover-text', hoverText);
         }
     }

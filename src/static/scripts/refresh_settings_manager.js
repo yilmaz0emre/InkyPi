@@ -153,20 +153,21 @@ class RefreshSettingsManager {
      * @returns {{valid: boolean, error?: string}}
      */
     validate(data) {
+        const _t = window._t || (m => m);
         if (!data.refreshType) {
-            return { valid: false, error: 'Please select a refresh type' };
+            return { valid: false, error: _t('Please select a refresh type') };
         }
 
         if (data.refreshType === 'interval') {
             if (!data.interval || data.interval < 1) {
-                return { valid: false, error: 'Please enter a valid interval' };
+                return { valid: false, error: _t('Please enter a valid interval') };
             }
             if (!data.unit) {
-                return { valid: false, error: 'Please select a time unit' };
+                return { valid: false, error: _t('Please select a time unit') };
             }
         } else if (data.refreshType === 'scheduled') {
             if (!data.refreshTime) {
-                return { valid: false, error: 'Please select a refresh time' };
+                return { valid: false, error: _t('Please select a refresh time') };
             }
         }
 

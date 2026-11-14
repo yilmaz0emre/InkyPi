@@ -8,6 +8,7 @@ from astral import moon
 import pytz
 from io import BytesIO
 import math
+from utils import i18n
 
 logger = logging.getLogger(__name__)
         
@@ -130,10 +131,7 @@ class Weather(BasePlugin):
 
         # Add last refresh time
         now = datetime.now(tz)
-        if time_format == "24h":
-            last_refresh_time = now.strftime("%Y-%m-%d %H:%M")
-        else:
-            last_refresh_time = now.strftime("%Y-%m-%d %I:%M %p")
+        last_refresh_time = f"{now.strftime('%Y-%m-%d')} {i18n.format_time(now, time_format)}"
         template_params["last_refresh_time"] = last_refresh_time
 
         image = self.render_image(dimensions, "weather.html", "weather.css", template_params)
@@ -155,7 +153,7 @@ class Weather(BasePlugin):
             if current_icon.endswith('n'):
                 current_icon = current_icon.replace("n", "d")
         data = {
-            "current_date": dt.strftime("%A, %B %d"),
+            "current_date": i18n.format_date(dt, skeleton="MMMMEEEEd"),
             "current_day_icon": self.get_plugin_dir(f'icons/{current_icon}.png'),
             "current_temperature": str(round(current.get("temp"))),
             "feels_like": str(round(current.get("feels_like"))),
@@ -180,7 +178,7 @@ class Weather(BasePlugin):
         temperature_conversion = 273.15 if units == "standard" else 0.
 
         data = {
-            "current_date": dt.strftime("%A, %B %d"),
+            "current_date": i18n.format_date(dt, skeleton="MMMMEEEEd"),
             "current_day_icon": self.get_plugin_dir(f'icons/{current_icon}.png'),
             "current_temperature": str(round(current.get("temperature", 0) + temperature_conversion)),
             "feels_like": str(round(current.get("apparent_temperature", current.get("temperature", 0)) + temperature_conversion)),
@@ -316,7 +314,7 @@ class Weather(BasePlugin):
 
             # --- date & temps ---
             dt = datetime.fromtimestamp(day["dt"], tz=timezone.utc).astimezone(tz)
-            day_label = dt.strftime("%a")
+            day_label = i18n.format_date(dt, skeleton="EEE")
 
             forecast.append(
                 {
@@ -347,7 +345,7 @@ class Weather(BasePlugin):
 
         for i in range(0, len(times)): 
             local_date = date.fromisoformat(times[i])
-            day_label = local_date.strftime("%a")
+            day_label = i18n.format_date(local_date, skeleton="EEE")
             code = weather_codes[i] if i < len(weather_codes) else 0
             weather_icon = self.map_weather_code_to_icon(code, is_day=1)
             weather_icon_path = self.get_plugin_dir(f"icons/{weather_icon}.png")

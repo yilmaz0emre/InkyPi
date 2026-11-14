@@ -113,6 +113,13 @@ def _find_chromium_binary():
         if path:
             logger.debug(f"Found browser binary: {candidate} at {path}")
             return candidate
+
+    # macOS standard Google Chrome path
+    mac_chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    if os.path.isfile(mac_chrome) and os.access(mac_chrome, os.X_OK):
+        logger.debug(f"Found browser binary: {mac_chrome}")
+        return mac_chrome
+
     return None
 
 

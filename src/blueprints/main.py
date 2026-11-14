@@ -1,3 +1,4 @@
+from flask_babel import gettext as _
 from flask import Blueprint, request, jsonify, current_app, render_template, send_file
 import os
 from datetime import datetime
@@ -15,7 +16,7 @@ def get_current_image():
     image_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'images', 'current_image.png')
     
     if not os.path.exists(image_path):
-        return jsonify({"error": "Image not found"}), 404
+        return jsonify({"error": _("Image not found")}), 404
     
     # Get the file's last modified time (truncate to seconds to match HTTP header precision)
     file_mtime = int(os.path.getmtime(image_path))
@@ -51,7 +52,7 @@ def save_plugin_order():
     order = data.get('order', [])
 
     if not isinstance(order, list):
-        return jsonify({"error": "Order must be a list"}), 400
+        return jsonify({"error": _("Order must be a list")}), 400
 
     device_config.set_plugin_order(order)
 

@@ -1,0 +1,1345 @@
+# Turkish translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-14 22:14+0300\n"
+"PO-Revision-Date: 2026-11-14 22:13+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: tr\n"
+"Language-Team: tr <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: src/blueprints/apikeys.py:96
+#, python-format
+msgid "Invalid key format: %(key)s"
+msgstr "Geçersiz anahtar biçimi: %(key)s"
+
+#: src/blueprints/apikeys.py:114
+#, python-format
+msgid ""
+"Saved %(len_valid_entries)s API key(s). Some plugins may require restart "
+"to pick up changes."
+msgstr ""
+"%(len_valid_entries)s API anahtarı kaydedildi. Değişikliklerin geçerli "
+"olması için bazı eklentilerin yeniden başlatılması gerekebilir."
+
+#: src/blueprints/apikeys.py:117
+msgid "Failed to write .env file"
+msgstr ".env dosyası yazılamadı"
+
+#: src/blueprints/main.py:19
+msgid "Image not found"
+msgstr "Görsel bulunamadı"
+
+#: src/blueprints/main.py:55
+msgid "Order must be a list"
+msgstr "Sıralama bir liste olmalıdır"
+
+#: src/blueprints/playlist.py:28 src/blueprints/playlist.py:96
+#: src/blueprints/playlist.py:149
+msgid "Playlist name is required"
+msgstr "Oynatma listesi adı gereklidir"
+
+#: src/blueprints/playlist.py:30
+msgid "Instance name is required"
+msgstr "Örnek adı gereklidir"
+
+#: src/blueprints/playlist.py:32
+msgid "Instance name can only contain alphanumeric characters and spaces"
+msgstr "Örnek adı yalnızca alfasayısal karakterler ve boşluk içerebilir"
+
+#: src/blueprints/playlist.py:35
+msgid "Refresh type is required"
+msgstr "Yenileme türü gereklidir"
+
+#: src/blueprints/playlist.py:39
+#, python-format
+msgid "Plugin instance '%(instance_name)s' already exists"
+msgstr "'%(instance_name)s' adlı eklenti örneği zaten mevcut"
+
+#: src/blueprints/playlist.py:44
+msgid "Refresh interval unit is required"
+msgstr "Yenileme aralığı birimi gereklidir"
+
+#: src/blueprints/playlist.py:46 src/blueprints/settings.py:46
+msgid "Refresh interval is required"
+msgstr "Yenileme aralığı gereklidir"
+
+#: src/blueprints/playlist.py:52
+msgid "Refresh time is required"
+msgstr "Yenileme saati gereklidir"
+
+#: src/blueprints/playlist.py:64
+msgid "Failed to add to playlist"
+msgstr "Oynatma listesine eklenemedi"
+
+#: src/blueprints/playlist.py:68 src/blueprints/playlist.py:114
+#: src/blueprints/plugin.py:62 src/blueprints/plugin.py:154
+#: src/blueprints/plugin.py:201 src/blueprints/plugin.py:226
+#: src/blueprints/plugin.py:257 src/blueprints/settings.py:86
+#, python-format
+msgid "An error occurred: %(error)s"
+msgstr "Bir hata oluştu: %(error)s"
+
+#: src/blueprints/playlist.py:69
+msgid "Scheduled refresh configured."
+msgstr "Zamanlanmış yenileme yapılandırıldı."
+
+#: src/blueprints/playlist.py:98
+msgid "Start time and End time are required"
+msgstr "Başlangıç ve bitiş saati gereklidir"
+
+#: src/blueprints/playlist.py:103
+#, python-format
+msgid "Playlist with name '%(playlist_name)s' already exists"
+msgstr "'%(playlist_name)s' adlı oynatma listesi zaten mevcut"
+
+#: src/blueprints/playlist.py:107
+msgid "Failed to create playlist"
+msgstr "Oynatma listesi oluşturulamadı"
+
+#: src/blueprints/playlist.py:116
+msgid "Created new Playlist!"
+msgstr "Yeni oynatma listesi oluşturuldu!"
+
+#: src/blueprints/playlist.py:130
+msgid "Missing required fields"
+msgstr "Gerekli alanlar eksik"
+
+#: src/blueprints/playlist.py:134 src/blueprints/playlist.py:153
+#, python-format
+msgid "Playlist '%(playlist_name)s' does not exist"
+msgstr "'%(playlist_name)s' adlı oynatma listesi mevcut değil"
+
+#: src/blueprints/playlist.py:138
+msgid "Failed to delete playlist"
+msgstr "Oynatma listesi silinemedi"
+
+#: src/blueprints/playlist.py:141
+#, python-format
+msgid "Updated playlist '%(playlist_name)s'!"
+msgstr "'%(playlist_name)s' oynatma listesi güncellendi!"
+
+#: src/blueprints/playlist.py:163
+#, python-format
+msgid "Deleted playlist '%(playlist_name)s'!"
+msgstr "'%(playlist_name)s' oynatma listesi silindi!"
+
+#: src/blueprints/playlist.py:188
+msgid "just now"
+msgstr "az önce"
+
+#: src/blueprints/playlist.py:190
+#, python-format
+msgid "%(minutes)d minutes ago"
+msgstr "%(minutes)d dakika önce"
+
+#: src/blueprints/playlist.py:192
+#, python-format
+msgid "today at %(time)s"
+msgstr "bugün %(time)s"
+
+#: src/blueprints/playlist.py:194
+#, python-format
+msgid "yesterday at %(time)s"
+msgstr "dün %(time)s"
+
+#: src/blueprints/playlist.py:199
+#, python-format
+msgid "%(date)s at %(time)s"
+msgstr "%(date)s %(time)s"
+
+#: src/blueprints/plugin.py:52
+#, python-format
+msgid "Plugin instance: %(plugin_instance_name)s does not exist"
+msgstr "Eklenti örneği mevcut değil: %(plugin_instance_name)s"
+
+#: src/blueprints/plugin.py:135
+msgid "Playlist not found"
+msgstr "Oynatma listesi bulunamadı"
+
+#: src/blueprints/plugin.py:140 src/blueprints/plugin.py:147
+msgid "Plugin instance not found"
+msgstr "Eklenti örneği bulunamadı"
+
+#: src/blueprints/plugin.py:156
+msgid "Deleted plugin instance."
+msgstr "Eklenti örneği silindi."
+
+#: src/blueprints/plugin.py:172
+#, python-format
+msgid "Plugin instance: %(instance_name)s does not exist"
+msgstr "Eklenti örneği mevcut değil: %(instance_name)s"
+
+#: src/blueprints/plugin.py:202
+#, python-format
+msgid "Updated plugin instance %(instance_name)s."
+msgstr "%(instance_name)s eklenti örneği güncellendi."
+
+#: src/blueprints/plugin.py:218
+#, python-format
+msgid "Playlist %(playlist_name)s not found"
+msgstr "%(playlist_name)s oynatma listesi bulunamadı"
+
+#: src/blueprints/plugin.py:222
+#, python-format
+msgid "Plugin instance '%(plugin_instance_name)s' not found"
+msgstr "'%(plugin_instance_name)s' eklenti örneği bulunamadı"
+
+#: src/blueprints/plugin.py:228 src/blueprints/plugin.py:259
+msgid "Display updated"
+msgstr "Ekran güncellendi"
+
+#: src/blueprints/plugin.py:249
+#, python-format
+msgid "Plugin '%(plugin_id)s' not found"
+msgstr "'%(plugin_id)s' eklentisi bulunamadı"
+
+#: src/blueprints/settings.py:44
+msgid "Plugin cycle interval unit is required"
+msgstr "Eklenti döngü aralığı birimi gereklidir"
+
+#: src/blueprints/settings.py:48
+msgid "Time Zone is required"
+msgstr "Saat dilimi gereklidir"
+
+#: src/blueprints/settings.py:50
+msgid "Time format is required"
+msgstr "Saat biçimi gereklidir"
+
+#: src/blueprints/settings.py:54
+msgid "Plugin cycle interval must be less than 24 hours"
+msgstr "Eklenti döngü aralığı 24 saatten az olmalıdır"
+
+#: src/blueprints/settings.py:87
+msgid "Saved settings."
+msgstr "Ayarlar kaydedildi."
+
+#: src/plugins/ai_image/settings.html:2 src/plugins/ai_text/settings.html:24
+msgid "Text Prompt:"
+msgstr "Metin İstemi:"
+
+#: src/plugins/ai_image/settings.html:3 src/plugins/ai_text/settings.html:4
+#: src/plugins/ai_text/settings.html:25 src/plugins/countdown/settings.html:4
+#: src/plugins/image_album/settings.html:10
+#: src/plugins/image_album/settings.html:12
+#: src/plugins/image_folder/settings.html:26
+#: src/plugins/image_url/settings.html:3 src/plugins/rss/settings.html:4
+#: src/plugins/rss/settings.html:28 src/plugins/screenshot/settings.html:3
+#: src/plugins/todo_list/settings.html:37 src/plugins/unsplash/settings.html:3
+#: src/plugins/weather/settings.html:41 src/templates/playlist.html:481
+#: src/templates/plugin.html:455 src/templates/settings.html:129
+msgid "Type something..."
+msgstr "Bir şeyler yazın..."
+
+#: src/plugins/ai_image/settings.html:11
+msgid "Image Model:"
+msgstr "Görsel Modeli:"
+
+#: src/plugins/ai_image/settings.html:20
+msgid "Quality:"
+msgstr "Kalite:"
+
+#: src/plugins/ai_image/settings.html:27
+msgid "Randomize Text Prompt:"
+msgstr "Metin İstemini Rastgele Seç:"
+
+#: src/plugins/ai_text/settings.html:3 src/plugins/rss/settings.html:3
+#: src/plugins/weather/settings.html:33
+msgid "Title:"
+msgstr "Başlık:"
+
+#: src/plugins/ai_text/settings.html:9
+msgid "Text Model:"
+msgstr "Metin Modeli:"
+
+#: src/plugins/apod/settings.html:2 src/plugins/wpotd/settings.html:3
+msgid "Date (optional)"
+msgstr "Tarih (isteğe bağlı)"
+
+#: src/plugins/apod/settings.html:7 src/plugins/wpotd/settings.html:7
+msgid "Randomize date"
+msgstr "Tarihi rastgele seç"
+
+#: src/plugins/base_plugin/base_plugin.py:22
+msgid "None"
+msgstr "Yok"
+
+#: src/plugins/base_plugin/base_plugin.py:26
+msgid "Corner"
+msgstr "Köşe"
+
+#: src/plugins/base_plugin/base_plugin.py:30
+msgid "Top and Bottom"
+msgstr "Üst ve Alt"
+
+#: src/plugins/base_plugin/base_plugin.py:34
+msgid "Rectangle"
+msgstr "Dikdörtgen"
+
+#: src/plugins/calendar/settings.html:2
+msgid "Calendars:"
+msgstr "Takvimler:"
+
+#: src/plugins/calendar/settings.html:4
+msgid "Add Calendar"
+msgstr "Takvim Ekle"
+
+#: src/plugins/calendar/settings.html:9
+msgid "Layout:"
+msgstr "Düzen:"
+
+#: src/plugins/calendar/settings.html:11
+#: src/templates/refresh_settings_form.html:13
+msgid "Day"
+msgstr "Gün"
+
+#: src/plugins/calendar/settings.html:12
+msgid "Week"
+msgstr "Hafta"
+
+#: src/plugins/calendar/settings.html:13
+msgid "Multi-Week"
+msgstr "Çoklu Hafta"
+
+#: src/plugins/calendar/settings.html:14
+msgid "Month"
+msgstr "Ay"
+
+#: src/plugins/calendar/settings.html:15 src/templates/inky.html:88
+#: src/templates/inky.html:121
+msgid "List"
+msgstr "Liste"
+
+#: src/plugins/calendar/settings.html:20 src/templates/settings.html:137
+msgid "Language:"
+msgstr "Dil:"
+
+#: src/plugins/calendar/settings.html:30 src/plugins/weather/settings.html:46
+msgid "Display:"
+msgstr "Görünüm:"
+
+#: src/plugins/calendar/settings.html:34 src/plugins/countdown/settings.html:3
+#: src/plugins/todo_list/settings.html:36
+msgid "Title"
+msgstr "Başlık"
+
+#: src/plugins/calendar/settings.html:39
+msgid "Weekends"
+msgstr "Hafta Sonları"
+
+#: src/plugins/calendar/settings.html:44
+msgid "Event Time"
+msgstr "Etkinlik Saati"
+
+#: src/plugins/calendar/settings.html:49
+msgid "Now Indicator"
+msgstr "Şu An İşareti"
+
+#: src/plugins/calendar/settings.html:55
+msgid "Previous Days"
+msgstr "Önceki Günler"
+
+#: src/plugins/calendar/settings.html:61
+msgid "Week Start Day:"
+msgstr "Haftanın İlk Günü:"
+
+#: src/plugins/calendar/settings.html:63
+msgid "Sunday"
+msgstr "Pazar"
+
+#: src/plugins/calendar/settings.html:64
+msgid "Monday"
+msgstr "Pazartesi"
+
+#: src/plugins/calendar/settings.html:65
+msgid "Tuesday"
+msgstr "Salı"
+
+#: src/plugins/calendar/settings.html:66
+msgid "Wednesday"
+msgstr "Çarşamba"
+
+#: src/plugins/calendar/settings.html:67
+msgid "Thursday"
+msgstr "Perşembe"
+
+#: src/plugins/calendar/settings.html:68
+msgid "Friday"
+msgstr "Cuma"
+
+#: src/plugins/calendar/settings.html:69
+msgid "Saturday"
+msgstr "Cumartesi"
+
+#: src/plugins/calendar/settings.html:74
+msgid "Time Interval:"
+msgstr "Zaman Aralığı:"
+
+#: src/plugins/calendar/settings.html:81
+msgid "Display Weeks:"
+msgstr "Gösterilecek Hafta Sayısı:"
+
+#: src/plugins/calendar/settings.html:86 src/plugins/comic/settings.html:20
+#: src/plugins/rss/settings.html:15 src/plugins/todo_list/settings.html:51
+msgid "Font Size:"
+msgstr "Yazı Boyutu:"
+
+#: src/plugins/calendar/settings.html:88 src/plugins/rss/settings.html:17
+#: src/plugins/todo_list/settings.html:53
+msgid "Extra Small"
+msgstr "Çok Küçük"
+
+#: src/plugins/calendar/settings.html:89
+msgid "Smaller"
+msgstr "Daha Küçük"
+
+#: src/plugins/calendar/settings.html:90 src/plugins/rss/settings.html:18
+#: src/plugins/todo_list/settings.html:54
+msgid "Small"
+msgstr "Küçük"
+
+#: src/plugins/calendar/settings.html:91 src/plugins/rss/settings.html:19
+#: src/plugins/todo_list/settings.html:55
+msgid "Normal"
+msgstr "Normal"
+
+#: src/plugins/calendar/settings.html:92 src/plugins/rss/settings.html:20
+#: src/plugins/todo_list/settings.html:56
+msgid "Large"
+msgstr "Büyük"
+
+#: src/plugins/calendar/settings.html:93
+msgid "Larger"
+msgstr "Daha Büyük"
+
+#: src/plugins/calendar/settings.html:94 src/plugins/rss/settings.html:21
+#: src/plugins/todo_list/settings.html:57
+msgid "Extra Larger"
+msgstr "Çok Büyük"
+
+#: src/plugins/clock/settings.html:2
+msgid "Clock Face:"
+msgstr "Saat Kadranı:"
+
+#: src/plugins/clock/settings.html:24
+msgid "Primary Color:"
+msgstr "Birincil Renk:"
+
+#: src/plugins/clock/settings.html:28
+msgid "Secondary Color:"
+msgstr "İkincil Renk:"
+
+#: src/plugins/comic/settings.html:2
+msgid "Comic:"
+msgstr "Çizgi Roman:"
+
+#: src/plugins/comic/settings.html:12
+msgid "Show Comic Title and Caption:"
+msgstr "Çizgi Roman Başlığını ve Açıklamasını Göster:"
+
+#: src/plugins/countdown/settings.html:7
+msgid "Date"
+msgstr "Tarih"
+
+#: src/plugins/github/settings.html:3
+msgid "Type:"
+msgstr "Tür:"
+
+#: src/plugins/github/settings.html:5
+msgid "Contributions"
+msgstr "Katkılar"
+
+#: src/plugins/github/settings.html:6
+msgid "Sponsors"
+msgstr "Sponsorlar"
+
+#: src/plugins/github/settings.html:7
+msgid "Stars"
+msgstr "Yıldızlar"
+
+#: src/plugins/github/settings.html:13
+msgid "GitHub Username:"
+msgstr "GitHub Kullanıcı Adı:"
+
+#: src/plugins/github/settings.html:14
+msgid "GitHub Username"
+msgstr "GitHub Kullanıcı Adı"
+
+#: src/plugins/github/settings.html:17
+msgid "Repository:"
+msgstr "Depo (Repo):"
+
+#: src/plugins/github/settings.html:18
+msgid "GitHub Repository"
+msgstr "GitHub Deposu"
+
+#: src/plugins/github/settings.html:21
+msgid "Grid Colors:"
+msgstr "Izgara Renkleri:"
+
+#: src/plugins/github/render/github_sponsors.html:12
+#, python-format
+msgid "Earnings this month $%(amount)s"
+msgstr "Bu ayki kazanç: $%(amount)s"
+
+#: src/plugins/image_album/settings.html:2
+msgid "Album Provider:"
+msgstr "Albüm Sağlayıcısı:"
+
+#: src/plugins/image_album/settings.html:9
+msgid "Base URL:"
+msgstr "Temel Bağlantı (URL):"
+
+#: src/plugins/image_album/settings.html:11
+msgid "Album Name:"
+msgstr "Albüm Adı:"
+
+#: src/plugins/image_album/settings.html:17
+#: src/plugins/image_folder/settings.html:3
+#: src/plugins/image_upload/settings.html:3
+msgid "Scale to Fit:"
+msgstr "Ekrana Sığdır:"
+
+#: src/plugins/image_album/settings.html:27
+#: src/plugins/image_upload/settings.html:12
+msgid "Random Order:"
+msgstr "Rastgele Sıralama:"
+
+#: src/plugins/image_album/settings.html:36
+#: src/plugins/image_folder/settings.html:13
+#: src/plugins/image_upload/settings.html:21 src/templates/plugin.html:367
+msgid "Background:"
+msgstr "Arka Plan:"
+
+#: src/plugins/image_album/settings.html:39
+#: src/plugins/image_folder/settings.html:16
+#: src/plugins/image_upload/settings.html:24
+msgid "Blur"
+msgstr "Bulanıklaştır"
+
+#: src/plugins/image_album/settings.html:41
+#: src/plugins/image_folder/settings.html:18
+#: src/plugins/image_upload/settings.html:26 src/templates/plugin.html:371
+msgid "Color"
+msgstr "Renk"
+
+#: src/plugins/image_folder/settings.html:25
+msgid "Folder path:"
+msgstr "Klasör yolu:"
+
+#: src/plugins/image_upload/settings.html:33
+msgid "Choose Image"
+msgstr "Görsel Seç"
+
+#: src/plugins/image_url/settings.html:2
+msgid "Image URL:"
+msgstr "Görsel Bağlantısı:"
+
+#: src/plugins/image_url/settings.html:7
+msgid ""
+"Warning: Do not run with untrusted URLs, as it may pose a security risk. "
+"This may also fail if the image takes too long to load."
+msgstr ""
+"Uyarı: Güvenilmeyen bağlantılarla çalıştırmayın. Ayrıca görselin "
+"yüklenmesi çok uzun sürerse işlem başarısız olabilir."
+
+#: src/plugins/newspaper/settings.html:5
+msgid "Newspaper:"
+msgstr "Gazete:"
+
+#: src/plugins/newspaper/settings.html:12
+#: src/plugins/newspaper/settings.html:34 src/templates/settings.html:169
+msgid "Type to search..."
+msgstr "Aramak için yazın..."
+
+#: src/plugins/newspaper/settings.html:27 src/plugins/weather/settings.html:5
+msgid "Location:"
+msgstr "Konum:"
+
+#: src/plugins/rss/settings.html:7
+msgid "Include Images:"
+msgstr "Görselleri Dahil Et:"
+
+#: src/plugins/rss/settings.html:27
+msgid "RSS Feed Url:"
+msgstr "RSS Akış Bağlantısı:"
+
+#: src/plugins/rss/settings.html:33
+msgid "Warning: Do not run with untrusted URLs, as it may pose a security risk."
+msgstr ""
+"Uyarı: Güvenilmeyen bağlantılarla (URL) çalıştırmayın, güvenlik riski "
+"oluşturabilir."
+
+#: src/plugins/screenshot/settings.html:2
+msgid "URL:"
+msgstr "Bağlantı (URL):"
+
+#: src/plugins/screenshot/settings.html:7
+msgid ""
+"Warning: Do not run with untrusted URLs, as it may pose a security risk. "
+"This may also fail if the website takes too long to load."
+msgstr ""
+"Uyarı: Güvenilmeyen bağlantılarla çalıştırmayın. Ayrıca web sitesinin "
+"yüklenmesi çok uzun sürerse işlem başarısız olabilir."
+
+#: src/plugins/todo_list/settings.html:40
+msgid "List Style:"
+msgstr "Liste Biçimi:"
+
+#: src/plugins/todo_list/settings.html:42
+msgid "Disc (●)"
+msgstr "Daire (●)"
+
+#: src/plugins/todo_list/settings.html:43
+msgid "Square (◼)"
+msgstr "Kare (◼)"
+
+#: src/plugins/todo_list/settings.html:44
+msgid "Diamond (◆)"
+msgstr "Eşkenar Dörtgen (◆)"
+
+#: src/plugins/todo_list/settings.html:45
+msgid "Decimal"
+msgstr "Sayısal"
+
+#: src/plugins/todo_list/settings.html:46
+msgid "Roman Numeral"
+msgstr "Romen Rakamı"
+
+#: src/plugins/todo_list/settings.html:47
+msgid "Alphabetical"
+msgstr "Alfabetik"
+
+#: src/plugins/todo_list/settings.html:65
+msgid "+ Add List"
+msgstr "+ Liste Ekle"
+
+#: src/plugins/unsplash/settings.html:2
+msgid "Search Query:"
+msgstr "Arama Sorgusu:"
+
+#: src/plugins/unsplash/settings.html:4
+msgid ""
+"Optional: Search for an image on Unsplash. If not provided, a random "
+"image will be fetched."
+msgstr ""
+"İsteğe bağlı: Unsplash'te görsel arayın. Belirtilmezse rastgele bir "
+"görsel getirilir."
+
+#: src/plugins/unsplash/settings.html:8
+msgid "Collections:"
+msgstr "Koleksiyonlar:"
+
+#: src/plugins/unsplash/settings.html:10
+msgid "Optional: Comma-separated list of Unsplash collection IDs."
+msgstr "İsteğe bağlı: Virgülle ayrılmış Unsplash koleksiyon kimlikleri."
+
+#: src/plugins/unsplash/settings.html:15
+msgid "Content Filter:"
+msgstr "İçerik Filtresi:"
+
+#: src/plugins/unsplash/settings.html:17
+msgid "Avoid nudity and violence"
+msgstr "Müstehcenlik ve şiddetten kaçın"
+
+#: src/plugins/unsplash/settings.html:18
+msgid "No filtering"
+msgstr "Filtreleme yok"
+
+#: src/plugins/unsplash/settings.html:23
+msgid "Color:"
+msgstr "Renk:"
+
+#: src/plugins/unsplash/settings.html:25 src/plugins/unsplash/settings.html:43
+msgid "Any"
+msgstr "Herhangi"
+
+#: src/plugins/unsplash/settings.html:26
+msgid "Black and White"
+msgstr "Siyah Beyaz"
+
+#: src/plugins/unsplash/settings.html:27
+msgid "Black"
+msgstr "Siyah"
+
+#: src/plugins/unsplash/settings.html:28
+msgid "White"
+msgstr "Beyaz"
+
+#: src/plugins/unsplash/settings.html:29
+msgid "Yellow"
+msgstr "Sarı"
+
+#: src/plugins/unsplash/settings.html:30
+msgid "Orange"
+msgstr "Turuncu"
+
+#: src/plugins/unsplash/settings.html:31
+msgid "Red"
+msgstr "Kırmızı"
+
+#: src/plugins/unsplash/settings.html:32
+msgid "Purple"
+msgstr "Mor"
+
+#: src/plugins/unsplash/settings.html:33
+msgid "Magenta"
+msgstr "Eflatun"
+
+#: src/plugins/unsplash/settings.html:34
+msgid "Green"
+msgstr "Yeşil"
+
+#: src/plugins/unsplash/settings.html:35
+msgid "Teal"
+msgstr "Camgöbeği"
+
+#: src/plugins/unsplash/settings.html:36
+msgid "Blue"
+msgstr "Mavi"
+
+#: src/plugins/unsplash/settings.html:41 src/templates/settings.html:146
+msgid "Orientation:"
+msgstr "Yönlendirme:"
+
+#: src/plugins/unsplash/settings.html:44
+msgid "Landscape"
+msgstr "Yatay"
+
+#: src/plugins/unsplash/settings.html:45
+msgid "Portrait"
+msgstr "Dikey"
+
+#: src/plugins/weather/settings.html:7
+msgid "Latitude"
+msgstr "Enlem"
+
+#: src/plugins/weather/settings.html:11
+msgid "Longitude"
+msgstr "Boylam"
+
+#: src/plugins/weather/settings.html:14 src/plugins/weather/settings.html:111
+msgid "Select Location"
+msgstr "Konum Seç"
+
+#: src/plugins/weather/settings.html:18
+msgid "Weather Provider:"
+msgstr "Hava Durumu Sağlayıcısı:"
+
+#: src/plugins/weather/settings.html:24
+msgid "Units:"
+msgstr "Birimler:"
+
+#: src/plugins/weather/settings.html:26
+msgid "Imperial (°F)"
+msgstr "İngiliz Ölçü Birimi (°F)"
+
+#: src/plugins/weather/settings.html:27
+msgid "Metric (°C)"
+msgstr "Metrik (°C)"
+
+#: src/plugins/weather/settings.html:28
+msgid "Standard (K)"
+msgstr "Standart (K)"
+
+#: src/plugins/weather/settings.html:37
+msgid "Location"
+msgstr "Konum"
+
+#: src/plugins/weather/settings.html:40
+msgid "Custom"
+msgstr "Özel"
+
+#: src/plugins/weather/settings.html:50
+msgid "Refresh Time"
+msgstr "Yenileme Saati"
+
+#: src/plugins/weather/settings.html:55
+msgid "Metrics"
+msgstr "Metrikler"
+
+#: src/plugins/weather/settings.html:60
+msgid "Weather Graph"
+msgstr "Hava Durumu Grafiği"
+
+#: src/plugins/weather/settings.html:65
+msgid "Rain Amount"
+msgstr "Yağış Miktarı"
+
+#: src/plugins/weather/settings.html:71
+msgid "Moon Phase"
+msgstr "Ayın Evresi"
+
+#: src/plugins/weather/settings.html:76
+msgid "Graph icons every"
+msgstr "Grafik simge sıklığı:"
+
+#: src/plugins/weather/settings.html:84
+msgid "hours"
+msgstr "saat"
+
+#: src/plugins/weather/settings.html:89
+msgid "Forecast"
+msgstr "Tahmin"
+
+#: src/plugins/weather/settings.html:95
+msgid "days"
+msgstr "gün"
+
+#: src/plugins/weather/settings.html:99 src/templates/settings.html:162
+msgid "Time Zone:"
+msgstr "Saat Dilimi:"
+
+#: src/plugins/weather/settings.html:101
+msgid "Use Location Time Zone"
+msgstr "Konum Saat Dilimini Kullan"
+
+#: src/plugins/weather/settings.html:102
+msgid "Use Local Time Zone"
+msgstr "Yerel Saat Dilimini Kullan"
+
+#: src/plugins/weather/settings.html:114 src/templates/apikeys.html:252
+#: src/templates/inky.html:142 src/templates/playlist.html:491
+#: src/templates/playlist.html:508 src/templates/plugin.html:407
+#: src/templates/plugin.html:432 src/templates/plugin.html:463
+#: src/templates/settings.html:291
+msgid "Save"
+msgstr "Kaydet"
+
+#: src/plugins/weather/render/weather.html:9
+#, python-format
+msgid "Last refresh: %(time)s"
+msgstr "Son yenileme: %(time)s"
+
+#: src/plugins/weather/render/weather.html:24
+#, python-format
+msgid "Feels Like %(temperature)s"
+msgstr "Hissedilen: %(temperature)s"
+
+#: src/plugins/wpotd/settings.html:1
+msgid ""
+"If the date field is blank it will default to today's date. This is "
+"useful when adding to a playlist."
+msgstr ""
+"Tarih alanı boş bırakılırsa varsayılan olarak bugünün tarihi kullanılır. "
+"Bu özellik oynatma listesine eklerken kullanışlıdır."
+
+#: src/plugins/wpotd/settings.html:16
+msgid "Shrink the image to fit the display"
+msgstr "Görseli ekrana sığacak şekilde küçült"
+
+#: src/plugins/year_progress/render/year_progress.html:8
+msgid "PROGRESS"
+msgstr "İLERLEME"
+
+#: src/plugins/year_progress/render/year_progress.html:14
+#, python-format
+msgid "%(percent)s%% DONE"
+msgstr "%%%(percent)sTAMAMLANDI"
+
+#: src/plugins/year_progress/render/year_progress.html:15
+#, python-format
+msgid "%(days)s DAYS LEFT"
+msgstr "%(days)s GÜN KALDI"
+
+#: src/templates/apikeys.html:6 src/templates/apikeys.html:203
+#: src/templates/inky.html:65
+msgid "API Keys"
+msgstr "API Anahtarları"
+
+#: src/templates/apikeys.html:196 src/templates/playlist.html:387
+#: src/templates/plugin.html:293 src/templates/settings.html:104
+msgid "← Back"
+msgstr "← Geri"
+
+#: src/templates/apikeys.html:215
+msgid "KEY_NAME"
+msgstr "ANAHTAR_ADI"
+
+#: src/templates/apikeys.html:216
+msgid "(unchanged)"
+msgstr "(değiştirilmedi)"
+
+#: src/templates/apikeys.html:217 src/templates/playlist.html:492
+msgid "Delete"
+msgstr "Sil"
+
+#: src/templates/apikeys.html:223
+msgid "No API keys configured yet."
+msgstr "Henüz yapılandırılmış bir API anahtarı yok."
+
+#: src/templates/apikeys.html:224
+msgid "Add keys below to enable plugin features."
+msgstr "Eklenti özelliklerini etkinleştirmek için aşağıya anahtarlar ekleyin."
+
+#: src/templates/apikeys.html:232
+msgid "Add API Key"
+msgstr "API Anahtarı Ekle"
+
+#: src/templates/apikeys.html:234
+msgid "OPEN_WEATHER_MAP_SECRET"
+msgstr "OPEN_WEATHER_MAP_SECRET"
+
+#: src/templates/apikeys.html:235
+msgid "OPEN_AI_SECRET"
+msgstr "OPEN_AI_SECRET"
+
+#: src/templates/apikeys.html:236
+msgid "NASA_SECRET"
+msgstr "NASA_SECRET"
+
+#: src/templates/apikeys.html:237
+msgid "UNSPLASH_ACCESS_KEY"
+msgstr "UNSPLASH_ACCESS_KEY"
+
+#: src/templates/apikeys.html:238
+msgid "GITHUB_SECRET"
+msgstr "GITHUB_SECRET"
+
+#: src/templates/apikeys.html:245
+msgid "API keys are stored in the"
+msgstr "API anahtarları cihazdaki"
+
+#: src/templates/apikeys.html:245
+msgid ".env"
+msgstr ".env"
+
+#: src/templates/apikeys.html:245
+msgid ""
+"file on the device. For security, existing values are never displayed. To"
+" change a key, delete it and add a new one. Some plugins may require a "
+"restart after changing keys."
+msgstr ""
+"dosyasında saklanır. Güvenlik için mevcut değerler gösterilmez. Bir "
+"anahtarı değiştirmek için silip yenisini ekleyin. Anahtar "
+"değişikliklerinden sonra bazı eklentilerin yeniden başlatılması "
+"gerekebilir."
+
+#: src/templates/inky.html:64 src/templates/response_modal.html:16
+msgid "Toggle Dark Mode"
+msgstr "Koyu Temayı Aç/Kapat"
+
+#: src/templates/inky.html:69 src/templates/playlist.html:6
+#: src/templates/playlist.html:393
+msgid "Playlists"
+msgstr "Oynatma Listeleri"
+
+#: src/templates/inky.html:72 src/templates/settings.html:6
+#: src/templates/settings.html:110
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: src/templates/inky.html:85
+msgid "Plugins"
+msgstr "Eklentiler"
+
+#: src/templates/inky.html:87
+msgid "Reorder plugins"
+msgstr "Eklentileri sırala"
+
+#: src/templates/inky.html:87 src/templates/inky.html:160
+msgid "Sort"
+msgstr "Sırala"
+
+#: src/templates/inky.html:88
+msgid "Switch view"
+msgstr "Görünümü değiştir"
+
+#: src/templates/inky.html:92
+msgid "Drag plugins to reorder. Click \"Save\" when done."
+msgstr "Sıralamak için eklentileri sürükleyin. Bitince \"Kaydet\"e tıklayın."
+
+#: src/templates/inky.html:118
+msgid "Grid"
+msgstr "Izgara"
+
+#: src/templates/playlist.html:187 src/templates/playlist.html:395
+#: src/templates/playlist.html:474
+msgid "New Playlist"
+msgstr "Yeni Oynatma Listesi"
+
+#: src/templates/playlist.html:201
+msgid "Update Playlist"
+msgstr "Oynatma Listesini Güncelle"
+
+#: src/templates/playlist.html:423
+msgid "Click to view full size"
+msgstr "Tam boyut görmek için tıklayın"
+
+#: src/templates/playlist.html:431
+msgid "Displayed Now"
+msgstr "Şu An Gösteriliyor"
+
+#: src/templates/playlist.html:448
+msgid "Edit Refresh Settings"
+msgstr "Yenileme Ayarlarını Düzenle"
+
+#: src/templates/playlist.html:455
+msgid "Display Now"
+msgstr "Şimdi Göster"
+
+#: src/templates/playlist.html:458
+msgid "Delete Plugin Instance"
+msgstr "Eklenti Örneğini Sil"
+
+#: src/templates/playlist.html:480
+msgid "Playlist Name:"
+msgstr "Oynatma Listesi Adı:"
+
+#: src/templates/playlist.html:484
+msgid "Display from"
+msgstr "Gösterim aralığı:"
+
+#: src/templates/playlist.html:501 src/templates/plugin.html:304
+#: src/templates/plugin.html:425
+msgid "Refresh Settings"
+msgstr "Yenileme Ayarları"
+
+#: src/templates/plugin.html:6
+#, python-format
+msgid "%(name)s Settings"
+msgstr "%(name)s Ayarları"
+
+#: src/templates/plugin.html:301
+msgid "Requires API Key"
+msgstr "API Anahtarı Gerekir"
+
+#: src/templates/plugin.html:320
+msgid "Style"
+msgstr "Stil"
+
+#: src/templates/plugin.html:326
+msgid "Frame:"
+msgstr "Çerçeve:"
+
+#: src/templates/plugin.html:345
+msgid "Margins:"
+msgstr "Kenar Boşlukları:"
+
+#: src/templates/plugin.html:347
+msgid "Top"
+msgstr "Üst"
+
+#: src/templates/plugin.html:348 src/templates/plugin.html:352
+#: src/templates/plugin.html:356 src/templates/plugin.html:360
+msgid "px"
+msgstr "px"
+
+#: src/templates/plugin.html:351
+msgid "Bottom"
+msgstr "Alt"
+
+#: src/templates/plugin.html:355
+msgid "Left"
+msgstr "Sol"
+
+#: src/templates/plugin.html:359
+msgid "Right"
+msgstr "Sağ"
+
+#: src/templates/plugin.html:378
+msgid "Image"
+msgstr "Görsel"
+
+#: src/templates/plugin.html:380
+msgid "Upload Image"
+msgstr "Görsel Yükle"
+
+#: src/templates/plugin.html:394
+msgid "Text Color:"
+msgstr "Metin Rengi:"
+
+#: src/templates/plugin.html:408
+msgid "Save As..."
+msgstr "Farklı Kaydet..."
+
+#: src/templates/plugin.html:410
+msgid "Update Now"
+msgstr "Şimdi Güncelle"
+
+#: src/templates/plugin.html:411 src/templates/plugin.html:442
+msgid "Add to Playlist"
+msgstr "Listeye Ekle"
+
+#: src/templates/plugin.html:446
+msgid "Playlist:"
+msgstr "Oynatma Listesi:"
+
+#: src/templates/plugin.html:454
+msgid "Instance Name:"
+msgstr "Örnek Adı:"
+
+#: src/templates/refresh_settings_form.html:3
+msgid "Refresh"
+msgstr "Yenileme"
+
+#: src/templates/refresh_settings_form.html:4
+msgid "Determines how often the data and image should be refreshed."
+msgstr "Veri ve görselin ne sıklıkla yenileneceğini belirler."
+
+#: src/templates/refresh_settings_form.html:8 src/templates/settings.html:192
+msgid "Every"
+msgstr "Her"
+
+#: src/templates/refresh_settings_form.html:9
+msgid "Enter a number"
+msgstr "Bir sayı girin"
+
+#: src/templates/refresh_settings_form.html:11 src/templates/settings.html:195
+msgid "Minute"
+msgstr "Dakika"
+
+#: src/templates/refresh_settings_form.html:12 src/templates/settings.html:196
+msgid "Hour"
+msgstr "Saat"
+
+#: src/templates/refresh_settings_form.html:19
+msgid "Daily at"
+msgstr "Her gün şu saatte:"
+
+#: src/templates/response_modal.html:11
+msgid "Please select a refresh type"
+msgstr "Lütfen bir yenileme türü seçin"
+
+#: src/templates/response_modal.html:12
+msgid "Please enter a valid interval"
+msgstr "Lütfen geçerli bir aralık girin"
+
+#: src/templates/response_modal.html:13
+msgid "Please select a time unit"
+msgstr "Lütfen bir zaman birimi seçin"
+
+#: src/templates/response_modal.html:14
+msgid "Please select a refresh time"
+msgstr "Lütfen bir yenileme saati seçin"
+
+#: src/templates/response_modal.html:15
+msgid "An error occurred while processing your request."
+msgstr "İsteğiniz işlenirken bir hata oluştu."
+
+#: src/templates/response_modal.html:17
+msgid "Toggle Light Mode"
+msgstr "Açık Temayı Aç/Kapat"
+
+#: src/templates/settings.html:78
+msgid ""
+"The system is rebooting. The UI will be unavailable until the reboot is "
+"complete."
+msgstr ""
+"Sistem yeniden başlatılıyor. İşlem tamamlanana kadar arayüze "
+"erişilemeyecektir."
+
+#: src/templates/settings.html:80
+msgid ""
+"The system is shutting down. The UI will remain unavailable until it is "
+"manually restarted."
+msgstr ""
+"Sistem kapatılıyor. Cihaz manuel olarak açılana kadar arayüze "
+"erişilemeyecektir."
+
+#: src/templates/settings.html:113
+msgid "Download Logs"
+msgstr "Günlükleri İndir"
+
+#: src/templates/settings.html:114
+msgid "Reboot"
+msgstr "Yeniden Başlat"
+
+#: src/templates/settings.html:115
+msgid "Shutdown"
+msgstr "Kapat"
+
+#: src/templates/settings.html:125
+msgid "Device Name:"
+msgstr "Cihaz Adı:"
+
+#: src/templates/settings.html:148
+msgid "Horizontal"
+msgstr "Yatay"
+
+#: src/templates/settings.html:149
+msgid "Vertical"
+msgstr "Dikey"
+
+#: src/templates/settings.html:154
+msgid "Invert Image"
+msgstr "Görseli Ters Çevir"
+
+#: src/templates/settings.html:181
+msgid "Time Format:"
+msgstr "Saat Biçimi:"
+
+#: src/templates/settings.html:183
+msgid "12 Hour (AM/PM)"
+msgstr "12 Saat (ÖÖ/ÖS)"
+
+#: src/templates/settings.html:184
+msgid "24 Hour"
+msgstr "24 Saat"
+
+#: src/templates/settings.html:190
+msgid "Plugin Cycle Interval:"
+msgstr "Eklenti Geçiş Aralığı:"
+
+#: src/templates/settings.html:191
+msgid "Determines how often the display switches to a new plugin."
+msgstr "Ekranın ne sıklıkla yeni bir eklentiye geçeceğini belirler."
+
+#: src/templates/settings.html:201
+msgid "Log System Stats"
+msgstr "Sistem İstatistiklerini Günlüğe Kaydet"
+
+#: src/templates/settings.html:209
+msgid "Image Settings"
+msgstr "Görsel Ayarları"
+
+#: src/templates/settings.html:213
+msgid "Saturation:"
+msgstr "Doygunluk:"
+
+#: src/templates/settings.html:227
+msgid "Contrast:"
+msgstr "Kontrast:"
+
+#: src/templates/settings.html:241
+msgid "Sharpness:"
+msgstr "Keskinlik:"
+
+#: src/templates/settings.html:255
+msgid "Brightness:"
+msgstr "Parlaklık:"
+
+#: src/templates/settings.html:270
+msgid "Inky Driver Saturation:"
+msgstr "Inky Sürücü Doygunluğu:"
+
+#: src/utils/i18n_strings.py:5
+msgid "AI Image"
+msgstr "Yapay Zeka Görseli"
+
+#: src/utils/i18n_strings.py:6
+msgid "AI Text"
+msgstr "Yapay Zeka Metni"
+
+#: src/utils/i18n_strings.py:7
+msgid "NASA Astronomy Picture Of the Day"
+msgstr "NASA Günün Astronomi Fotoğrafı"
+
+#: src/utils/i18n_strings.py:8
+msgid "Calendar"
+msgstr "Takvim"
+
+#: src/utils/i18n_strings.py:9
+msgid "Clock"
+msgstr "Saat"
+
+#: src/utils/i18n_strings.py:10
+msgid "Daily Comic"
+msgstr "Günlük Çizgi Roman"
+
+#: src/utils/i18n_strings.py:11
+msgid "Countdown"
+msgstr "Geri Sayım"
+
+#: src/utils/i18n_strings.py:12
+msgid "GitHub"
+msgstr "GitHub"
+
+#: src/utils/i18n_strings.py:13
+msgid "Image Album"
+msgstr "Fotoğraf Albümü"
+
+#: src/utils/i18n_strings.py:14
+msgid "Image Folder"
+msgstr "Görsel Klasörü"
+
+#: src/utils/i18n_strings.py:15
+msgid "Image Upload"
+msgstr "Görsel Yükleme"
+
+#: src/utils/i18n_strings.py:16
+msgid "Image URL"
+msgstr "Görsel Bağlantısı"
+
+#: src/utils/i18n_strings.py:17
+msgid "Today's Newspaper"
+msgstr "Günün Gazetesi"
+
+#: src/utils/i18n_strings.py:18
+msgid "RSS Feed"
+msgstr "RSS Akışı"
+
+#: src/utils/i18n_strings.py:19
+msgid "Screenshot"
+msgstr "Ekran Görüntüsü"
+
+#: src/utils/i18n_strings.py:20
+msgid "To-Do List"
+msgstr "Yapılacaklar Listesi"
+
+#: src/utils/i18n_strings.py:21
+msgid "Unsplash"
+msgstr "Unsplash"
+
+#: src/utils/i18n_strings.py:22
+msgid "Weather"
+msgstr "Hava Durumu"
+
+#: src/utils/i18n_strings.py:23
+msgid "Wikipedia:Picture of the day"
+msgstr "Vikipedi: Günün Görseli"
+
+#: src/utils/i18n_strings.py:24
+msgid "Year Progress"
+msgstr "Yıl İlerlemesi"
+
+#: src/utils/i18n_strings.py:27
+msgid "Sunrise"
+msgstr "Gündoğumu"
+
+#: src/utils/i18n_strings.py:28
+msgid "Sunset"
+msgstr "Günbatımı"
+
+#: src/utils/i18n_strings.py:29
+msgid "Wind"
+msgstr "Rüzgar"
+
+#: src/utils/i18n_strings.py:30
+msgid "Humidity"
+msgstr "Nem"
+
+#: src/utils/i18n_strings.py:31
+msgid "UV Index"
+msgstr "UV İndeksi"
+
+#: src/utils/i18n_strings.py:32
+msgid "Rain"
+msgstr "Yağmur"
+
+#: src/utils/i18n_strings.py:33
+msgid "Air Quality"
+msgstr "Hava Kalitesi"
+
+#: src/utils/i18n_strings.py:34
+msgid "Pressure"
+msgstr "Basınç"
+
+#: src/utils/i18n_strings.py:37
+msgid "Days Left"
+msgstr "Kalan Gün"
+
+#: src/utils/i18n_strings.py:38
+msgid "Days Passed"
+msgstr "Geçen Gün"
+

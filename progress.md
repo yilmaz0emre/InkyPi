@@ -159,9 +159,18 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
   mode settings via systemd drop-in `inkypi.service.d/mode.conf` (server: MemoryMax=1G)
 - [x] Tests `tests/test_server_client.py`; install mode functions tested with fake paths; end-to-end
   client ↔ real HTTP server run locally
-- [ ] Enable SSH on the Pi 5; flash Pi Zero (Raspberry Pi OS Lite 64-bit, SSH key from this Mac)
-- [ ] Install: Pi 5 `install.sh -S -R 800x480`, Pi Zero `install.sh -W epd7in3f -C http://<pi5>.local`
-- [ ] Verify on hardware: render time on the Pi 5, panel refresh, offline badge, power save
+- [x] SSH to the Pi 5 (`emreyilmaz@raspberrypi.local`, key from this Mac)
+- [x] Pi 5 installed with `install.sh -S -R 800x480` (2026-11-22): service active on port 80, web UI at
+  http://raspberrypi.local, `/api/display_image` returns 200 then 304. Render times: clock (PIL) 0.1 s,
+  Currency & Gold (Chromium) 0.5–0.7 s. Docker services (n8n, open-webui, ollama) unaffected
+- [x] Installer fixes from the Pi 5 install (PR #5): stop on a broken package system (`dpkg --audit`),
+  `show_loader` waits with `kill -0` + `wait` (the old `ps a` check raced ahead without a terminal),
+  verify Debian dependencies, `configure_mode` fails loudly when `jq` is missing
+- [ ] Pi 5 settings start fresh: set language to Turkish, recreate widgets and the dashboard there
+- [ ] Flash Pi Zero (Raspberry Pi OS Lite 64-bit, hostname `inkypi-zero`, SSH key from this Mac), then
+  `install.sh -W epd7in3f -C http://raspberrypi.local`
+- [ ] Verify on hardware: panel refresh, offline badge, power save
+- Note: the Pi 5 has a pending kernel update; ask before rebooting (it also runs n8n/open-webui/ollama)
 - Decided 2026-11-22: device updates are **manual** (on request: `git pull && sudo bash install/update.sh`
   over SSH); no automatic/nightly updates
 

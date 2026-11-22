@@ -104,6 +104,17 @@ wake (PiSugar / RTC-based power board).
 - [x] CI in own fork (`.github/workflows/tests.yml`): pytest on Python 3.11 + 3.13 and translation catalog
   check (`scripts/check_translations.py`, locally `bash scripts/i18n.sh check`). First run on PR #1 green.
 
+## Currency & Gold plugin (`feature/currency-gold`)
+
+- [x] New plugin `src/plugins/currency_gold/`: TRY exchange rates and gold prices on the e-ink display
+  - Source: Truncgil Finans (`finans.truncgil.com/v4/today.json`, no key, unofficial). Fallback: TCMB
+    `today.xml` for currencies + gram gold calculated from XAU/USD (`api.gold-api.com`) × USD/TRY
+  - Selectable items (default USD, EUR, GBP, gram gold, quarter gold), buying / selling / daily change,
+    last update in device timezone, auto-fit text for long lists; Turkish + English
+  - `ONS`, BIST100, Brent and Bitcoin from Truncgil are skipped (return 0 / out of scope)
+  - Tests: `tests/test_currency_gold.py` (parsing, fallback, formatting, Turkish render)
+- [ ] Check on real hardware: readability on the actual panel (colour vs. black/white), vertical orientation
+
 ## Notes
 
 - Use `venv/` for tests; system `python3` lacks pytest.

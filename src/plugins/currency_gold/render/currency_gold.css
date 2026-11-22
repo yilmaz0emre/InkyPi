@@ -1,0 +1,78 @@
+.currency-gold {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    font-family: "Jost";
+    overflow: hidden;
+    /* Initial guess from the row count (header + group rows + quote rows); --fit is then
+       lowered by the script in currency_gold.html until everything fits on screen */
+    --fit: 1;
+    --row-size: calc(min(70dvh / (var(--rows) + 1), 6vw) * var(--font-scale) * var(--fit));
+}
+
+.currency-gold .title {
+    text-align: center;
+    font-size: calc(min(7dvh, 5vw) * var(--font-scale) * var(--fit));
+    font-weight: bold;
+    padding-bottom: 1dvh;
+}
+
+.quotes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: calc(var(--row-size) * 0.62);
+    font-variant-numeric: tabular-nums;
+    flex: 1;
+}
+
+.quotes th {
+    font-weight: normal;
+    font-size: 0.8em;
+    text-align: right;
+    padding: 0 0.6em 0.2em 0.6em;
+    border-bottom: 2px solid;
+}
+
+.quotes td {
+    padding: 0.15em 0.6em;
+    white-space: nowrap;
+}
+
+.quotes .name {
+    text-align: left;
+    width: 100%;
+    white-space: normal;
+}
+
+.quotes .price,
+.quotes .change {
+    text-align: right;
+}
+
+.quotes .selling {
+    font-weight: bold;
+}
+
+.quotes .group-row td {
+    font-family: "Jost";
+    font-weight: bold;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-top: 0.6em;
+}
+
+.quotes .quote-row td {
+    border-bottom: 1px solid;
+}
+
+.quotes .change {
+    font-size: 0.85em;
+}
+
+.footer {
+    text-align: right;
+    font-size: calc(min(3.5dvh, 2.6vw) * var(--font-scale) * max(var(--fit), 0.8));
+    padding-top: 1dvh;
+}

@@ -58,4 +58,14 @@ Restart after changes: `sudo systemctl restart inkypi`. Logs: `journalctl -u ink
 - **Power cut at home:** router and server go down too, so the client simply keeps the last image until they are back. The Pi 5 boots automatically when power returns and the InkyPi service starts with it.
 - **Wrong size:** if the server resolution does not match the panel the image is resized (and a warning is logged); fix the server's `-R`.
 
+## Updating
+
+Code changes reach a device only when it is updated (settings and content live in each device's own `device.json` and are not affected):
+
+```bash
+cd ~/InkyPi && git pull && sudo bash install/update.sh
+```
+
+The server/client mode is kept (it lives in the systemd drop-in, not in `inkypi.service`); on a thin client Chromium is not installed. The client rarely needs updates — only when `thin_client.py` or the panel driver changes.
+
 Switching a device back to the normal (all-in-one) mode: run `install.sh` again without `-S`/`-C`; the mode-specific service settings are removed.

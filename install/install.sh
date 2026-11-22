@@ -259,21 +259,28 @@ enable_interfaces(){
 }
 
 show_loader() {
+  # Wait for the background job started just before this call, showing a spinner.
+  # kill -0 works without a terminal (unlike `ps a`, which hid the job when the installer ran
+  # over a non-interactive SSH session, so the script raced ahead of apt/pip), and `wait`
+  # returns the job's real exit status instead of always reporting success.
   local pid=$!
   local delay=0.1
   local spinstr='|/-\'
   printf "$1 [${spinstr:0:1}] "
-  while ps a | awk '{print $1}' | grep -q "${pid}"; do
+  while kill -0 "$pid" 2>/dev/null; do
     local temp=${spinstr#?}
     printf "\r$1 [${temp:0:1}] "
     spinstr=${temp}${spinstr%"${temp}"}
     sleep ${delay}
   done
-  if [[ $? -eq 0 ]]; then
+  wait "$pid"
+  local status=$?
+  if [[ $status -eq 0 ]]; then
     printf "\r$1 [\e[32m\xE2\x9C\x94\e[0m]\n"
   else
-    printf "\r$1 [\e[31m\xE2\x9C\x98\e[0m]\n"
+    printf "\r$1 [\e[31m\xE2\x9C\x98\e[0m] (exit code $status)\n"
   fi
+  return $status
 }
 
 echo_success() {

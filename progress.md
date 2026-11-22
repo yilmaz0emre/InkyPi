@@ -191,7 +191,16 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
   defaults (300 s / 3600 s)
 - [x] Pi Zero language set to Turkish (`language: "tr"` in its device.json), so the badge reads
   "Çevrimdışı · son güncelleme …"
-- [ ] Verify power save on the panel (once the Zero runs on battery)
+- [x] Power save verified on the Zero (2026-11-23, on the adapter, poll 120 s for the test): Wi-Fi,
+  Bluetooth, HDMI and LEDs off between polls (no ping while asleep), 8/8 wakes reconnected, new images
+  drawn after a wake, unchanged images left alone
+- [x] Fixed on the way (PR #10): after a wake the network check used `one.one.one.one:443`, which the Zero
+  cannot reach, so each wake waited 3 × 25 s for nothing. `PowerManager.connectivity_check_host` now
+  points at the thin client's server → network in ~2 s, ~2.5 s awake per unchanged poll (was ~85 s)
+- [x] Zero final settings: `power_save: true`, `poll_interval: 3600`, `offline_after: 7200` (badge after two
+  missed polls), `boot_awake` default 600 s (SSH window after power-on). Zero and Pi 5 both on `main`
+- [ ] Battery life: no current meter, so measure by running the Zero on battery and counting days
+- Note: changes on the Pi 5 now reach the panel within an hour; power-cycle the Zero to fetch at once
 - Pi 5 rebooted 2026-11-22 onto kernel 6.12.115; InkyPi and Docker services came back on their own.
   Disk is tight (2.5 GB free of 58 GB); ask before rebooting (it also runs n8n/open-webui/ollama)
 - Decided 2026-11-22: device updates are **manual** (on request: `git pull && sudo bash install/update.sh`

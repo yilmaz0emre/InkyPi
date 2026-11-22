@@ -187,6 +187,20 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
 - Decided 2026-11-22: device updates are **manual** (on request: `git pull && sudo bash install/update.sh`
   over SSH); no automatic/nightly updates
 
+## Autosave + weather address search (`feature/plugin-autosave`, PR #8)
+
+- [x] Every settings form saves itself (`static/scripts/autosave.js`): ~1 s after an edit and on leaving
+  the page, status line above the buttons; hidden inputs (frame, dashboard layout) are caught by a
+  1.5 s comparison once the user has interacted
+  - Saved plugin instance: `PUT /update_plugin_instance` (settings only, no display refresh)
+  - New plugin: draft stored in the device config (`plugin_drafts`, `PUT/DELETE /plugin_draft/<id>`),
+    restored from any browser and after restarts; dropped by Add to Playlist
+  - Device Settings page: `POST /save_settings`, validation errors shown inline, language change reloads
+  - A newly picked file still needs Save (no repeated uploads); creation dialogs keep their Save button
+- [x] Weather: address / place search (`GET /geocode`, OpenStreetMap Nominatim, UI language, max 5
+  results, only on Find) fills latitude/longitude and an empty custom title
+- [x] Installed on the Pi 5 (2026-11-22, `update.sh`); pages, script and geocode checked over HTTP
+
 ## Notes
 
 - Use `venv/` for tests; system `python3` lacks pytest.

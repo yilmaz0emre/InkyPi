@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
+    <title>{{ _('Settings') }}</title>
     <script>
         (function() {
             const theme = localStorage.getItem('inkypi-theme') || 
@@ -30,6 +30,7 @@
                 const result = await response.json();
                 if (response.ok) {
                     showResponseModal('success', `Success! ${result.message}`);
+                    setTimeout(() => window.location.reload(), 1200);
                 } else {
                     showResponseModal('failure', `Error!  ${result.error}`);
                     form.reset();
@@ -74,9 +75,9 @@
 
         async function handleShutdown(reboot) {
             if (reboot) {
-                showResponseModal('success', 'The system is rebooting. The UI will be unavailable until the reboot is complete.');
+                showResponseModal('success', "{{ _('The system is rebooting. The UI will be unavailable until the reboot is complete.') }}");
             } else {
-                showResponseModal('success', 'The system is shutting down. The UI will remain unavailable until it is manually restarted.');
+                showResponseModal('success', "{{ _('The system is shutting down. The UI will remain unavailable until it is manually restarted.') }}");
             }
             await new Promise(resolve => setTimeout(resolve, 1000));
             // we cannot await a response here
@@ -90,6 +91,56 @@
         }
 
 
+        async function togglePowerSave(enable) {
+            try {
+                const response = await fetch("{{ url_for('settings.power_save_toggle') }}", {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({active: enable})
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    showResponseModal('success', result.message);
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showResponseModal('failure', result.error || 'Failed');
+                }
+            } catch (e) {
+                showResponseModal('failure', 'Error: ' + e);
+            }
+        }
+
+        async function keepAwake(seconds) {
+            try {
+                const response = await fetch("{{ url_for('settings.power_save_keep_awake') }}", {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({seconds: seconds})
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    updatePowerSaveCountdowns(result.status.remaining_awake_seconds);
+                    showResponseModal('success', result.message);
+                } else {
+                    showResponseModal('failure', result.error || 'Failed');
+                }
+            } catch (e) {
+                showResponseModal('failure', 'Error: ' + e);
+            }
+        }
+
+        // Seconds unit enforces the same minimum awake window as the backend
+        function updateAwakeMinimum() {
+            const unit = document.getElementById('ps_awake_unit');
+            const input = document.getElementById('ps_awake_duration');
+            if (!unit || !input) return;
+            input.min = unit.value === 'second' ? {{ min_awake_seconds | default(60) }} : 1;
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            updateAwakeMinimum();
+            document.getElementById('ps_awake_unit')?.addEventListener('change', updateAwakeMinimum);
+        });
+
         function updateSliderValue(slider) {
             const valueDisplay = document.getElementById(`${slider.id}-value`);
             valueDisplay.textContent = parseFloat(slider.value).toFixed(1);
@@ -100,18 +151,18 @@
 <body>
     <div class="frame">
         <!-- Back Button -->
-        <button onclick="history.back()" class="back-button">← Back</button>
+        <button onclick="history.back()" class="back-button">{{ _('← Back') }}</button>
         <!-- Settings Header -->
         <div class="app-header">
             <div class="header-content">
                 <div class="title-container">
                     <img src="{{ url_for('static', filename='icons/settings.png') }}" alt="settings icon" class="app-icon">
-                    <h1 class="app-title">Settings</h1>
+                    <h1 class="app-title">{{ _('Settings') }}</h1>
                 </div>
                 <div>
-                    <a class="header-button" style="text-decoration: none; background-color: #2c66b1; color: #fff;" href="{{ url_for('settings.download_logs', hours=24) }}" download>Download Logs</a>
-                    <button class="header-button" style="background-color: #FFD600; color: #333;" onclick="handleShutdown(true)">Reboot</button>
-                    <button class="header-button" style="background-color: #E53935; color: #fff;" onclick="handleShutdown(false)">Shutdown</button>
+                    <a class="header-button" style="text-decoration: none; background-color: #2c66b1; color: #fff;" href="{{ url_for('settings.download_logs', hours=24) }}" download>{{ _('Download Logs') }}</a>
+                    <button class="header-button" style="background-color: #FFD600; color: #333;" onclick="handleShutdown(true)">{{ _('Reboot') }}</button>
+                    <button class="header-button" style="background-color: #E53935; color: #fff;" onclick="handleShutdown(false)">{{ _('Shutdown') }}</button>
                 </div>
             </div>
         </div>
@@ -121,27 +172,36 @@
             <div id="settings-container">
                 <!-- Device Name -->
                 <div class="form-group">
-                    <label for="deviceName" class="form-label">Device Name:</label>
+                    <label for="deviceName" class="form-label">{{ _('Device Name:') }}</label>
                     <input type="text" 
                            id="deviceName" 
                            name="deviceName" 
-                           placeholder="Type something..." 
+                           placeholder="{{ _('Type something...') }}" 
                            value="{{ device_settings.name }}" 
                            required 
                            class="form-input">
                 </div>
                 <div class="form-group nowrap">
+                    <!-- Language Dropdown -->
+                    <div class="form-group">
+                        <label for="language" class="form-label">{{ _('Language:') }}</label>
+                        <select id="language" name="language" class="form-input">
+                            {% for code, name in supported_languages.items() %}
+                            <option value="{{ code }}" {% if device_settings.get('language', 'en') == code %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <!-- Orientation Dropdown -->
                     <div class="form-group">
-                        <label for="orientation" class="form-label">Orientation:</label>
+                        <label for="orientation" class="form-label">{{ _('Orientation:') }}</label>
                         <select id="orientation" name="orientation" class="form-input">
-                            <option value="horizontal" {% if device_settings.orientation == "horizontal" %}selected{% endif %}>Horizontal</option>
-                            <option value="vertical" {% if device_settings.orientation == "vertical" %}selected{% endif %}>Vertical</option>
+                            <option value="horizontal" {% if device_settings.orientation == "horizontal" %}selected{% endif %}>{{ _('Horizontal') }}</option>
+                            <option value="vertical" {% if device_settings.orientation == "vertical" %}selected{% endif %}>{{ _('Vertical') }}</option>
                         </select>
                     </div>
                     <div class="form-group nowrap">
                         <!-- Invert Image Checkbox -->
-                        <label class="form-label" for="invertImage">Invert Image</label>
+                        <label class="form-label" for="invertImage">{{ _('Invert Image') }}</label>
                         <input type="checkbox" id="invertImage" name="invertImage" {% if device_settings.inverted_image %}checked{% endif %}>
                         </label>
                     </div>
@@ -149,14 +209,14 @@
                 <div class="form-group">
                     <!-- Timezone Dropdown -->
                     <div class="form-group nowrap">
-                        <label for="timezone" class="form-label">Time Zone:</label>
+                        <label for="timezone" class="form-label">{{ _('Time Zone:') }}</label>
                         <input
                             type="text"
                             id="timezone"
                             name="timezoneName"
                             class="form-input"
                             list="timezoneList"
-                            placeholder="Type to search..."
+                            placeholder="{{ _('Type to search...') }}"
                             value="{{ device_settings.timezone }}"
                         />
                         <datalist id="timezoneList">
@@ -168,39 +228,143 @@
 
                     <!-- Time Format Dropdown -->
                     <div class="form-group nowrap">
-                        <label for="timeFormat" class="form-label">Time Format:</label>
+                        <label for="timeFormat" class="form-label">{{ _('Time Format:') }}</label>
                         <select id="timeFormat" name="timeFormat" class="form-input">
-                            <option value="12h" {% if device_settings.time_format == "12h" %}selected{% endif %}>12 Hour (AM/PM)</option>
-                            <option value="24h" {% if device_settings.time_format == "24h" %}selected{% endif %}>24 Hour</option>
+                            <option value="12h" {% if device_settings.time_format == "12h" %}selected{% endif %}>{{ _('12 Hour (AM/PM)') }}</option>
+                            <option value="24h" {% if device_settings.time_format == "24h" %}selected{% endif %}>{{ _('24 Hour') }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="form-group">
-                        <label for="interval">Plugin Cycle Interval:</label>
-                        <span title="Determines how often the display switches to a new plugin.">ⓘ</span>
-                        <span>Every</span>
+                        <label for="interval">{{ _('Plugin Cycle Interval:') }}</label>
+                        <span title="{{ _('Determines how often the display switches to a new plugin.') }}">ⓘ</span>
+                        <span>{{ _('Every') }}</span>
                         <input type="number" id="interval" name="interval" class="form-input" required min="1">
                         <select id="unit" name="unit" class="form-input" required>
-                            <option value="minute">Minute</option>
-                            <option value="hour">Hour</option>
+                            <option value="minute">{{ _('Minute') }}</option>
+                            <option value="hour">{{ _('Hour') }}</option>
                         </select>
                     </div>
 
                     <div class="form-group nowrap">
-                        <label class="form-label" for="logSystemStats">Log System Stats</label>
+                        <label class="form-label" for="logSystemStats">{{ _('Log System Stats') }}</label>
                             <input type="checkbox" id="logSystemStats" name="logSystemStats" {% if device_settings.log_system_stats %}checked{% endif %}>
                         </label>
                     </div>
                 </div>
 
+                <!-- Battery & Power Management Collapsible -->
                 <div class="collapsible">
                     <button type="button" class="collapsible-header" onclick="toggleCollapsible(this)">
-                        Image Settings <span class="collapsible-icon">▼</span>
+                        {{ _('Battery & Power Management') }} <span class="collapsible-icon">▼</span>
+                    </button>
+                    <div class="settings-container collapsible-content" style="padding-top: 10px;">
+                        <!-- Status and Safety Callout -->
+                        <div style="background-color: var(--input-bg); border-left: 4px solid var(--accent-primary); padding: 12px; margin-bottom: 15px; border-radius: 4px; font-size: 0.95rem;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+                                <div>
+                                    <strong>{{ _('Mode Status:') }}</strong>
+                                    {% if power_save_status.is_active %}
+                                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; background-color: #2e7d32; color: #fff; font-weight: bold; font-size: 0.85rem;">
+                                            🟢 {{ _('ACTIVE') }}
+                                        </span>
+                                        <span class="ps-countdown" style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 6px;"
+                                              data-remaining="{{ power_save_status.remaining_awake_seconds }}"
+                                              data-template="({{ _('Awake for %(time)s', time='{time}') }})"
+                                              data-expired="({{ _('Entering low-power sleep...') }})"></span>
+                                    {% else %}
+                                        <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; background-color: #757575; color: #fff; font-weight: bold; font-size: 0.85rem;">
+                                            ⚪ {{ _('INACTIVE (Normal Mode)') }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if power_save_status.is_active %}
+                                        <button type="button" class="header-button" style="background-color: #d32f2f; color: #fff; padding: 5px 12px; font-size: 0.85rem;" onclick="togglePowerSave(false)">
+                                            {{ _('Deactivate Mode') }}
+                                        </button>
+                                        <button type="button" class="header-button" style="background-color: #2c66b1; color: #fff; padding: 5px 12px; font-size: 0.85rem;" onclick="keepAwake(900)">
+                                            +15 {{ _('Min Awake') }}
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="header-button" style="background-color: #2e7d32; color: #fff; padding: 5px 12px; font-size: 0.85rem;" onclick="togglePowerSave(true)">
+                                            {{ _('Activate Mode Now') }}
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">
+                                ⚠️ <strong>{{ _('Physical Power-off / Boot Safety:') }}</strong> {{ _('Whenever Raspberry Pi physically loses power or restarts, this mode is automatically kept OFF. You will always be able to access the web interface and Wi-Fi on boot. You can enable it again here whenever you wish.') }}
+                            </div>
+                        </div>
+
+                        <!-- Awake Duration -->
+                        <div class="form-group">
+                            <label for="ps_awake_duration" class="form-label">{{ _('Awake Duration:') }}</label>
+                            <span title="{{ _('How long the device stays fully awake with Wi-Fi on after a refresh for web access and configurations.') }}">ⓘ</span>
+                            <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                                <input type="number" id="ps_awake_duration" name="ps_awake_duration" class="form-input" min="1" value="{{ power_save_status.get('config', {}).get('awake_duration', 3) }}" required style="max-width: 120px;">
+                                <select id="ps_awake_unit" name="ps_awake_unit" class="form-input" style="max-width: 140px;">
+                                    <option value="minute" {% if power_save_status.get('config', {}).get('awake_unit', 'minute') == 'minute' %}selected{% endif %}>{{ _('Minute') }}</option>
+                                    <option value="second" {% if power_save_status.get('config', {}).get('awake_unit') == 'second' %}selected{% endif %}>{{ _('Second') }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Sleep Duration -->
+                        <div class="form-group">
+                            <label for="ps_sleep_duration" class="form-label">{{ _('Sleep Duration:') }}</label>
+                            <span title="{{ _('How long the device enters low-power sleep between display refreshes.') }}">ⓘ</span>
+                            <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                                <input type="number" id="ps_sleep_duration" name="ps_sleep_duration" class="form-input" min="1" value="{{ power_save_status.get('config', {}).get('sleep_duration', 1) }}" required style="max-width: 120px;">
+                                <select id="ps_sleep_unit" name="ps_sleep_unit" class="form-input" style="max-width: 140px;">
+                                    <option value="hour" {% if power_save_status.get('config', {}).get('sleep_unit', 'hour') == 'hour' %}selected{% endif %}>{{ _('Hour') }}</option>
+                                    <option value="minute" {% if power_save_status.get('config', {}).get('sleep_unit') == 'minute' %}selected{% endif %}>{{ _('Minute') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 10px;">
+                            {{ _('One full cycle takes the awake time plus the sleep time, plus roughly 30-60 seconds to reconnect Wi-Fi and refresh the display. The display refreshes once per cycle. The minimum awake time is 1 minute.') }}
+                        </div>
+
+                        <!-- Peripheral Switches -->
+                        <div style="margin-top: 10px;">
+                            <label class="form-label" style="margin-bottom: 8px; display: block;">{{ _('Sleep Hardware Controls:') }}</label>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                                <div class="form-group nowrap">
+                                    <input type="checkbox" id="ps_turn_off_wifi" name="ps_turn_off_wifi" {% if power_save_status.get('config', {}).get('turn_off_wifi', True) %}checked{% endif %}>
+                                    <label for="ps_turn_off_wifi" class="form-label">{{ _('Turn off Wi-Fi') }}</label>
+                                </div>
+                                <div class="form-group nowrap">
+                                    <input type="checkbox" id="ps_turn_off_bluetooth" name="ps_turn_off_bluetooth" {% if power_save_status.get('config', {}).get('turn_off_bluetooth', True) %}checked{% endif %}>
+                                    <label for="ps_turn_off_bluetooth" class="form-label">{{ _('Turn off Bluetooth') }}</label>
+                                </div>
+                                <div class="form-group nowrap">
+                                    {% if power_save_status.get('hdmi_control_supported', True) %}
+                                    <input type="checkbox" id="ps_turn_off_hdmi" name="ps_turn_off_hdmi" {% if power_save_status.get('config', {}).get('turn_off_hdmi', True) %}checked{% endif %}>
+                                    <label for="ps_turn_off_hdmi" class="form-label">{{ _('Turn off HDMI') }}</label>
+                                    {% else %}
+                                    <input type="checkbox" id="ps_turn_off_hdmi" disabled>
+                                    <label for="ps_turn_off_hdmi" class="form-label" title="{{ _('Not supported with the KMS display driver (Raspberry Pi OS Bookworm default).') }}">{{ _('Turn off HDMI') }} ⓘ</label>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group nowrap">
+                                    <input type="checkbox" id="ps_turn_off_led" name="ps_turn_off_led" {% if power_save_status.get('config', {}).get('turn_off_led', True) %}checked{% endif %}>
+                                    <label for="ps_turn_off_led" class="form-label">{{ _('Turn off Status LEDs') }}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <button type="button" class="collapsible-header" onclick="toggleCollapsible(this)">
+                        {{ _('Image Settings') }} <span class="collapsible-icon">▼</span>
                     </button>
                     <div class="settings-container collapsible-content">
                         <div class="form-group">
-                            <label for="saturation" class="form-label" style="min-width: 100px;">Saturation:</label>
+                            <label for="saturation" class="form-label" style="min-width: 100px;">{{ _('Saturation:') }}</label>
                             <span id="saturation-value">{{ device_settings.get('image_settings', {}).get('saturation', 1.0) }}</span>
                             <input
                                 type="range"
@@ -214,7 +378,7 @@
                             />
                         </div>
                         <div class="form-group">
-                            <label for="contrast" class="form-label" style="min-width: 100px;">Contrast:</label>
+                            <label for="contrast" class="form-label" style="min-width: 100px;">{{ _('Contrast:') }}</label>
                             <span id="contrast-value">{{ device_settings.get('image_settings', {}).get('contrast', 1.0) }}</span>
                             <input
                                 type="range"
@@ -228,7 +392,7 @@
                             />
                          </div>
                         <div class="form-group">
-                            <label for="sharpness" class="form-label" style="min-width: 100px;">Sharpness:</label>
+                            <label for="sharpness" class="form-label" style="min-width: 100px;">{{ _('Sharpness:') }}</label>
                             <span id="sharpness-value">{{ device_settings.get('image_settings', {}).get('sharpness', 1.0) }}</span>
                             <input
                                 type="range"
@@ -242,7 +406,7 @@
                             />
                         </div>
                         <div class="form-group">
-                            <label for="brightness" class="form-label" style="min-width: 100px;">Brightness:</label>
+                            <label for="brightness" class="form-label" style="min-width: 100px;">{{ _('Brightness:') }}</label>
                             <span id="brightness-value">{{ device_settings.get('image_settings', {}).get('brightness', 1.0) }}</span>
                             <input
                                 type="range"
@@ -257,7 +421,7 @@
                         </div>
                         {% if device_settings.get('display_type', 'inky') == 'inky' %}
                         <div class="form-group">
-                            <label for="inky_saturation" class="form-label" style="min-width: 100px;">Inky Driver Saturation:</label>
+                            <label for="inky_saturation" class="form-label" style="min-width: 100px;">{{ _('Inky Driver Saturation:') }}</label>
                             <span id="inky_saturation-value">{{ device_settings.get('image_settings', {}).get('inky_saturation', 0.5) }}</span>
                             <input
                                 type="range"
@@ -278,10 +442,11 @@
  
         <!-- Buttons -->
         <div class="buttons-container">
-            <button type="button" onclick="handleAction()" class="action-button">Save</button>
+            <button type="button" onclick="handleAction()" class="action-button">{{ _('Save') }}</button>
         </div>
     </div>
     <!-- Success/Error Modal -->
     {% include 'response_modal.html' %}
+    {% include 'power_save_countdown.html' %}
 </body>
 </html>

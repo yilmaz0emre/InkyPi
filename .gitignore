@@ -54,6 +54,7 @@ cover/
 # Translations
 *.mo
 *.pot
+!src/translations/**/*.mo
 
 # Django stuff:
 *.log
@@ -166,9 +167,13 @@ cython_debug/
 # Development artifacts
 mock_display_output/
 
+# Runtime power save hardware snapshot
+src/config/.power_save_state.json*
+
 # IDE files
 .idea
 
 # Static Files added by install/update_vendors.sh
 /src/static/scripts/
 /src/static/styles/
+/src/static/images/current_image.png

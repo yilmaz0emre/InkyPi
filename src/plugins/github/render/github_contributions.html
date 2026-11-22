@@ -11,7 +11,7 @@
     <div class="metric-container">
         {% for metric in metrics %}
         <div class="metric">
-            <div class="metric-title">{{ metric.title }}</div>
+            <div class="metric-title">{{ _(metric.title) }}</div>
             <div class="metric-value">{{ metric.value }}</div>
         </div>
         {% endfor %}

@@ -9,7 +9,7 @@
         GitHub/{{ username }}
     </div>
     <div class="title">
-        Earnings this month ${{ total_per_month }}
+        {{ _('Earnings this month $%(amount)s', amount=total_per_month) }}
     </div>
 </div>
 {% endblock %}

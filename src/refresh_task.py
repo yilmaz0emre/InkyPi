@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 class RefreshTask:
     """Handles the logic for refreshing the display using a background thread."""
 
-    def __init__(self, device_config, display_manager):
+    def __init__(self, device_config, display_manager, power_manager=None):
         self.device_config = device_config
         self.display_manager = display_manager
+        self.power_manager = power_manager
 
         self.thread = None
         self.lock = threading.Lock()
@@ -73,10 +74,37 @@ class RefreshTask:
         while True:
             try:
                 with self.condition:
-                    sleep_time = self.device_config.get_config("plugin_cycle_interval_seconds", default=60*60)
+                    woke_from_sleep = False
+                    if self.power_manager and self.power_manager.is_active:
+                        awake_seconds = self.power_manager.get_awake_seconds()
+                        sleep_seconds = self.power_manager.get_sleep_seconds()
 
-                    # Wait for sleep_time or until notified
-                    self.condition.wait(timeout=sleep_time)
+                        # Maintain the awake window
+                        now = time.time()
+                        if self.power_manager.keep_awake_until < now:
+                            self.power_manager.keep_awake_until = now + awake_seconds
+
+                        while time.time() < self.power_manager.keep_awake_until and self.running:
+                            rem = self.power_manager.keep_awake_until - time.time()
+                            self.condition.wait(timeout=max(0.2, min(5.0, rem)))
+                            if self.manual_update_request or not self.running or not self.power_manager.is_active:
+                                break
+
+                        # Enter deep low-power idle if still active and no manual update
+                        if self.running and self.power_manager.is_active and not self.manual_update_request:
+                            self.power_manager.enter_low_power_mode()
+                            self.condition.wait(timeout=sleep_seconds)
+
+                        # Restore hardware before performing refresh
+                        if self.power_manager.is_in_low_power:
+                            self.power_manager.exit_low_power_mode()
+                            # Sleep duration is the refresh period in power save mode: every
+                            # wake must update the display, regardless of the cycle interval.
+                            woke_from_sleep = True
+                    else:
+                        sleep_time = self.device_config.get_config("plugin_cycle_interval_seconds", default=60*60)
+                        self.condition.wait(timeout=sleep_time)
+
                     self.refresh_result = {}
                     self.refresh_event.clear()
 
@@ -101,9 +129,9 @@ class RefreshTask:
 
                         # handle refresh based on playlists
                         logger.info(f"Running interval refresh check. | current_time: {current_dt.strftime('%Y-%m-%d %H:%M:%S')}")
-                        playlist, plugin_instance = self._determine_next_plugin(playlist_manager, latest_refresh, current_dt)
+                        playlist, plugin_instance = self._determine_next_plugin(playlist_manager, latest_refresh, current_dt, force=woke_from_sleep)
                         if plugin_instance:
-                            refresh_action = PlaylistRefresh(playlist, plugin_instance)
+                            refresh_action = PlaylistRefresh(playlist, plugin_instance, force=woke_from_sleep)
 
                     if refresh_action:
                         plugin_config = self.device_config.get_plugin(refresh_action.get_plugin_id())
@@ -126,6 +154,9 @@ class RefreshTask:
                         # update latest refresh data in the device config
                         self.device_config.refresh_info = RefreshInfo(**refresh_info)
                         self.device_config.write_config()
+
+                        if self.power_manager and self.power_manager.is_active:
+                            self.power_manager.keep_awake_until = time.time() + self.power_manager.get_awake_seconds()
 
             except Exception as e:
                 logger.exception('Exception during refresh')
@@ -160,8 +191,10 @@ class RefreshTask:
         tz_str = self.device_config.get_config("timezone", default="UTC")
         return datetime.now(pytz.timezone(tz_str))
 
-    def _determine_next_plugin(self, playlist_manager, latest_refresh_info, current_dt):
-        """Determines the next plugin to refresh based on the active playlist, plugin cycle interval, and current time."""
+    def _determine_next_plugin(self, playlist_manager, latest_refresh_info, current_dt, force=False):
+        """Determines the next plugin to refresh based on the active playlist, plugin cycle interval, and current time.
+
+        With force=True the plugin cycle interval check is skipped (used after a power save wake)."""
         playlist = playlist_manager.determine_active_playlist(current_dt)
         if not playlist:
             playlist_manager.active_playlist = None
@@ -177,7 +210,7 @@ class RefreshTask:
         plugin_cycle_interval = self.device_config.get_config("plugin_cycle_interval_seconds", default=3600)
         should_refresh = PlaylistManager.should_refresh(latest_refresh_dt, plugin_cycle_interval, current_dt)
 
-        if not should_refresh:
+        if not should_refresh and not force:
             latest_refresh_str = latest_refresh_dt.strftime('%Y-%m-%d %H:%M:%S') if latest_refresh_dt else "None"
             logger.info(f"Not time to update display. | latest_update: {latest_refresh_str} | plugin_cycle_interval: {plugin_cycle_interval}")
             return None, None

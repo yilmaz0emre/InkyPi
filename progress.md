@@ -162,6 +162,8 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
 - [ ] Enable SSH on the Pi 5; flash Pi Zero (Raspberry Pi OS Lite 64-bit, SSH key from this Mac)
 - [ ] Install: Pi 5 `install.sh -S -R 800x480`, Pi Zero `install.sh -W epd7in3f -C http://<pi5>.local`
 - [ ] Verify on hardware: render time on the Pi 5, panel refresh, offline badge, power save
+- Decided 2026-11-22: device updates are **manual** (on request: `git pull && sudo bash install/update.sh`
+  over SSH); no automatic/nightly updates
 
 ## Notes
 

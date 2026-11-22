@@ -80,6 +80,11 @@ fi
 # server / thin client mode, as written by install.sh -S / -C (empty for a normal install)
 INSTALL_MODE=$(sed -n 's/^# inkypi-mode: //p' "/etc/systemd/system/$SERVICE_FILE.d/mode.conf" 2>/dev/null)
 
+if [[ -n "$(dpkg --audit 2>/dev/null)" ]]; then
+  echo_error "ERROR: The package system has unfinished installs (an earlier upgrade was interrupted). Fix it first with: sudo dpkg --configure -a && sudo apt-get -f install"
+  exit 1
+fi
+
 apt-get update -y > /dev/null
 if [ -f "$APT_REQUIREMENTS_FILE" ]; then
   echo "Installing system dependencies... "

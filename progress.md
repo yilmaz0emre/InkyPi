@@ -170,7 +170,8 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
 - [ ] Flash Pi Zero (Raspberry Pi OS Lite 64-bit, hostname `inkypi-zero`, SSH key from this Mac), then
   `install.sh -W epd7in3f -C http://raspberrypi.local`
 - [ ] Verify on hardware: panel refresh, offline badge, power save
-- Note: the Pi 5 has a pending kernel update; ask before rebooting (it also runs n8n/open-webui/ollama)
+- Pi 5 rebooted 2026-11-22 onto kernel 6.12.115; InkyPi and Docker services came back on their own.
+  Disk is tight (2.5 GB free of 58 GB); ask before rebooting (it also runs n8n/open-webui/ollama)
 - Decided 2026-11-22: device updates are **manual** (on request: `git pull && sudo bash install/update.sh`
   over SSH); no automatic/nightly updates
 

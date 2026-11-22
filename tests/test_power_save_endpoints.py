@@ -150,3 +150,34 @@ def test_save_settings_clamps_awake_seconds_to_minimum(setup):
 
     assert power_manager.get_config()["awake_duration"] == 60
     assert power_manager.get_config()["awake_unit"] == "second"
+
+
+# --- render server: power save belongs to the display devices ---
+
+SERVER_FORM = {k: v for k, v in SETTINGS_FORM.items() if not k.startswith("ps_")}
+
+
+def test_server_saves_display_device_settings_not_its_own(setup):
+    client, power_manager, _ = setup
+    device_config = client.application.config["DEVICE_CONFIG"]
+    device_config.config["display_type"] = "server"
+    own_before = power_manager.get_config()
+
+    res = client.post("/save_settings", data={**SERVER_FORM, "tc_power_save": "on",
+                                              "tc_poll_minutes": "60", "tc_offline_hours": "2"})
+
+    assert res.status_code == 200, res.get_json()
+    assert device_config.config["thin_client_settings"] == {
+        "power_save": True, "poll_interval": 3600, "offline_after": 7200}
+    assert "power_save_config" not in device_config.config
+    assert power_manager.get_config() == own_before
+
+
+@pytest.mark.parametrize("minutes, hours", [("0", "2"), ("60", "200"), ("x", "2")])
+def test_server_rejects_invalid_display_device_settings(setup, minutes, hours):
+    client, _, _ = setup
+    client.application.config["DEVICE_CONFIG"].config["display_type"] = "server"
+
+    res = client.post("/save_settings", data={**SERVER_FORM, "tc_poll_minutes": minutes, "tc_offline_hours": hours})
+
+    assert res.status_code == 400

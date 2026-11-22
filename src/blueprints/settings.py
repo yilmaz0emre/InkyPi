@@ -1,4 +1,4 @@
-from flask_babel import gettext as _
+from flask_babel import gettext as _, format_timedelta
 from flask import Blueprint, request, jsonify, current_app, render_template, Response
 from utils.time_utils import calculate_seconds
 from utils.power_manager import MIN_AWAKE_SECONDS
@@ -27,13 +27,61 @@ except ImportError:
 logger = logging.getLogger(__name__)
 settings_bp = Blueprint("settings", __name__)
 
+# what a thin client runs with until the server's web UI says otherwise (see thin_client.DEFAULTS)
+THIN_CLIENT_DEFAULTS = {"power_save": False, "poll_interval": 300, "offline_after": 3600}
+
+
+def _is_server(device_config):
+    return device_config.get_config("display_type") == "server"
+
+
+def _thin_client_context(device_config):
+    """Display devices of a render server and the settings shown in its form."""
+    from utils import thin_clients
+
+    clients = thin_clients.client_overview(device_config)
+    for client in clients:
+        client["last_seen_text"] = format_timedelta(timedelta(seconds=-client["seconds_ago"]), add_direction=True)
+        if client["poll_interval"]:
+            client["poll_text"] = format_timedelta(timedelta(seconds=client["poll_interval"]))
+        if client["next_check_in"] is not None:
+            client["next_check_text"] = format_timedelta(timedelta(seconds=client["next_check_in"]), add_direction=True)
+    # the form starts from the chosen settings, else from what the newest client reports
+    settings = dict(THIN_CLIENT_DEFAULTS)
+    if clients:
+        settings.update({k: v for k, v in clients[0].items() if k in THIN_CLIENT_DEFAULTS and v is not None})
+    settings.update(thin_clients.desired_settings(device_config))
+    return clients, settings
+
+def _thin_client_settings_from_form(form_data):
+    """Settings for the display devices from the server's form; returns (settings, error)."""
+    try:
+        poll_minutes = int(form_data.get("tc_poll_minutes", ""))
+        offline_hours = int(form_data.get("tc_offline_hours", ""))
+    except ValueError:
+        return None, _("Enter whole numbers for the check interval and the offline badge.")
+    if not 1 <= poll_minutes <= 1440:
+        return None, _("The check interval must be between 1 and 1440 minutes.")
+    if not 0 <= offline_hours <= 168:
+        return None, _("The offline badge delay must be between 0 and 168 hours.")
+    return {
+        "power_save": form_data.get("tc_power_save") == "on",
+        "poll_interval": poll_minutes * 60,
+        "offline_after": offline_hours * 3600,
+    }, None
+
+
 @settings_bp.route('/settings')
 def settings_page():
     device_config = current_app.config['DEVICE_CONFIG']
     power_manager = current_app.config.get('POWER_MANAGER')
     power_save_status = power_manager.get_status() if power_manager else {}
     timezones = sorted(pytz.all_timezones_set)
-    return render_template('settings.html', device_settings=device_config.get_config(), timezones=timezones, power_save_status=power_save_status, min_awake_seconds=MIN_AWAKE_SECONDS)
+    is_server = _is_server(device_config)
+    clients, client_settings = _thin_client_context(device_config) if is_server else ([], {})
+    return render_template('settings.html', device_settings=device_config.get_config(), timezones=timezones,
+                           power_save_status=power_save_status, min_awake_seconds=MIN_AWAKE_SECONDS,
+                           is_server=is_server, thin_clients=clients, thin_client_settings=client_settings)
 
 @settings_bp.route('/save_settings', methods=['POST'])
 def save_settings():
@@ -78,36 +126,43 @@ def save_settings():
         if "inky_saturation" in form_data:
             settings["image_settings"]["inky_saturation"] = float(form_data.get("inky_saturation", "0.5"))
 
-        # Power save configuration
         power_manager = current_app.config.get('POWER_MANAGER')
-        try:
-            ps_awake_duration = int(form_data.get("ps_awake_duration", 3))
-        except (ValueError, TypeError):
-            ps_awake_duration = 3
-        ps_awake_unit = form_data.get("ps_awake_unit", "minute")
-
-        try:
-            ps_sleep_duration = int(form_data.get("ps_sleep_duration", 1))
-        except (ValueError, TypeError):
-            ps_sleep_duration = 1
-        ps_sleep_unit = form_data.get("ps_sleep_unit", "hour")
-
-        if ps_awake_unit not in ["second", "minute"]:
-            ps_awake_unit = "minute"
-        # Store what is actually used, so the form never shows a value below the enforced minimum
-        min_awake = MIN_AWAKE_SECONDS if ps_awake_unit == "second" else 1
-        ps_config = {
-            "awake_duration": max(min_awake, ps_awake_duration),
-            "awake_unit": ps_awake_unit,
-            "sleep_duration": max(1, ps_sleep_duration),
-            "sleep_unit": ps_sleep_unit if ps_sleep_unit in ["minute", "hour"] else "hour",
-            "turn_off_wifi": form_data.get("ps_turn_off_wifi") == "on",
-            "turn_off_bluetooth": form_data.get("ps_turn_off_bluetooth") == "on",
-            "turn_off_hdmi": form_data.get("ps_turn_off_hdmi") == "on",
-            "turn_off_led": form_data.get("ps_turn_off_led") == "on",
-        }
-        settings["power_save_config"] = ps_config
         previous_ps_config = power_manager.get_config() if power_manager else None
+        if _is_server(device_config):
+            # a render server manages the power save of its display devices, not its own
+            client_settings, error = _thin_client_settings_from_form(form_data)
+            if error:
+                return jsonify({"error": error}), 400
+            settings["thin_client_settings"] = client_settings
+        else:
+            # Power save configuration
+            try:
+                ps_awake_duration = int(form_data.get("ps_awake_duration", 3))
+            except (ValueError, TypeError):
+                ps_awake_duration = 3
+            ps_awake_unit = form_data.get("ps_awake_unit", "minute")
+
+            try:
+                ps_sleep_duration = int(form_data.get("ps_sleep_duration", 1))
+            except (ValueError, TypeError):
+                ps_sleep_duration = 1
+            ps_sleep_unit = form_data.get("ps_sleep_unit", "hour")
+
+            if ps_awake_unit not in ["second", "minute"]:
+                ps_awake_unit = "minute"
+            # Store what is actually used, so the form never shows a value below the enforced minimum
+            min_awake = MIN_AWAKE_SECONDS if ps_awake_unit == "second" else 1
+            ps_config = {
+                "awake_duration": max(min_awake, ps_awake_duration),
+                "awake_unit": ps_awake_unit,
+                "sleep_duration": max(1, ps_sleep_duration),
+                "sleep_unit": ps_sleep_unit if ps_sleep_unit in ["minute", "hour"] else "hour",
+                "turn_off_wifi": form_data.get("ps_turn_off_wifi") == "on",
+                "turn_off_bluetooth": form_data.get("ps_turn_off_bluetooth") == "on",
+                "turn_off_hdmi": form_data.get("ps_turn_off_hdmi") == "on",
+                "turn_off_led": form_data.get("ps_turn_off_led") == "on",
+            }
+            settings["power_save_config"] = ps_config
 
         device_config.update_config(settings)
 

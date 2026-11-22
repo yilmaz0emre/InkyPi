@@ -19,6 +19,7 @@ Settings live in device.json under "thin_client", e.g.
 import json
 import logging
 import os
+import socket
 import time
 from datetime import datetime
 from io import BytesIO
@@ -26,6 +27,8 @@ from urllib.parse import urlparse
 
 import requests
 from PIL import Image, ImageDraw
+
+from utils import thin_clients
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +39,7 @@ DEFAULTS = {
     "power_save": False,
     "boot_awake": 600,
 }
-MIN_POLL_INTERVAL = 30
+MIN_POLL_INTERVAL = thin_clients.MIN_POLL_INTERVAL
 REQUEST_TIMEOUT = 20
 
 
@@ -62,7 +65,8 @@ def server_address(server_url):
 class ThinClient:
     def __init__(self, server_url, display, resolution, state_dir, power_manager=None,
                  poll_interval=300, offline_after=3600, power_save=False, boot_awake=600,
-                 offline_label=None, session=None, sleep=time.sleep, now=time.time):
+                 offline_label=None, session=None, sleep=time.sleep, now=time.time,
+                 name=None, on_settings_changed=None):
         self.image_url = f"{server_url}/api/display_image"
         self.display = display
         self.resolution = tuple(resolution)
@@ -77,6 +81,10 @@ class ThinClient:
         self.session = session or requests.Session()
         self.sleep = sleep
         self.now = now
+        # reported to the server, which lists its clients on its Settings page
+        self.name = name or socket.gethostname()
+        # callable(changed_settings): keep settings received from the server across restarts
+        self.on_settings_changed = on_settings_changed
 
         self.started_at = now()
         os.makedirs(state_dir, exist_ok=True)
@@ -109,15 +117,54 @@ class ThinClient:
 
     # --- one poll ---
 
-    def fetch(self):
-        """Returns ("new", image, last_modified), ("unchanged",), ("empty",) or ("error", message)."""
-        headers = {}
+    # --- settings managed from the server's web UI ---
+
+    @property
+    def settings(self):
+        return {"power_save": self.power_save, "poll_interval": self.poll_interval,
+                "offline_after": self.offline_after}
+
+    def _request_headers(self):
+        headers = {
+            thin_clients.CLIENT_HEADER: self.name,
+            thin_clients.SETTINGS_HEADER: json.dumps(self.settings),
+        }
         if self.state.get("last_modified"):
             headers["If-Modified-Since"] = self.state["last_modified"]
+        return headers
+
+    def apply_server_settings(self, header_value):
+        """Apply settings sent by the server; returns the ones that changed."""
+        wanted = thin_clients.parse_settings_header(header_value)
+        changed = {key: value for key, value in wanted.items() if self.settings.get(key) != value}
+        if not changed:
+            return {}
+        logger.info(f"Settings from server: {changed}")
+        for key, value in changed.items():
+            setattr(self, key, value)
+        if self.on_settings_changed:
+            try:
+                self.on_settings_changed(changed)
+            except Exception:
+                logger.exception("Could not store settings from server")
+        return changed
+
+    def _report_settings(self):
+        """Tell the server right away that new settings are in use (a conditional, cheap request)."""
         try:
-            response = self.session.get(self.image_url, headers=headers, timeout=REQUEST_TIMEOUT)
+            self.session.get(self.image_url, headers=self._request_headers(), timeout=REQUEST_TIMEOUT)
+        except requests.RequestException:
+            pass
+
+    def fetch(self):
+        """Returns ("new", image, last_modified), ("unchanged",), ("empty",) or ("error", message)."""
+        try:
+            response = self.session.get(self.image_url, headers=self._request_headers(), timeout=REQUEST_TIMEOUT)
         except requests.RequestException as e:
             return ("error", str(e))
+
+        if self.apply_server_settings(response.headers.get(thin_clients.SETTINGS_HEADER)):
+            self._report_settings()
 
         if response.status_code == 304:
             return ("unchanged",)
@@ -240,6 +287,11 @@ def main():
         when = i18n.format_time(datetime.fromtimestamp(last_success), time_format)
         return i18n.gettext("Offline · last update %(time)s", time=when)
 
+    def keep_server_settings(changed):
+        section = dict(device_config.get_config("thin_client", default={}) or {})
+        section.update(changed)
+        device_config.update_value("thin_client", section, write=True)
+
     display = DisplayManager(device_config).display
     power_manager = PowerManager(device_config)
     # after a wake, wait for the server rather than the internet (which may not be reachable)
@@ -255,6 +307,7 @@ def main():
         power_save=settings["power_save"],
         boot_awake=settings["boot_awake"],
         offline_label=offline_label,
+        on_settings_changed=keep_server_settings,
     )
     client.run()
 

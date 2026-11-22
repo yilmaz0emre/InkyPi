@@ -22,6 +22,7 @@ import os
 import time
 from datetime import datetime
 from io import BytesIO
+from urllib.parse import urlparse
 
 import requests
 from PIL import Image, ImageDraw
@@ -50,6 +51,12 @@ def load_settings(device_config):
     settings["boot_awake"] = max(0, int(settings["boot_awake"]))
     settings["power_save"] = bool(settings["power_save"])
     return settings
+
+
+def server_address(server_url):
+    """(host, port) of the server, for the connectivity check after waking Wi-Fi."""
+    parsed = urlparse(server_url)
+    return parsed.hostname, parsed.port or (443 if parsed.scheme == "https" else 80)
 
 
 class ThinClient:
@@ -234,12 +241,15 @@ def main():
         return i18n.gettext("Offline · last update %(time)s", time=when)
 
     display = DisplayManager(device_config).display
+    power_manager = PowerManager(device_config)
+    # after a wake, wait for the server rather than the internet (which may not be reachable)
+    power_manager.connectivity_check_host = server_address(settings["server_url"])
     client = ThinClient(
         server_url=settings["server_url"],
         display=display,
         resolution=device_config.get_resolution(),
         state_dir=os.path.join(Config.BASE_DIR, "config", ".thin_client"),
-        power_manager=PowerManager(device_config),
+        power_manager=power_manager,
         poll_interval=settings["poll_interval"],
         offline_after=settings["offline_after"],
         power_save=settings["power_save"],

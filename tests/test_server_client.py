@@ -237,3 +237,12 @@ def test_load_settings():
     device_config.get_config.return_value = {}
     with pytest.raises(ValueError):
         tc.load_settings(device_config)
+
+
+@pytest.mark.parametrize("url, address", [
+    ("http://raspberrypi.local", ("raspberrypi.local", 80)),
+    ("https://pi5.example.test", ("pi5.example.test", 443)),
+    ("http://192.168.1.42:8080", ("192.168.1.42", 8080)),
+])
+def test_server_address_for_the_wake_network_check(url, address):
+    assert tc.server_address(url) == address

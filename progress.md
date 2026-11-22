@@ -88,8 +88,10 @@ wake (PiSugar / RTC-based power board).
 
 - [x] Tests cover the `RefreshTask` power-save sleep/wake loop (`tests/test_refresh_task_power_save.py`),
   `/power_save/*` endpoints, boot-time hardware restore and forced refresh after wake.
-- [ ] Power save feature was committed and pushed to `feature/i18n-turkish`, mixing two features.
-  Consider moving it to a separate `feature/power-save` branch.
+- [x] Power save feature was committed and pushed to `feature/i18n-turkish`, mixing two features.
+  Decided 2026-11-22: keep both in one branch while working only in the own fork; nothing goes to
+  upstream `fatihak/InkyPi` for now. If proposed upstream later, split into `feature/i18n` and a stacked
+  `feature/power-save` (power save UI depends on i18n) and drop `CLAUDE.md` / `progress.md`.
 
 ## Next / open
 
@@ -98,7 +100,7 @@ wake (PiSugar / RTC-based power board).
 - [x] Review untranslated / fuzzy entries in `src/translations/tr/LC_MESSAGES/messages.po` (0 / 341 missing)
 - [x] Check plugin render templates (rendered on the display) for remaining hard-coded English (GitHub metric titles, calendar all-day / more texts, RSS image alt)
 - [x] Update docs (`docs/development.md`) with i18n workflow
-- [ ] Open PR `feature/i18n-turkish` → `main`
+- [x] Open PR `feature/i18n-turkish` → `main` in own fork: https://github.com/yilmaz0emre/InkyPi/pull/1
 
 ## Notes
 

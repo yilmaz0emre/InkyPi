@@ -167,6 +167,9 @@ cython_debug/
 # Development artifacts
 mock_display_output/
 
+# Runtime power save hardware snapshot
+src/config/.power_save_state.json*
+
 # IDE files
 .idea
 

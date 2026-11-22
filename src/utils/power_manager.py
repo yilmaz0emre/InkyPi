@@ -8,6 +8,7 @@ over Wi-Fi to configure the device without being locked out.
 """
 
 import glob
+import json
 import logging
 import os
 import shutil
@@ -16,6 +17,12 @@ import subprocess
 import time
 
 logger = logging.getLogger(__name__)
+
+# Snapshot of the hardware state taken before entering low-power mode. It survives a
+# power loss during sleep so the next boot can undo exactly what was changed.
+DEFAULT_STATE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", ".power_save_state.json")
+LED_DIR = "/sys/class/leds"
+CPU_GOVERNOR_GLOB = "/sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
 
 
 def is_raspberry_pi():
@@ -39,17 +46,36 @@ def is_raspberry_pi():
 class PowerManager:
     """Manages power-saving states for battery-powered operation."""
 
-    def __init__(self, device_config=None, dev_mode=False):
+    def __init__(self, device_config=None, dev_mode=False, state_file=DEFAULT_STATE_FILE):
         self.device_config = device_config
         self.dev_mode = dev_mode
         self.is_pi = is_raspberry_pi() and not dev_mode
+        self.state_file = state_file
 
         # Runtime-only state: always False on boot / power-loss for safety
         self.is_active = False
         self.is_in_low_power = False
         self.keep_awake_until = 0.0
+        self._saved_state = None
 
         logger.info(f"PowerManager initialized (is_raspberry_pi={self.is_pi}, dev_mode={self.dev_mode})")
+        self.restore_hardware_on_boot()
+
+    def restore_hardware_on_boot(self):
+        """Undo any low-power changes left behind by a power loss during sleep.
+
+        systemd-rfkill restores the last rfkill state at boot, so a battery cut while
+        asleep would otherwise leave Wi-Fi blocked and the web UI unreachable.
+        """
+        state = self._load_state()
+        if self.is_pi:
+            # Wi-Fi is always unblocked, even without a snapshot: reachability is the
+            # one thing boot safety must guarantee.
+            self.enable_wifi()
+            if state:
+                logger.warning("Found low-power snapshot from previous run, restoring hardware state.")
+                self._restore_hardware(state)
+        self._clear_state()
 
     def get_config(self):
         """Return power save configuration dictionary from device_config."""
@@ -182,32 +208,116 @@ class PowerManager:
             self._run_cmd(["vcgencmd", "display_power", val])
         return True
 
-    def set_led_power(self, enable: bool):
-        """Toggle Raspberry Pi onboard activity LEDs."""
-        if not self.is_pi:
-            logger.info(f"[Mock] Status LEDs set to {enable}")
-            return True
-        brightness_val = "1" if enable else "0"
-        for led_path in glob.glob("/sys/class/leds/*/brightness"):
+    def get_led_state(self):
+        """Return {led_name: {"trigger": ..., "brightness": ...}} for all onboard LEDs."""
+        leds = {}
+        for led_path in glob.glob(os.path.join(LED_DIR, "*")):
             try:
-                with open(led_path, "w") as f:
-                    f.write(brightness_val)
+                trigger = _read_active_trigger(os.path.join(led_path, "trigger"))
+                with open(os.path.join(led_path, "brightness")) as f:
+                    brightness = f.read().strip()
+                leds[os.path.basename(led_path)] = {"trigger": trigger, "brightness": brightness}
             except Exception:
                 pass
+        return leds
+
+    def turn_off_leds(self):
+        """Turn off onboard LEDs. The trigger must be cleared first, otherwise it turns them back on."""
+        if not self.is_pi:
+            logger.info("[Mock] Status LEDs turned off")
+            return True
+        for led_path in glob.glob(os.path.join(LED_DIR, "*")):
+            _write_sysfs(os.path.join(led_path, "trigger"), "none")
+            _write_sysfs(os.path.join(led_path, "brightness"), "0")
         return True
+
+    def restore_leds(self, led_state):
+        """Restore LED triggers (e.g. mmc0, heartbeat) and brightness saved by get_led_state()."""
+        if not self.is_pi:
+            logger.info("[Mock] Status LEDs restored")
+            return True
+        for name, state in (led_state or {}).items():
+            led_path = os.path.join(LED_DIR, name)
+            trigger = state.get("trigger")
+            if trigger:
+                _write_sysfs(os.path.join(led_path, "trigger"), trigger)
+            # A non-"none" trigger drives the LED itself; brightness only matters for manual LEDs
+            if trigger in (None, "none") and state.get("brightness") is not None:
+                _write_sysfs(os.path.join(led_path, "brightness"), state["brightness"])
+        return True
+
+    def get_cpu_governor(self):
+        """Return the current scaling governor of the first CPU, or None if unavailable."""
+        for gov_path in sorted(glob.glob(CPU_GOVERNOR_GLOB)):
+            try:
+                with open(gov_path) as f:
+                    return f.read().strip()
+            except Exception:
+                pass
+        return None
 
     def set_cpu_governor(self, governor="powersave"):
         """Set CPU scaling governor to save energy while idle."""
         if not self.is_pi:
             logger.info(f"[Mock] CPU governor set to {governor}")
             return True
-        for gov_path in glob.glob("/sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"):
-            try:
-                with open(gov_path, "w") as f:
-                    f.write(governor)
-            except Exception:
-                pass
+        for gov_path in glob.glob(CPU_GOVERNOR_GLOB):
+            _write_sysfs(gov_path, governor)
         return True
+
+    # --- Hardware state snapshot ---
+
+    def _capture_state(self, config):
+        """Record what is about to be changed so it can be undone on wake or next boot."""
+        return {
+            "wifi_disabled": bool(config.get("turn_off_wifi", True)),
+            "bluetooth_disabled": bool(config.get("turn_off_bluetooth", True)),
+            "hdmi_disabled": bool(config.get("turn_off_hdmi", True)),
+            "leds": self.get_led_state() if self.is_pi and config.get("turn_off_led", True) else None,
+            "cpu_governor": self.get_cpu_governor() if self.is_pi else None,
+        }
+
+    def _restore_hardware(self, state):
+        """Undo the changes recorded in a snapshot (except Wi-Fi, which callers handle)."""
+        governor = state.get("cpu_governor")
+        if governor:
+            self.set_cpu_governor(governor)
+        if state.get("bluetooth_disabled"):
+            self.enable_bluetooth()
+        if state.get("hdmi_disabled"):
+            self.set_hdmi_power(True)
+        if state.get("leds") is not None:
+            self.restore_leds(state["leds"])
+
+    def _save_state(self, state):
+        try:
+            os.makedirs(os.path.dirname(self.state_file), exist_ok=True)
+            tmp_path = self.state_file + ".tmp"
+            with open(tmp_path, "w") as f:
+                json.dump(state, f)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, self.state_file)
+        except Exception as e:
+            logger.warning(f"Could not save power save state to {self.state_file}: {e}")
+
+    def _load_state(self):
+        try:
+            with open(self.state_file) as f:
+                return json.load(f)
+        except FileNotFoundError:
+            return None
+        except Exception as e:
+            logger.warning(f"Could not read power save state from {self.state_file}: {e}")
+            return None
+
+    def _clear_state(self):
+        try:
+            os.remove(self.state_file)
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            logger.warning(f"Could not remove power save state {self.state_file}: {e}")
 
     # --- High-level Power Modes ---
 
@@ -218,8 +328,12 @@ class PowerManager:
         config = self.get_config()
         logger.info("Entering low-power idle mode...")
 
+        # Persist the snapshot before touching hardware so a power cut mid-way is recoverable
+        self._saved_state = self._capture_state(config)
+        self._save_state(self._saved_state)
+
         if config.get("turn_off_led", True):
-            self.set_led_power(False)
+            self.turn_off_leds()
 
         if config.get("turn_off_hdmi", True):
             self.set_hdmi_power(False)
@@ -241,21 +355,35 @@ class PowerManager:
             return
         logger.info("Exiting low-power mode, waking peripherals...")
 
-        config = self.get_config()
-        if config.get("turn_off_wifi", True):
+        # Undo what was actually changed on entry, even if the config was edited meanwhile
+        state = self._saved_state or self._capture_state(self.get_config())
+        if state.get("wifi_disabled"):
             self.enable_wifi()
             self.wait_for_network(timeout=25)
 
-        self.set_cpu_governor("ondemand")
+        self._restore_hardware(state)
+        if not state.get("cpu_governor"):
+            self.set_cpu_governor("ondemand")
 
-        if config.get("turn_off_bluetooth", True):
-            self.enable_bluetooth()
-
-        if config.get("turn_off_hdmi", True):
-            self.set_hdmi_power(True)
-
-        if config.get("turn_off_led", True):
-            self.set_led_power(True)
-
+        self._saved_state = None
+        self._clear_state()
         self.is_in_low_power = False
         logger.info("Peripherals restored to normal mode.")
+
+
+def _read_active_trigger(trigger_path):
+    """Return the active trigger from a sysfs LED trigger file ("none [mmc0] timer" -> "mmc0")."""
+    with open(trigger_path) as f:
+        for token in f.read().split():
+            if token.startswith("[") and token.endswith("]"):
+                return token[1:-1]
+    return None
+
+
+def _write_sysfs(path, value):
+    try:
+        with open(path, "w") as f:
+            f.write(value)
+        return True
+    except Exception:
+        return False

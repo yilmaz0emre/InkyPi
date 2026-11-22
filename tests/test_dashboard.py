@@ -335,3 +335,141 @@ def test_plugin_page_for_dashboard_prechecks_option(client, monkeypatch):
 
     client.get("/plugin/dashboard?for_dashboard=1")
     assert rendered["for_dashboard"] is False
+
+
+# --- plugin page autosave (used by the dashboard editor and every plugin page) ---
+
+
+@pytest.fixture
+def page_client(device_config):
+    """Like `client`, but with the real template and static folders so pages render."""
+    from jinja2 import ChoiceLoader, FileSystemLoader
+
+    from blueprints.main import main_bp
+    from blueprints.playlist import playlist_bp
+    from blueprints.plugin import plugin_bp
+
+    src = Config.BASE_DIR
+    app = Flask(__name__, static_folder=os.path.join(src, "static"))
+    app.jinja_loader = ChoiceLoader([FileSystemLoader(os.path.join(src, d)) for d in ("templates", "plugins")])
+    app.config.update(DEVICE_CONFIG=device_config, REFRESH_TASK=MagicMock(), DISPLAY_MANAGER=MagicMock(),
+                      PROPAGATE_EXCEPTIONS=True)
+    i18n.init_app(app, device_config)
+    for blueprint in (main_bp, plugin_bp, playlist_bp):
+        app.register_blueprint(blueprint)
+    return app.test_client()
+
+
+def test_instance_page_has_autosave(page_client, device_config):
+    add_instance(device_config, "currency_gold", "Kur", {"labelStyle": "short"}, dashboard_only=False)
+    device_config.update_value("language", "tr")
+
+    html = page_client.get("/plugin/currency_gold?instance=Kur").get_data(as_text=True)
+
+    assert 'id="autosaveStatus"' in html
+    assert "scripts/autosave.js" in html
+    # messages are embedded with |tojson, which escapes non-ASCII letters
+    assert json.dumps("Değişiklikler otomatik kaydedilir.") in html
+    assert "const pluginInstanceName ='Kur'" in html
+
+
+def test_draft_is_stored_on_the_device_and_restored(page_client, device_config):
+    res = page_client.put("/plugin_draft/currency_gold", data={
+        "plugin_id": "currency_gold", "labelStyle": "strip", "items[]": ["USD", "GRA"]})
+    assert res.status_code == 200
+
+    # written to the config file, so it survives a restart of the server
+    reloaded = Config()
+    assert reloaded.get_config("plugin_drafts") == {
+        "currency_gold": {"labelStyle": "strip", "items[]": ["USD", "GRA"]}}
+
+    html = page_client.get("/plugin/currency_gold").get_data(as_text=True)
+    assert "const draftRestored = true;" in html
+    assert '"labelStyle": "strip"' in html
+
+    assert page_client.delete("/plugin_draft/currency_gold").status_code == 200
+    assert "const draftRestored = false;" in page_client.get("/plugin/currency_gold").get_data(as_text=True)
+
+
+def test_draft_for_unknown_plugin_is_rejected(page_client):
+    assert page_client.put("/plugin_draft/nope", data={"a": "b"}).status_code == 404
+
+
+def test_adding_to_playlist_drops_the_draft(page_client, device_config):
+    page_client.put("/plugin_draft/clock", data={"plugin_id": "clock", "selectedClockFace": "Digital Clock"})
+    page_client.put("/plugin_draft/currency_gold", data={"plugin_id": "currency_gold", "labelStyle": "short"})
+    playlist = device_config.get_playlist_manager().playlists[0].name
+    refresh = {"playlist": playlist, "instance_name": "Saat", "refreshType": "interval",
+               "unit": "hour", "interval": "1"}
+
+    res = page_client.post("/add_plugin", data={
+        "plugin_id": "clock", "selectedClockFace": "Digital Clock", "refresh_settings": json.dumps(refresh)})
+
+    assert res.status_code == 200, res.get_json()
+    assert set(Config().get_config("plugin_drafts")) == {"currency_gold"}
+
+
+def test_settings_page_has_autosave(page_client, device_config):
+    from blueprints.settings import settings_bp
+    page_client.application.register_blueprint(settings_bp)
+
+    html = page_client.get("/settings").get_data(as_text=True)
+
+    assert 'id="autosaveStatus"' in html
+    assert "scripts/autosave.js" in html
+
+
+def test_geocode_returns_places(page_client, monkeypatch):
+    from blueprints import plugin as plugin_module
+
+    calls = {}
+
+    class FakeResponse:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return [{"name": "Moda Caddesi", "display_name": "Moda Caddesi, Kadıköy, İstanbul, Türkiye",
+                     "lat": "40.98", "lon": "29.02"}]
+
+    class FakeSession:
+        def get(self, url, params=None, headers=None, timeout=None):
+            calls.update(url=url, params=params, headers=headers)
+            return FakeResponse()
+
+    monkeypatch.setattr(plugin_module, "get_http_session", lambda: FakeSession())
+
+    res = page_client.get("/geocode?q=Moda Kadıköy")
+
+    assert res.status_code == 200
+    assert res.get_json()["results"] == [{
+        "name": "Moda Caddesi", "label": "Moda Caddesi, Kadıköy, İstanbul, Türkiye", "lat": "40.98", "lon": "29.02"}]
+    assert calls["params"]["q"] == "Moda Kadıköy"
+    assert calls["url"] == plugin_module.NOMINATIM_SEARCH_URL
+
+
+def test_geocode_needs_a_query_and_reports_failures(page_client, monkeypatch):
+    from blueprints import plugin as plugin_module
+
+    assert page_client.get("/geocode?q=").status_code == 400
+
+    class BrokenSession:
+        def get(self, *args, **kwargs):
+            raise OSError("offline")
+
+    monkeypatch.setattr(plugin_module, "get_http_session", lambda: BrokenSession())
+    assert page_client.get("/geocode?q=Moda").status_code == 502
+
+
+def test_autosave_request_keeps_lists_and_refresh(client, device_config):
+    """The autosave PUT (settings only, no refresh_settings) must not touch refresh or dashboard flag."""
+    add_instance(device_config, "currency_gold", "Kur", {"labelStyle": "short"}, dashboard_only=True)
+
+    res = client.put("/update_plugin_instance/Kur", data={
+        "plugin_id": "currency_gold", "labelStyle": "strip", "items[]": ["USD", "GRA"]})
+
+    assert res.status_code == 200, res.get_json()
+    instance = device_config.get_playlist_manager().find_plugin("currency_gold", "Kur")
+    assert instance.settings == {"labelStyle": "strip", "items[]": ["USD", "GRA"]}
+    assert instance.refresh == {"interval": 3600}
+    assert instance.dashboard_only is True

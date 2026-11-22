@@ -17,6 +17,7 @@
     <script src="{{ url_for('static', filename='scripts/dark_mode.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/response_modal.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/refresh_settings_manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/autosave.js') }}"></script>
     <!-- Select2 CSS -->
     <link href="{{ url_for('static', filename='styles/select2.min.css') }}" rel="stylesheet" />
     <!-- jQuery -->
@@ -27,7 +28,45 @@
     <script>
         const pluginSettings = {{ plugin_settings | tojson if plugin_settings else {} }};
         const pluginInstanceName ='{{ plugin_instance }}';
-        const loadPluginSettings = pluginInstanceName != '';
+        // a new plugin can start from the draft stored on the device
+        const draftRestored = {{ draft_restored | default(false) | tojson }};
+        const loadPluginSettings = pluginInstanceName != '' || draftRestored;
+
+        let autosave = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            const draftUrl = "{{ url_for('plugin.plugin_draft', plugin_id=plugin.id) }}";
+            autosave = Autosave.attach({
+                form: document.getElementById('settingsForm'),
+                status: document.getElementById('autosaveStatus'),
+                url: pluginInstanceName
+                    ? "{{ url_for('plugin.update_plugin_instance', instance_name='') }}" + pluginInstanceName
+                    : draftUrl,
+                method: 'PUT',
+                extraFiles: () => uploadedFiles,
+                messages: {
+                    idle: pluginInstanceName ? {{ _('Changes are saved automatically.') | tojson }} : '',
+                    saving: {{ _('Saving…') | tojson }},
+                    saved: pluginInstanceName ? {{ _('Saved ✓') | tojson }} : {{ _('Draft saved ✓') | tojson }},
+                    failed: {{ _('Could not save, retrying…') | tojson }},
+                    fileNeedsSave: {{ _('A new file is selected: press Save to upload it.') | tojson }},
+                },
+                onReady(setStatus) {
+                    if (!draftRestored) return;
+                    const status = document.getElementById('autosaveStatus');
+                    setStatus({{ _('Your last settings were restored.') | tojson }} + ' ', '');
+                    const clear = document.createElement('a');
+                    clear.href = '#';
+                    clear.textContent = {{ _('Clear') | tojson }};
+                    clear.addEventListener('click', async event => {
+                        event.preventDefault();
+                        autosave.reset();
+                        await fetch(draftUrl, { method: 'DELETE' });
+                        window.location.reload();
+                    });
+                    status.appendChild(clear);
+                },
+            });
+        });
         const styleSettings = {{ style_settings | default(false) | tojson }};
         const refreshSettings = {{ refresh_settings | tojson if refresh_settings else {} }};
 
@@ -106,6 +145,11 @@
                 // Handle the response
                 if (response.ok) {
                     showResponseModal('success', `Success! ${result.message}`);
+                    if (autosave) {
+                        // the server drops the draft once the plugin is added to a playlist
+                        if (action == "add_to_playlist") autosave.reset();
+                        else if (action == "update_instance") autosave.markSaved();
+                    }
                 } else {
                     showResponseModal('failure', `Error!  ${result.error}`);
                 }
@@ -410,6 +454,7 @@
             <!-- Hidden input to pass plugin id -->
             <input type="hidden" name="plugin_id" value="{{ plugin.id }}">
 
+            <div id="autosaveStatus" class="autosave-status" aria-live="polite"></div>
             <div class="buttons-container">
                 {% if plugin_instance %}
                     <button type="button" onclick="handleAction('update_instance')" class="action-button">{{ _('Save') }}</button>

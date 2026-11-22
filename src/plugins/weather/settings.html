@@ -12,6 +12,12 @@
         <input type="text" id="longitude" name="longitude" class="form-input" />
     </div>
     <button type="button" id="openMap" class="action-button compact">{{ _('Select Location') }}</button>
+    <div class="form-group nowrap">
+        <input type="text" id="addressSearch" class="form-input" autocomplete="off"
+               placeholder="{{ _('Or type an address or place, e.g. Moda, Kadıköy') }}" />
+        <button type="button" id="addressSearchButton" class="action-button compact">{{ _('Find') }}</button>
+    </div>
+    <div id="addressResults" class="address-results" aria-live="polite"></div>
 </div>
 
 <div class="form-group">
@@ -369,4 +375,64 @@
         document.querySelector(`input[name="titleSelection"][value="${selectedTitle}"]`).checked = true;
         updateTitleOptions(weatherProvider)
     });
+</script>
+
+<script>
+    // Address search: pick one of the found places to fill in latitude/longitude.
+    (function () {
+        const input = document.getElementById('addressSearch');
+        const results = document.getElementById('addressResults');
+        const latitude = document.getElementById('latitude');
+        const longitude = document.getElementById('longitude');
+        const customTitle = document.getElementById('customTitle');
+        let autoTitle = null;
+
+        function choose(place) {
+            latitude.value = Number(place.lat).toFixed(4);
+            longitude.value = Number(place.lon).toFixed(4);
+            // fill an empty title (or the one filled in by an earlier search) with the place name
+            if (!customTitle.value || customTitle.value === autoTitle) {
+                customTitle.value = place.name;
+                autoTitle = place.name;
+            }
+            [latitude, longitude, customTitle].forEach(el => el.dispatchEvent(new Event('input', { bubbles: true })));
+            results.textContent = {{ _('Selected:') | tojson }} + ' ' + place.label;
+        }
+
+        async function search() {
+            const query = input.value.trim();
+            if (query.length < 2) return;
+            results.textContent = {{ _('Searching…') | tojson }};
+            try {
+                const response = await fetch("{{ url_for('plugin.geocode') }}?q=" + encodeURIComponent(query));
+                const data = await response.json();
+                if (!response.ok) {
+                    results.textContent = data.error;
+                    return;
+                }
+                if (!data.results.length) {
+                    results.textContent = {{ _('No place found. Try adding the city.') | tojson }};
+                    return;
+                }
+                results.replaceChildren(...data.results.map(place => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'address-result';
+                    button.textContent = place.label;
+                    button.addEventListener('click', () => choose(place));
+                    return button;
+                }));
+            } catch (e) {
+                results.textContent = {{ _('Address search is not available right now.') | tojson }};
+            }
+        }
+
+        document.getElementById('addressSearchButton').addEventListener('click', search);
+        input.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                search();
+            }
+        });
+    })();
 </script>

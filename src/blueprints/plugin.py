@@ -2,6 +2,7 @@ from flask_babel import gettext as _
 from flask import Blueprint, request, jsonify, current_app, render_template, send_from_directory, send_file
 from plugins.plugin_registry import get_plugin_instance
 from utils.app_utils import resolve_path, handle_request_files, parse_form
+from utils.http_client import get_http_session
 from refresh_task import ManualRefresh, PlaylistRefresh
 import io
 import json
@@ -10,6 +11,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 plugin_bp = Blueprint("plugin", __name__)
+
+# OpenStreetMap address search; their policy allows light use with an identifying User-Agent
+NOMINATIM_SEARCH_URL = "https://nominatim.openstreetmap.org/search"
 
 def _delete_plugin_instance_images(device_config, plugin_instance_obj):
     """Delete all images associated with a plugin instance."""
@@ -57,6 +61,12 @@ def plugin_page(plugin_id):
                 template_params["plugin_instance"] = plugin_instance_name
                 template_params["refresh_settings"] = plugin_instance.refresh
                 template_params["dashboard_only"] = plugin_instance.dashboard_only
+            else:
+                # a new plugin starts from the settings the user left last time (any device)
+                draft = device_config.get_config("plugin_drafts", default={}).get(plugin_id)
+                if draft:
+                    template_params["plugin_settings"] = draft
+                    template_params["draft_restored"] = True
 
             template_params["playlists"] = playlist_manager.get_playlist_names()
             # opened from the dashboard editor to create a new widget
@@ -67,6 +77,53 @@ def plugin_page(plugin_id):
         return render_template('plugin.html', plugin=plugin_config, **template_params)
     else:
         return "Plugin not found", 404
+
+@plugin_bp.route('/plugin_draft/<plugin_id>', methods=['PUT', 'DELETE'])
+def plugin_draft(plugin_id):
+    """Keep the settings form of a not yet saved plugin, so it survives page reloads and reboots."""
+    device_config = current_app.config['DEVICE_CONFIG']
+    if not device_config.get_plugin(plugin_id):
+        return jsonify({"error": _("Plugin not found")}), 404
+
+    drafts = dict(device_config.get_config("plugin_drafts", default={}))
+    if request.method == 'DELETE':
+        drafts.pop(plugin_id, None)
+    else:
+        settings = parse_form(request.form)
+        settings.pop("plugin_id", None)
+        drafts[plugin_id] = settings
+    device_config.update_value("plugin_drafts", drafts, write=True)
+    return jsonify({"success": True})
+
+@plugin_bp.route('/geocode')
+def geocode():
+    """Look up an address or place name (OpenStreetMap Nominatim) for location pickers."""
+    query = request.args.get('q', '').strip()
+    if len(query) < 2:
+        return jsonify({"error": _("Type an address or place name.")}), 400
+
+    from utils.i18n import get_language
+    device_config = current_app.config['DEVICE_CONFIG']
+    try:
+        response = get_http_session().get(
+            NOMINATIM_SEARCH_URL,
+            params={"q": query, "format": "jsonv2", "limit": 5},
+            headers={"Accept-Language": get_language(device_config)},
+            timeout=10,
+        )
+        response.raise_for_status()
+        places = response.json()
+    except Exception as e:
+        logger.warning(f"Address search failed: {e}")
+        return jsonify({"error": _("Address search is not available right now.")}), 502
+
+    results = [{
+        "name": place.get("name") or place["display_name"].split(",")[0],
+        "label": place["display_name"],
+        "lat": place["lat"],
+        "lon": place["lon"],
+    } for place in places if place.get("lat") and place.get("lon")]
+    return jsonify({"results": results})
 
 @plugin_bp.route('/images/<plugin_id>/<path:filename>')
 def image(plugin_id, filename):

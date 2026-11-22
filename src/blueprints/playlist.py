@@ -64,6 +64,11 @@ def add_plugin():
         if not result:
             return jsonify({"error": _("Failed to add to playlist")}), 500
 
+        # the draft of this plugin's settings form is now a saved instance
+        drafts = dict(device_config.get_config("plugin_drafts", default={}))
+        if drafts.pop(plugin_id, None) is not None:
+            device_config.update_value("plugin_drafts", drafts)
+
         device_config.write_config()
     except Exception as e:
         return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500

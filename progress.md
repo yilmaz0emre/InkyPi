@@ -199,6 +199,14 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
   points at the thin client's server → network in ~2 s, ~2.5 s awake per unchanged poll (was ~85 s)
 - [x] Zero final settings: `power_save: true`, `poll_interval: 3600`, `offline_after: 7200` (badge after two
   missed polls), `boot_awake` default 600 s (SSH window after power-on). Zero and Pi 5 both on `main`
+- [x] Display devices managed from the server (PR #11, installed 2026-11-23): on a render server Settings →
+  Battery & Power Management lists the thin clients (power save, check interval, last contact, next
+  check, pending changes) and sets power save / check interval / offline badge delay
+  (`thin_client_settings`); the server's own power save controls are hidden there. Clients report name
+  and settings in `X-InkyPi-Client(-Settings)` headers, the server answers with the chosen settings, the
+  client applies and keeps them in its device.json (`src/utils/thin_clients.py`,
+  server state in `src/config/.thin_clients.json`). Verified: Pi 5 shows "inkypi-zero · Güç tasarrufu
+  açık · kontrol aralığı 1 saat"
 - [ ] Battery life: no current meter, so measure by running the Zero on battery and counting days
 - Note: changes on the Pi 5 now reach the panel within an hour; power-cycle the Zero to fetch at once
 - Pi 5 rebooted 2026-11-22 onto kernel 6.12.115; InkyPi and Docker services came back on their own.

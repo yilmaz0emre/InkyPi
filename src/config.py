@@ -15,6 +15,8 @@ class Config:
 
     # File path for storing the current image being displayed
     current_image_file = os.path.join(BASE_DIR, "static", "images", "current_image.png")
+    # panel-ready image produced in server mode (display_type "server") for thin clients
+    display_image_file = os.path.join(BASE_DIR, "static", "images", "display_image.png")
 
     # Directory path for storing plugin instance images
     plugin_image_dir = os.path.join(BASE_DIR, "static", "images", "plugins")

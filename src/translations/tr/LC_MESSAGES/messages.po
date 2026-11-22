@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 15:42+0300\n"
+"POT-Creation-Date: 2026-11-22 17:01+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -17,6 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: src/thin_client.py:234
+#, python-format
+msgid "Offline · last update %(time)s"
+msgstr "Çevrimdışı · son güncelleme %(time)s"
 
 #: src/blueprints/apikeys.py:96
 #, python-format
@@ -36,11 +41,11 @@ msgstr ""
 msgid "Failed to write .env file"
 msgstr ".env dosyası yazılamadı"
 
-#: src/blueprints/main.py:21
+#: src/blueprints/main.py:18
 msgid "Image not found"
 msgstr "Görsel bulunamadı"
 
-#: src/blueprints/main.py:57
+#: src/blueprints/main.py:60
 msgid "Order must be a list"
 msgstr "Sıralama bir liste olmalıdır"
 
@@ -652,19 +657,19 @@ msgstr ""
 "Fiyatlar Truncgil Finans'tan alınır. Ulaşılamazsa TCMB'nin resmi kurları "
 "ve hesaplanan gram altın fiyatı kullanılır."
 
-#: src/plugins/currency_gold/render/currency_gold.html:35
+#: src/plugins/currency_gold/render/currency_gold.html:51
 msgid "Buying"
 msgstr "Alış"
 
-#: src/plugins/currency_gold/render/currency_gold.html:36
+#: src/plugins/currency_gold/render/currency_gold.html:52
 msgid "Selling"
 msgstr "Satış"
 
-#: src/plugins/currency_gold/render/currency_gold.html:37
+#: src/plugins/currency_gold/render/currency_gold.html:53
 msgid "Change"
 msgstr "Değişim"
 
-#: src/plugins/currency_gold/render/currency_gold.html:63
+#: src/plugins/currency_gold/render/currency_gold.html:79
 #, python-format
 msgid "Last update: %(time)s"
 msgstr "Son güncelleme: %(time)s"

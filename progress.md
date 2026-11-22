@@ -144,6 +144,25 @@ wake (PiSugar / RTC-based power board).
   narrower window; inside a dashboard each widget is an exact-size iframe, so this does not apply there
 - [ ] Measure render time on a Pi Zero 2 W
 
+## Render server + thin client (`feature/server-client`)
+
+Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" ACeP `epd7in3f`,
+800×480) only shows the result. Nothing exposed to the internet. Docs: `docs/server_client.md`.
+
+- [x] Server mode: `display_type: "server"` (`ServerDisplay`) keeps one panel-ready image (no history),
+  served at `GET /api/display_image` with correct `Last-Modified` / `If-Modified-Since`
+  (also fixed `/api/current_image`, which labelled local time as GMT)
+- [x] Thin client `src/thin_client.py` (`inkypi client`): 304 → no panel refresh (state survives
+  reboots), keeps last image when offline, one-time "offline" badge after `offline_after`,
+  optional power save between polls after a `boot_awake` window
+- [x] `install.sh -S [-R WxH]` (server) and `-C <url>` (client, no Chromium, no web UI);
+  mode settings via systemd drop-in `inkypi.service.d/mode.conf` (server: MemoryMax=1G)
+- [x] Tests `tests/test_server_client.py`; install mode functions tested with fake paths; end-to-end
+  client ↔ real HTTP server run locally
+- [ ] Enable SSH on the Pi 5; flash Pi Zero (Raspberry Pi OS Lite 64-bit, SSH key from this Mac)
+- [ ] Install: Pi 5 `install.sh -S -R 800x480`, Pi Zero `install.sh -W epd7in3f -C http://<pi5>.local`
+- [ ] Verify on hardware: render time on the Pi 5, panel refresh, offline badge, power save
+
 ## Notes
 
 - Use `venv/` for tests; system `python3` lacks pytest.

@@ -344,13 +344,19 @@ create_venv(){
   python3 -m venv "$VENV_PATH"
   $VENV_PATH/bin/python -m pip install --upgrade pip setuptools wheel > /dev/null
   $VENV_PATH/bin/python -m pip install -r $PIP_REQUIREMENTS_FILE -qq > /dev/null &
-  show_loader "\tInstalling python dependencies. "
+  if ! show_loader "\tInstalling python dependencies. "; then
+    echo_error "ERROR: Python dependencies could not be installed (check the network), then run this installer again."
+    exit 1
+  fi
 
   # do additional dependencies for Waveshare support.
   if [[ -n "$WS_TYPE" ]]; then
     echo "Adding additional dependencies for waveshare to the python virtual environment. "
     $VENV_PATH/bin/python -m pip install -r $WS_REQUIREMENTS_FILE > ws_pip_install.log &
-    show_loader "\tInstalling additional Waveshare python dependencies. "
+    if ! show_loader "\tInstalling additional Waveshare python dependencies. "; then
+      echo_error "ERROR: Waveshare python dependencies could not be installed, see ws_pip_install.log."
+      exit 1
+    fi
   fi
 
 }

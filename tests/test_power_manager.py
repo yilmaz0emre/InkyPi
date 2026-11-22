@@ -226,6 +226,26 @@ def test_wait_for_network_uses_dns_and_tcp(monkeypatch):
     assert calls == [pm_module.CONNECTIVITY_CHECK_HOST]
 
 
+def test_wait_for_network_can_check_another_host(monkeypatch):
+    """A thin client waits for its server: the internet may be unreachable from the panel device."""
+    monkeypatch.setattr(pm_module, "is_raspberry_pi", lambda: True)
+    monkeypatch.setattr(PowerManager, "restore_hardware_on_boot", lambda self: None)
+    calls = []
+
+    class FakeConn:
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+
+    monkeypatch.setattr(pm_module.socket, "create_connection", lambda addr, timeout: calls.append(addr) or FakeConn())
+    pm = PowerManager()
+    pm.connectivity_check_host = ("raspberrypi.local", 80)
+
+    assert pm.wait_for_network(timeout=1) is True
+    assert calls == [("raspberrypi.local", 80)]
+
+
 # --- Minor / UI items ---
 
 def test_deactivate_resets_keep_awake():

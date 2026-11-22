@@ -78,6 +78,9 @@ class PowerManager:
         self.is_pi = is_raspberry_pi() and not dev_mode
         self.hdmi_control_supported = not (self.is_pi and is_full_kms())
         self.state_file = state_file
+        # (host, port) that must answer before Wi-Fi counts as back after a wake. A thin client
+        # points this at its server: the internet may not be reachable (or needed) from there.
+        self.connectivity_check_host = CONNECTIVITY_CHECK_HOST
 
         # Runtime-only state: always False on boot / power-loss for safety
         self.is_active = False
@@ -219,7 +222,7 @@ class PowerManager:
             try:
                 # create_connection resolves the hostname (DNS) and opens a real TCP connection,
                 # unlike a UDP connect() which only checks that a route exists
-                with socket.create_connection(CONNECTIVITY_CHECK_HOST, timeout=3.0):
+                with socket.create_connection(self.connectivity_check_host, timeout=3.0):
                     pass
                 logger.info("Network connected successfully.")
                 return True

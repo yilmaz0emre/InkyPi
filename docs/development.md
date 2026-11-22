@@ -148,6 +148,7 @@ bash scripts/i18n.sh update    # merge new strings into each messages.po
 # translate the new / fuzzy entries in src/translations/<lang>/LC_MESSAGES/messages.po
 bash scripts/i18n.sh compile   # messages.po -> messages.mo
 bash scripts/i18n.sh all       # extract + update + compile in one step
+bash scripts/i18n.sh check     # fail on missing / untranslated / fuzzy strings or a stale .mo (also run in CI)
 ```
 
 `update` pre-fills new entries with *fuzzy* guesses that are often wrong — always review entries marked `#, fuzzy`, then remove the flag. Fuzzy entries are not used at runtime.

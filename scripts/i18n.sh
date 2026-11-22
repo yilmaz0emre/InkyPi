@@ -33,8 +33,14 @@ case "$1" in
         "$0" update
         "$0" compile
         ;;
+    check)
+        # Same check as CI: no missing/untranslated/fuzzy strings and .mo files up to date
+        PYTHON="${BASE_DIR}/venv/bin/python"
+        [ -x "$PYTHON" ] || PYTHON="python3"
+        PATH="$(dirname "$PYTHON"):$PATH" "$PYTHON" scripts/check_translations.py
+        ;;
     *)
-        echo "Usage: $0 {extract|update|compile|all}"
+        echo "Usage: $0 {extract|update|compile|all|check}"
         exit 1
         ;;
 esac

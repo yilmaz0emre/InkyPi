@@ -19,10 +19,13 @@ source venv/bin/activate
 python src/inkypi.py --dev          # dev server on http://localhost:8080, mock display
 venv/bin/python -m pytest -q        # tests (pytest.ini: testpaths=tests, pythonpath=src)
 bash scripts/i18n.sh all            # extract -> update -> compile translations
+bash scripts/i18n.sh check          # fail on missing/fuzzy strings or stale .mo
 bash install/update_vendors.sh      # fetch frontend vendor assets (first dev setup)
 ```
 
 Dev mode renders to `mock_display_output/latest.png` instead of hardware. Use the project `venv/` — the system `python3` has no pytest.
+
+CI (`.github/workflows/tests.yml`, fork only) runs pytest on Python 3.11 and 3.13 plus `scripts/check_translations.py` on every PR and push to `main`.
 
 ## Layout
 

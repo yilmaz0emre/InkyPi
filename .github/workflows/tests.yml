@@ -1,0 +1,45 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.11: Raspberry Pi OS Bookworm, 3.13: Trixie / devbox
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: install/requirements-dev.txt
+      - name: Install dependencies
+        run: pip install -r install/requirements-dev.txt
+      - name: Run tests
+        run: python -m pytest -q
+
+  translations:
+    name: Translation catalogs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Babel
+        # Jinja2 provides the template extractor used by babel.cfg
+        run: pip install babel==2.18.0 jinja2
+      - name: Check catalogs
+        run: python scripts/check_translations.py

@@ -154,6 +154,34 @@ check_permissions() {
   fi
 }
 
+# Stop before changing anything if an earlier apt/dpkg run was interrupted: apt refuses to install
+# in that state, which would otherwise leave a half-finished installation.
+check_package_system() {
+  if [[ -n "$(dpkg --audit 2>/dev/null)" ]]; then
+    echo_error "ERROR: The package system has unfinished installs (an earlier upgrade was interrupted).
+Fix it first with:  sudo dpkg --configure -a && sudo apt-get -f install
+then run this installer again."
+    exit 1
+  fi
+}
+
+# show_loader cannot report apt's exit status, so check the result explicitly.
+verify_debian_dependencies() {
+  local missing=()
+  local package
+  while read -r package; do
+    [[ -z "$package" || "$package" == \#* ]] && continue
+    [[ -n "$CLIENT_SERVER_URL" && "$package" == chromium* ]] && continue
+    dpkg -s "$package" > /dev/null 2>&1 || missing+=("$package")
+  done < "$APT_REQUIREMENTS_FILE"
+  if (( ${#missing[@]} )); then
+    echo_error "ERROR: These system packages could not be installed: ${missing[*]}
+Check 'sudo apt-get install ${missing[*]}' for the reason, then run this installer again."
+    exit 1
+  fi
+  echo_success "\tAll system dependencies are installed."
+}
+
 fetch_waveshare_driver() {
   echo "Fetching Waveshare driver for: $WS_TYPE"
 
@@ -384,12 +412,18 @@ configure_mode() {
   if [[ -n "$SERVER_MODE" ]]; then
     local width=${SERVER_RESOLUTION%x*}
     local height=${SERVER_RESOLUTION#*x}
-    jq --argjson w "$width" --argjson h "$height" \
-      '.display_type = "server" | .resolution = [$w, $h]' "$DEVICE_JSON" > "$tmp" && mv "$tmp" "$DEVICE_JSON"
+    if ! jq --argjson w "$width" --argjson h "$height" \
+        '.display_type = "server" | .resolution = [$w, $h]' "$DEVICE_JSON" > "$tmp" || ! mv "$tmp" "$DEVICE_JSON"; then
+      echo_error "ERROR: Could not write server settings to $DEVICE_JSON (is jq installed?)"
+      exit 1
+    fi
     echo_success "\tServer mode configured: display_type=server, resolution=${width}x${height}"
   elif [[ -n "$CLIENT_SERVER_URL" ]]; then
-    jq --arg url "$CLIENT_SERVER_URL" \
-      '.thin_client = ((.thin_client // {}) + {server_url: $url})' "$DEVICE_JSON" > "$tmp" && mv "$tmp" "$DEVICE_JSON"
+    if ! jq --arg url "$CLIENT_SERVER_URL" \
+        '.thin_client = ((.thin_client // {}) + {server_url: $url})' "$DEVICE_JSON" > "$tmp" || ! mv "$tmp" "$DEVICE_JSON"; then
+      echo_error "ERROR: Could not write thin client settings to $DEVICE_JSON (is jq installed?)"
+      exit 1
+    fi
     echo_success "\tThin client configured: server_url=$CLIENT_SERVER_URL"
   fi
   rm -f "$tmp"
@@ -499,6 +533,7 @@ ask_for_reboot() {
 # to maintain default INKY display support.
 parse_arguments "$@"
 check_permissions
+check_package_system
 stop_service
 # fetch the WS display driver if defined.
 if [[ -n "$WS_TYPE" ]]; then
@@ -509,6 +544,7 @@ if [[ -z "$SERVER_MODE" ]]; then
   enable_interfaces
 fi
 install_debian_dependencies
+verify_debian_dependencies
 # zramswap and earlyoom protect low-memory panel devices (Pi Zero). A render server usually has
 # plenty of RAM and may run other services, which earlyoom could kill (e.g. a large LLM).
 if [[ -n "$SERVER_MODE" ]]; then

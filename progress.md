@@ -101,6 +101,8 @@ wake (PiSugar / RTC-based power board).
 - [x] Check plugin render templates (rendered on the display) for remaining hard-coded English (GitHub metric titles, calendar all-day / more texts, RSS image alt)
 - [x] Update docs (`docs/development.md`) with i18n workflow
 - [x] Open PR `feature/i18n-turkish` → `main` in own fork: https://github.com/yilmaz0emre/InkyPi/pull/1
+- [x] CI in own fork (`.github/workflows/tests.yml`): pytest on Python 3.11 + 3.13 and translation catalog
+  check (`scripts/check_translations.py`, locally `bash scripts/i18n.sh check`). First run on PR #1 green.
 
 ## Notes
 

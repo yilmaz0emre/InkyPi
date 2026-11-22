@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-23 00:14+0300\n"
+"POT-Creation-Date: 2026-11-23 01:18+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: src/thin_client.py:234
+#: src/thin_client.py:288
 #, python-format
 msgid "Offline · last update %(time)s"
 msgstr "Çevrimdışı · son güncelleme %(time)s"
@@ -41,11 +41,11 @@ msgstr ""
 msgid "Failed to write .env file"
 msgstr ".env dosyası yazılamadı"
 
-#: src/blueprints/main.py:18
+#: src/blueprints/main.py:19
 msgid "Image not found"
 msgstr "Görsel bulunamadı"
 
-#: src/blueprints/main.py:60
+#: src/blueprints/main.py:73
 msgid "Order must be a list"
 msgstr "Sıralama bir liste olmalıdır"
 
@@ -75,7 +75,7 @@ msgstr "'%(instance_name)s' adlı eklenti örneği zaten mevcut"
 msgid "Refresh interval unit is required"
 msgstr "Yenileme aralığı birimi gereklidir"
 
-#: src/blueprints/playlist.py:46 src/blueprints/settings.py:49
+#: src/blueprints/playlist.py:46 src/blueprints/settings.py:97
 msgid "Refresh interval is required"
 msgstr "Yenileme aralığı gereklidir"
 
@@ -91,7 +91,7 @@ msgstr "Oynatma listesine eklenemedi"
 #: src/blueprints/plugin.py:76 src/blueprints/plugin.py:219
 #: src/blueprints/plugin.py:273 src/blueprints/plugin.py:298
 #: src/blueprints/plugin.py:329 src/blueprints/plugin.py:358
-#: src/blueprints/settings.py:123
+#: src/blueprints/settings.py:178
 #, python-format
 msgid "An error occurred: %(error)s"
 msgstr "Bir hata oluştu: %(error)s"
@@ -231,47 +231,59 @@ msgstr "'%(plugin_id)s' eklentisi bulunamadı"
 msgid "The plugin returned no image."
 msgstr "Eklenti bir görsel döndürmedi."
 
-#: src/blueprints/settings.py:47
+#: src/blueprints/settings.py:62
+msgid "Enter whole numbers for the check interval and the offline badge."
+msgstr "Kontrol aralığı ve çevrimdışı işareti için tam sayı gir."
+
+#: src/blueprints/settings.py:64
+msgid "The check interval must be between 1 and 1440 minutes."
+msgstr "Kontrol aralığı 1 ile 1440 dakika arasında olmalı."
+
+#: src/blueprints/settings.py:66
+msgid "The offline badge delay must be between 0 and 168 hours."
+msgstr "Çevrimdışı işareti süresi 0 ile 168 saat arasında olmalı."
+
+#: src/blueprints/settings.py:95
 msgid "Plugin cycle interval unit is required"
 msgstr "Eklenti döngü aralığı birimi gereklidir"
 
-#: src/blueprints/settings.py:51
+#: src/blueprints/settings.py:99
 msgid "Time Zone is required"
 msgstr "Saat dilimi gereklidir"
 
-#: src/blueprints/settings.py:53
+#: src/blueprints/settings.py:101
 msgid "Time format is required"
 msgstr "Saat biçimi gereklidir"
 
-#: src/blueprints/settings.py:57
+#: src/blueprints/settings.py:105
 msgid "Plugin cycle interval must be less than 24 hours"
 msgstr "Eklenti döngü aralığı 24 saatten az olmalıdır"
 
-#: src/blueprints/settings.py:124
+#: src/blueprints/settings.py:179
 msgid "Saved settings."
 msgstr "Ayarlar kaydedildi."
 
-#: src/blueprints/settings.py:131 src/blueprints/settings.py:154
+#: src/blueprints/settings.py:186 src/blueprints/settings.py:209
 msgid "Power manager not available"
 msgstr "Güç yöneticisi mevcut değil"
 
-#: src/blueprints/settings.py:137
+#: src/blueprints/settings.py:192
 msgid "Invalid value for 'active'"
 msgstr "'active' için geçersiz değer"
 
-#: src/blueprints/settings.py:144
+#: src/blueprints/settings.py:199
 msgid "Power save mode activated."
 msgstr "Güç tasarruf modu aktif edildi."
 
-#: src/blueprints/settings.py:144
+#: src/blueprints/settings.py:199
 msgid "Power save mode deactivated."
 msgstr "Güç tasarruf modu devre dışı bırakıldı."
 
-#: src/blueprints/settings.py:160
+#: src/blueprints/settings.py:215
 msgid "Invalid keep-awake duration"
 msgstr "Geçersiz uyanık kalma süresi"
 
-#: src/blueprints/settings.py:163
+#: src/blueprints/settings.py:218
 #, python-format
 msgid "Extended awake duration by %(minutes)d minutes."
 msgstr "Uyanık kalma süresi %(minutes)d dakika uzatıldı."
@@ -1234,7 +1246,7 @@ msgstr "Yerel Saat Dilimini Kullan"
 #: src/templates/inky.html:184 src/templates/playlist.html:498
 #: src/templates/playlist.html:515 src/templates/plugin.html:461
 #: src/templates/plugin.html:494 src/templates/plugin.html:533
-#: src/templates/settings.html:469
+#: src/templates/settings.html:517
 msgid "Save"
 msgstr "Kaydet"
 
@@ -1378,11 +1390,11 @@ msgstr "Güç Tasarrufu Aktif"
 msgid "Awake for %(time)s before low-power sleep"
 msgstr "Düşük güç uykusuna geçmeden önce %(time)s uyanık"
 
-#: src/templates/inky.html:83 src/templates/settings.html:298
+#: src/templates/inky.html:83 src/templates/settings.html:345
 msgid "Entering low-power sleep..."
 msgstr "Düşük güç uykusuna geçiliyor..."
 
-#: src/templates/inky.html:87 src/templates/settings.html:311
+#: src/templates/inky.html:87 src/templates/settings.html:358
 msgid "Min Awake"
 msgstr "Dk Uyanık"
 
@@ -1607,12 +1619,12 @@ msgid "Enter a number"
 msgstr "Bir sayı girin"
 
 #: src/templates/refresh_settings_form.html:11 src/templates/settings.html:268
-#: src/templates/settings.html:332 src/templates/settings.html:346
+#: src/templates/settings.html:379 src/templates/settings.html:393
 msgid "Minute"
 msgstr "Dakika"
 
 #: src/templates/refresh_settings_form.html:12 src/templates/settings.html:269
-#: src/templates/settings.html:345
+#: src/templates/settings.html:392
 msgid "Hour"
 msgstr "Saat"
 
@@ -1716,36 +1728,105 @@ msgstr "Sistem İstatistiklerini Günlüğe Kaydet"
 msgid "Battery & Power Management"
 msgstr "Batarya ve Güç Yönetimi"
 
-#: src/templates/settings.html:290
+#: src/templates/settings.html:289
+msgid "Display devices"
+msgstr "Ekran cihazları"
+
+#: src/templates/settings.html:294
+msgid "Power save on"
+msgstr "Güç tasarrufu açık"
+
+#: src/templates/settings.html:296
+msgid "Power save off"
+msgstr "Güç tasarrufu kapalı"
+
+#: src/templates/settings.html:299
+#, python-format
+msgid "Last contact: %(time)s"
+msgstr "Son bağlantı: %(time)s"
+
+#: src/templates/settings.html:300
+#, python-format
+msgid "checks every %(interval)s"
+msgstr "kontrol aralığı %(interval)s"
+
+#: src/templates/settings.html:301
+#, python-format
+msgid "next check %(time)s"
+msgstr "sonraki kontrol %(time)s"
+
+#: src/templates/settings.html:302
+msgid "New settings are applied at its next check."
+msgstr "Yeni ayarlar bir sonraki kontrolde uygulanacak."
+
+#: src/templates/settings.html:306
+msgid "No display device has connected yet."
+msgstr "Henüz bağlanan bir ekran cihazı yok."
+
+#: src/templates/settings.html:309
+msgid ""
+"This device only renders the images. Power save runs on the display "
+"devices: between checks they turn Wi-Fi, Bluetooth, HDMI and LEDs off. "
+"For 10 minutes after power-on they stay awake."
+msgstr ""
+"Bu cihaz sadece görüntüleri hazırlar. Güç tasarrufu ekran cihazlarında "
+"çalışır: iki kontrol arasında Wi-Fi, Bluetooth, HDMI ve LED'leri "
+"kapatırlar. Açıldıktan sonraki 10 dakika uyanık kalırlar."
+
+#: src/templates/settings.html:315
+msgid "Power save on the display devices"
+msgstr "Ekran cihazlarında güç tasarrufu"
+
+#: src/templates/settings.html:318
+msgid "Check for a new image every:"
+msgstr "Yeni görüntü kontrol aralığı:"
+
+#: src/templates/settings.html:321
+msgid "minutes"
+msgstr "dakika"
+
+#: src/templates/settings.html:325
+msgid "Show the offline badge after:"
+msgstr "Çevrimdışı işaretini göster:"
+
+#: src/templates/settings.html:326
+msgid "0 turns the badge off."
+msgstr "0 işareti kapatır."
+
+#: src/templates/settings.html:329
+msgid "hours without contact"
+msgstr "saat bağlantı olmazsa"
+
+#: src/templates/settings.html:337
 msgid "Mode Status:"
 msgstr "Mod Durumu:"
 
-#: src/templates/settings.html:293
+#: src/templates/settings.html:340
 msgid "ACTIVE"
 msgstr "AKTİF"
 
-#: src/templates/settings.html:297
+#: src/templates/settings.html:344
 #, python-format
 msgid "Awake for %(time)s"
 msgstr "%(time)s uyanık"
 
-#: src/templates/settings.html:301
+#: src/templates/settings.html:348
 msgid "INACTIVE (Normal Mode)"
 msgstr "KAPALI (Sürekli Güç Modu)"
 
-#: src/templates/settings.html:308
+#: src/templates/settings.html:355
 msgid "Deactivate Mode"
 msgstr "Modu Kapat"
 
-#: src/templates/settings.html:315
+#: src/templates/settings.html:362
 msgid "Activate Mode Now"
 msgstr "Modu Şimdi Başlat"
 
-#: src/templates/settings.html:321
+#: src/templates/settings.html:368
 msgid "Physical Power-off / Boot Safety:"
 msgstr "Fiziksel Güç Kesintisi / İlk Açılış Güvenliği:"
 
-#: src/templates/settings.html:321
+#: src/templates/settings.html:368
 msgid ""
 "Whenever Raspberry Pi physically loses power or restarts, this mode is "
 "automatically kept OFF. You will always be able to access the web "
@@ -1757,11 +1838,11 @@ msgstr ""
 "web arayüzüne her zaman erişebilirsiniz. İstediğiniz zaman bu menüden "
 "modu tekrar kurabilirsiniz."
 
-#: src/templates/settings.html:327
+#: src/templates/settings.html:374
 msgid "Awake Duration:"
 msgstr "Uyanık Kalma Süresi:"
 
-#: src/templates/settings.html:328
+#: src/templates/settings.html:375
 msgid ""
 "How long the device stays fully awake with Wi-Fi on after a refresh for "
 "web access and configurations."
@@ -1769,21 +1850,21 @@ msgstr ""
 "Ekran yenilendikten sonra cihazın web erişimi ve ayarlar için Wi-Fi açık "
 "şekilde uyanık kaldığı süre."
 
-#: src/templates/settings.html:333
+#: src/templates/settings.html:380
 msgid "Second"
 msgstr "Saniye"
 
-#: src/templates/settings.html:340
+#: src/templates/settings.html:387
 msgid "Sleep Duration:"
 msgstr "Uyku Süresi:"
 
-#: src/templates/settings.html:341
+#: src/templates/settings.html:388
 msgid "How long the device enters low-power sleep between display refreshes."
 msgstr ""
 "Ekran yenilemeleri arasında cihazın donanımları kapatıp derin enerji "
 "tasarrufunda uyuduğu süre."
 
-#: src/templates/settings.html:351
+#: src/templates/settings.html:398
 msgid ""
 "One full cycle takes the awake time plus the sleep time, plus roughly "
 "30-60 seconds to reconnect Wi-Fi and refresh the display. The display "
@@ -1793,53 +1874,53 @@ msgstr ""
 "ekran yenilemesi için yaklaşık 30-60 saniyeden oluşur. Ekran her döngüde "
 "bir kez yenilenir. En kısa uyanık kalma süresi 1 dakikadır."
 
-#: src/templates/settings.html:356
+#: src/templates/settings.html:403
 msgid "Sleep Hardware Controls:"
 msgstr "Uykuda Kapatılacak Donanımlar:"
 
-#: src/templates/settings.html:360
+#: src/templates/settings.html:407
 msgid "Turn off Wi-Fi"
 msgstr "Wi-Fi Bağlantısını Kapat"
 
-#: src/templates/settings.html:364
+#: src/templates/settings.html:411
 msgid "Turn off Bluetooth"
 msgstr "Bluetooth'u Kapat"
 
-#: src/templates/settings.html:369 src/templates/settings.html:372
+#: src/templates/settings.html:416 src/templates/settings.html:419
 msgid "Turn off HDMI"
 msgstr "HDMI Çıkışını Kapat"
 
-#: src/templates/settings.html:372
+#: src/templates/settings.html:419
 msgid ""
 "Not supported with the KMS display driver (Raspberry Pi OS Bookworm "
 "default)."
 msgstr "KMS ekran sürücüsüyle desteklenmez (Raspberry Pi OS Bookworm varsayılanı)."
 
-#: src/templates/settings.html:377
+#: src/templates/settings.html:424
 msgid "Turn off Status LEDs"
 msgstr "Durum LED'lerini Kapat"
 
-#: src/templates/settings.html:386
+#: src/templates/settings.html:434
 msgid "Image Settings"
 msgstr "Görsel Ayarları"
 
-#: src/templates/settings.html:390
+#: src/templates/settings.html:438
 msgid "Saturation:"
 msgstr "Doygunluk:"
 
-#: src/templates/settings.html:404
+#: src/templates/settings.html:452
 msgid "Contrast:"
 msgstr "Kontrast:"
 
-#: src/templates/settings.html:418
+#: src/templates/settings.html:466
 msgid "Sharpness:"
 msgstr "Keskinlik:"
 
-#: src/templates/settings.html:432
+#: src/templates/settings.html:480
 msgid "Brightness:"
 msgstr "Parlaklık:"
 
-#: src/templates/settings.html:447
+#: src/templates/settings.html:495
 msgid "Inky Driver Saturation:"
 msgstr "Inky Sürücü Doygunluğu:"
 
@@ -1994,3 +2075,4 @@ msgstr "Kalan Gün"
 #: src/utils/i18n_strings.py:48
 msgid "Days Passed"
 msgstr "Geçen Gün"
+

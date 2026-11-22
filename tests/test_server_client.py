@@ -132,7 +132,9 @@ def test_new_image_is_displayed_and_remembered(make_client, tmp_path):
 
     display.display_image.assert_called_once()
     assert display.display_image.call_args[0][0].size == (800, 480)
-    session.get.assert_called_once_with("http://pi5.local/api/display_image", headers={}, timeout=tc.REQUEST_TIMEOUT)
+    session.get.assert_called_once()
+    assert session.get.call_args.args == ("http://pi5.local/api/display_image",)
+    assert "If-Modified-Since" not in session.get.call_args.kwargs["headers"]
     state = json.loads((tmp_path / "state" / "state.json").read_text())
     assert state["last_modified"] == "Sun, 22 Nov 2026 12:00:00 GMT"
 
@@ -144,7 +146,7 @@ def test_unchanged_image_never_refreshes_panel(make_client):
     assert [client.step() for _ in range(3)] == ["new", "unchanged", "unchanged"]
 
     assert display.display_image.call_count == 1
-    assert session.get.call_args.kwargs["headers"] == {"If-Modified-Since": lm}
+    assert session.get.call_args.kwargs["headers"]["If-Modified-Since"] == lm
 
 
 def test_state_survives_restart(make_client):
@@ -154,7 +156,7 @@ def test_state_survives_restart(make_client):
 
     restarted, display, session, _ = make_client([FakeResponse(304)])
     assert restarted.step() == "unchanged"
-    assert session.get.call_args.kwargs["headers"] == {"If-Modified-Since": lm}
+    assert session.get.call_args.kwargs["headers"]["If-Modified-Since"] == lm
     display.display_image.assert_not_called()  # no refresh after reboot
 
 
@@ -246,3 +248,70 @@ def test_load_settings():
 ])
 def test_server_address_for_the_wake_network_check(url, address):
     assert tc.server_address(url) == address
+
+
+# --- display devices managed from the server ---
+
+def test_server_records_client_and_sends_chosen_settings(server, tmp_path):
+    from utils import thin_clients
+
+    client, device_config = server
+    device_config.config_file = str(tmp_path / "device.json")
+    chosen = {"power_save": True, "poll_interval": 3600, "offline_after": 7200}
+    device_config.get_config.side_effect = lambda key=None, default={}: {
+        "language": "en", "thin_client_settings": chosen}.get(key, default)
+    with open(device_config.display_image_file, "wb") as f:
+        f.write(png_bytes())
+
+    res = client.get("/api/display_image", headers={
+        "X-InkyPi-Client": "inkypi-zero",
+        "X-InkyPi-Client-Settings": json.dumps({"power_save": False, "poll_interval": 300, "offline_after": 3600})})
+
+    assert res.status_code == 200
+    assert json.loads(res.headers["X-InkyPi-Client-Settings"]) == chosen
+    [zero] = thin_clients.client_overview(device_config)
+    assert zero["name"] == "inkypi-zero"
+    assert zero["power_save"] is False and zero["poll_interval"] == 300
+    assert zero["pending"] is True  # applied at its next check
+
+    # also answered on 304, so a client with an unchanged image still gets new settings
+    again = client.get("/api/display_image", headers={"If-Modified-Since": res.headers["Last-Modified"]})
+    assert again.status_code == 304
+    assert "X-InkyPi-Client-Settings" in again.headers
+
+
+def test_client_applies_keeps_and_reports_server_settings(make_client):
+    chosen = {"power_save": True, "poll_interval": 3600, "offline_after": 7200}
+    answer = FakeResponse(304)
+    answer.headers["X-InkyPi-Client-Settings"] = json.dumps(chosen)
+    kept = []
+    client, _, session, _ = make_client([answer, FakeResponse(304)], name="inkypi-zero",
+                                        on_settings_changed=kept.append)
+
+    assert client.step() == "unchanged"
+
+    assert client.settings == chosen
+    assert kept == [chosen]
+    # the follow-up request reports the new settings right away
+    assert session.get.call_count == 2
+    reported = session.get.call_args.kwargs["headers"]
+    assert reported["X-InkyPi-Client"] == "inkypi-zero"
+    assert json.loads(reported["X-InkyPi-Client-Settings"]) == chosen
+
+
+def test_client_ignores_invalid_server_settings(make_client):
+    answer = FakeResponse(304)
+    answer.headers["X-InkyPi-Client-Settings"] = "not json"
+    client, _, session, _ = make_client([answer])
+
+    client.step()
+
+    assert client.settings == {"power_save": False, "poll_interval": 300, "offline_after": 3600}
+    assert session.get.call_count == 1
+
+
+def test_settings_are_clamped():
+    from utils.thin_clients import sanitize_settings
+
+    assert sanitize_settings({"poll_interval": 5, "offline_after": -1, "power_save": 1, "x": 2}) == {
+        "poll_interval": 30, "offline_after": 0, "power_save": True}

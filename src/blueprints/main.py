@@ -1,5 +1,6 @@
 from flask_babel import gettext as _
-from flask import Blueprint, request, jsonify, current_app, render_template, send_file
+from flask import Blueprint, request, jsonify, current_app, render_template, send_file, make_response
+import json
 import os
 from email.utils import formatdate, parsedate_to_datetime
 
@@ -44,8 +45,20 @@ def get_current_image():
 @main_bp.route('/api/display_image')
 def get_display_image():
     """Panel-ready image for thin clients (server mode), with If-Modified-Since support."""
+    from utils import thin_clients
+
     device_config = current_app.config['DEVICE_CONFIG']
-    return _send_image_if_modified(device_config.display_image_file)
+    client_name = request.headers.get(thin_clients.CLIENT_HEADER)
+    if client_name:
+        reported = thin_clients.parse_settings_header(request.headers.get(thin_clients.SETTINGS_HEADER))
+        thin_clients.record_poll(device_config, client_name, reported)
+
+    response = make_response(_send_image_if_modified(device_config.display_image_file))
+    # settings chosen in this server's web UI; the client applies them (also on 304 and 404)
+    wanted = thin_clients.desired_settings(device_config)
+    if wanted:
+        response.headers[thin_clients.SETTINGS_HEADER] = json.dumps(wanted)
+    return response
 
 
 @main_bp.route('/api/plugin_order', methods=['POST'])

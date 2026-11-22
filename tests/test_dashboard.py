@@ -520,3 +520,25 @@ def test_playlist_page_asks_before_deleting(page_client, device_config):
     assert "scripts/confirm_click.js" in html
     assert 'data-confirm="Silinsin mi? Tekrar tıkla · panodan da çıkar: Ana Pano"' in html
     assert "confirmClick(this, () => deletePluginInstance(" in html
+
+
+# --- settings page of a render server ---
+
+def test_server_settings_page_shows_display_devices(page_client, device_config):
+    from blueprints.settings import settings_bp
+    from utils import thin_clients
+
+    page_client.application.register_blueprint(settings_bp)
+    device_config.update_value("display_type", "server")
+    device_config.update_value("language", "tr")
+    thin_clients.record_poll(device_config, "inkypi-zero",
+                             {"power_save": True, "poll_interval": 3600, "offline_after": 7200})
+
+    html = page_client.get("/settings").get_data(as_text=True)
+
+    assert "inkypi-zero" in html
+    assert "Güç tasarrufu açık" in html
+    assert 'name="tc_poll_minutes"' in html and 'value="60"' in html
+    assert 'name="tc_offline_hours"' in html and 'value="2"' in html
+    # the server's own power save controls are not offered
+    assert 'id="ps_awake_duration"' not in html

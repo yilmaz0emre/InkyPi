@@ -51,6 +51,14 @@ Optional settings in `src/config/device.json` on the client (`thin_client` secti
 
 Restart after changes: `sudo systemctl restart inkypi`. Logs: `journalctl -u inkypi -f`.
 
+`power_save`, `poll_interval` and `offline_after` can also be set from the **server's** web UI
+(Settings → Battery & Power Management, which on a server shows its display devices instead of its own
+power save). The server sends them with every answer to `/api/display_image` (header
+`X-InkyPi-Client-Settings`); the client applies them at its next check and writes them into its
+`thin_client` section, so they also hold while the server is unreachable. Each client reports its name
+and current settings (`X-InkyPi-Client`, `X-InkyPi-Client-Settings`), which the Settings page lists with
+the last contact and the next expected check (stored in `src/config/.thin_clients.json` on the server).
+
 ## Behaviour
 
 - **Unchanged image → no panel refresh.** The client sends `If-Modified-Since`; a `304` answer costs a few bytes instead of a ~30 s e-ink refresh. The last `Last-Modified` is stored on disk, so a reboot does not cause a refresh either.

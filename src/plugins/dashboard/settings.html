@@ -95,6 +95,20 @@
         line-height: 22px;
         padding: 0;
     }
+    .dash-widget-edit {
+        position: absolute;
+        top: 0;
+        right: 24px;
+        width: 22px;
+        height: 22px;
+        border: 0;
+        background: #2c66b1;
+        color: #fff;
+        cursor: pointer;
+        font-size: 13px;
+        line-height: 22px;
+        padding: 0;
+    }
     .dash-widget-resize {
         position: absolute;
         right: 0;
@@ -121,6 +135,15 @@
         <select id="dashInstanceSelect" class="form-input"></select>
         <button type="button" class="header-button" onclick="dashboardEditor.addSelected()">
             + {{ _('Add Widget') }}
+        </button>
+        <button type="button" class="header-button" id="dashEditButton" onclick="dashboardEditor.editSelected()"
+                title="{{ _('Open the settings of the selected widget') }}">
+            {{ _('Edit') }}
+        </button>
+        <button type="button" class="header-button" id="dashDeleteButton" data-confirm=""
+                onclick="confirmClick(this, () => dashboardEditor.deleteSelected())"
+                title="{{ _('Delete the selected widget everywhere') }}">
+            {{ _('Delete') }}
         </button>
         <button type="button" class="header-button" onclick="dashboardEditor.refreshInstances()" title="{{ _('Reload the list of saved widgets') }}">
             ↻
@@ -175,7 +198,13 @@
             previewing: {{ _('Rendering…') | tojson }},
             preview: {{ _('Preview') | tojson }},
             previewFailed: {{ _('Preview failed') | tojson }},
+            edit: {{ _('Edit') | tojson }},
+            confirmDelete: {{ _('Delete? Click again') | tojson }},
+            alsoRemovedFrom: {{ _('also removed from %(dashboards)s', dashboards='%s') | tojson }},
+            deleteFailed: {{ _('Could not delete the widget.') | tojson }},
         };
+        const PLUGIN_PAGE_URL = {{ url_for('plugin.plugin_page', plugin_id='__ID__') | tojson }};
+        const DELETE_URL = {{ url_for('plugin.delete_plugin_instance') | tojson }};
 
         const canvas = document.getElementById('dashCanvas');
         const layoutInput = document.getElementById('dashLayout');
@@ -215,12 +244,65 @@
             }
         }
 
+        function selectedInstance() {
+            const value = document.getElementById('dashInstanceSelect').value;
+            return value.startsWith('saved:') ? instances[Number(value.slice(6))] : null;
+        }
+
+        // Edit/Delete only apply to saved widgets, not to "create new" entries
+        function updateActions() {
+            const instance = selectedInstance();
+            document.getElementById('dashEditButton').disabled = !instance;
+            const del = document.getElementById('dashDeleteButton');
+            del.disabled = !instance;
+            if (typeof resetConfirm === 'function') resetConfirm(del);
+            let question = TEXT.confirmDelete;
+            if (instance && instance.used_in && instance.used_in.length) {
+                question += ' · ' + TEXT.alsoRemovedFrom.replace('%s', instance.used_in.join(', '));
+            }
+            del.dataset.confirm = question;
+        }
+
+        function editInstance(instance) {
+            // the layout is autosaved when the page is left, so nothing gets lost
+            window.location.href = PLUGIN_PAGE_URL.replace('__ID__', encodeURIComponent(instance.plugin_id))
+                + '?instance=' + encodeURIComponent(instance.name);
+        }
+
+        function editSelected() {
+            const instance = selectedInstance();
+            if (instance) editInstance(instance);
+        }
+
+        async function deleteSelected() {
+            const instance = selectedInstance();
+            if (!instance) return;
+            try {
+                const response = await fetch(DELETE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        playlist_name: instance.playlist, plugin_id: instance.plugin_id, plugin_instance: instance.name,
+                    }),
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            } catch (e) {
+                console.error('Could not delete widget', e);
+                showResponseModal('failure', TEXT.deleteFailed);
+                return;
+            }
+            widgets = widgets.filter(w => !(w.plugin_id === instance.plugin_id && w.name === instance.name));
+            save();
+            await refreshInstances();
+        }
+
         async function refreshInstances() {
             try {
                 const response = await fetch("{{ url_for('plugin.dashboard_instances') }}", { cache: 'no-store' });
                 if (!response.ok) return;
                 instances = await response.json();
                 fillSelect();
+                updateActions();
                 render();  // widgets whose instance was missing may exist now
             } catch (e) {
                 console.error('Could not refresh dashboard widgets', e);
@@ -263,6 +345,17 @@
                 remove.addEventListener('pointerdown', e => e.stopPropagation());
                 remove.addEventListener('click', () => { widgets.splice(index, 1); save(); render(); });
                 box.appendChild(remove);
+
+                if (instance) {
+                    const edit = document.createElement('button');
+                    edit.type = 'button';
+                    edit.className = 'dash-widget-edit';
+                    edit.title = TEXT.edit;
+                    edit.textContent = '✎';
+                    edit.addEventListener('pointerdown', e => e.stopPropagation());
+                    edit.addEventListener('click', () => editInstance(instance));
+                    box.appendChild(edit);
+                }
 
                 const handle = document.createElement('div');
                 handle.className = 'dash-widget-resize';
@@ -404,9 +497,11 @@
         }
 
         fillSelect();
+        updateActions();
+        document.getElementById('dashInstanceSelect').addEventListener('change', updateActions);
         window.addEventListener('focus', refreshInstances);
 
-        return { load, addSelected, preview, refreshInstances };
+        return { load, addSelected, preview, refreshInstances, editSelected, deleteSelected };
     })();
 
     document.addEventListener('DOMContentLoaded', () => {

@@ -473,3 +473,50 @@ def test_autosave_request_keeps_lists_and_refresh(client, device_config):
     assert instance.settings == {"labelStyle": "strip", "items[]": ["USD", "GRA"]}
     assert instance.refresh == {"interval": 3600}
     assert instance.dashboard_only is True
+
+
+# --- editing and deleting widgets ---
+
+def _add_dashboard(config, name, widgets):
+    layout = {"columns": 12, "rows": 12, "widgets": widgets}
+    add_instance(config, "dashboard", name, {"layout": json.dumps(layout), "gap": "6"}, dashboard_only=False)
+
+
+def test_deleting_a_widget_removes_it_from_dashboards(page_client, device_config):
+    add_instance(device_config, "clock", "Saat")
+    add_instance(device_config, "currency_gold", "Kur")
+    _add_dashboard(device_config, "Ana Pano", [
+        {"plugin_id": "clock", "name": "Saat", "x": 0, "y": 0, "w": 6, "h": 6},
+        {"plugin_id": "currency_gold", "name": "Kur", "x": 6, "y": 0, "w": 6, "h": 6}])
+    playlist = device_config.get_playlist_manager().playlists[0].name
+
+    res = page_client.post("/delete_plugin_instance", json={
+        "playlist_name": playlist, "plugin_id": "clock", "plugin_instance": "Saat"})
+
+    assert res.status_code == 200
+    assert res.get_json()["dashboards"] == ["Ana Pano"]
+    dashboard = Config().get_playlist_manager().find_plugin("dashboard", "Ana Pano")
+    remaining = json.loads(dashboard.settings["layout"])["widgets"]
+    assert [w["name"] for w in remaining] == ["Kur"]
+
+
+def test_widget_list_says_where_a_widget_is_used(page_client, device_config):
+    add_instance(device_config, "clock", "Saat")
+    add_instance(device_config, "clock", "Yedek")
+    _add_dashboard(device_config, "Ana Pano", [{"plugin_id": "clock", "name": "Saat", "x": 0, "y": 0, "w": 6, "h": 6}])
+
+    used = {i["name"]: i["used_in"] for i in page_client.get("/dashboard_instances").get_json()}
+
+    assert used == {"Saat": ["Ana Pano"], "Yedek": []}
+
+
+def test_playlist_page_asks_before_deleting(page_client, device_config):
+    add_instance(device_config, "clock", "Saat")
+    _add_dashboard(device_config, "Ana Pano", [{"plugin_id": "clock", "name": "Saat", "x": 0, "y": 0, "w": 6, "h": 6}])
+    device_config.update_value("language", "tr")
+
+    html = page_client.get("/playlist").get_data(as_text=True)
+
+    assert "scripts/confirm_click.js" in html
+    assert 'data-confirm="Silinsin mi? Tekrar tıkla · panodan da çıkar: Ana Pano"' in html
+    assert "confirmClick(this, () => deletePluginInstance(" in html

@@ -207,6 +207,10 @@ def delete_plugin_instance():
         if not result:
             return jsonify({"success": False, "message": _("Plugin instance not found")}), 400
 
+        # a deleted widget would otherwise show up as an error box on its dashboards
+        from plugins.dashboard.dashboard import remove_widget_from_dashboards
+        dashboards = remove_widget_from_dashboards(device_config, plugin_id, plugin_instance)
+
         # save changes to device config file
         device_config.write_config()
 
@@ -214,7 +218,10 @@ def delete_plugin_instance():
         logger.exception("EXCEPTION CAUGHT: " + str(e))
         return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
 
-    return jsonify({"success": True, "message": _("Deleted plugin instance.")})
+    message = _("Deleted plugin instance.")
+    if dashboards:
+        message += " " + _("Also removed from: %(dashboards)s", dashboards=", ".join(dashboards))
+    return jsonify({"success": True, "message": message, "dashboards": dashboards})
 
 @plugin_bp.route('/update_plugin_instance/<string:instance_name>', methods=['PUT'])
 def update_plugin_instance(instance_name):

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 23:37+0300\n"
+"POT-Creation-Date: 2026-11-23 00:14+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -49,8 +49,8 @@ msgstr "Görsel bulunamadı"
 msgid "Order must be a list"
 msgstr "Sıralama bir liste olmalıdır"
 
-#: src/blueprints/playlist.py:28 src/blueprints/playlist.py:102
-#: src/blueprints/playlist.py:155
+#: src/blueprints/playlist.py:28 src/blueprints/playlist.py:105
+#: src/blueprints/playlist.py:158
 msgid "Playlist name is required"
 msgstr "Oynatma listesi adı gereklidir"
 
@@ -87,10 +87,10 @@ msgstr "Yenileme saati gereklidir"
 msgid "Failed to add to playlist"
 msgstr "Oynatma listesine eklenemedi"
 
-#: src/blueprints/playlist.py:74 src/blueprints/playlist.py:120
-#: src/blueprints/plugin.py:76 src/blueprints/plugin.py:215
-#: src/blueprints/plugin.py:266 src/blueprints/plugin.py:291
-#: src/blueprints/plugin.py:322 src/blueprints/plugin.py:351
+#: src/blueprints/playlist.py:74 src/blueprints/playlist.py:123
+#: src/blueprints/plugin.py:76 src/blueprints/plugin.py:219
+#: src/blueprints/plugin.py:273 src/blueprints/plugin.py:298
+#: src/blueprints/plugin.py:329 src/blueprints/plugin.py:358
 #: src/blueprints/settings.py:123
 #, python-format
 msgid "An error occurred: %(error)s"
@@ -100,66 +100,66 @@ msgstr "Bir hata oluştu: %(error)s"
 msgid "Scheduled refresh configured."
 msgstr "Zamanlanmış yenileme yapılandırıldı."
 
-#: src/blueprints/playlist.py:104
+#: src/blueprints/playlist.py:107
 msgid "Start time and End time are required"
 msgstr "Başlangıç ve bitiş saati gereklidir"
 
-#: src/blueprints/playlist.py:109
+#: src/blueprints/playlist.py:112
 #, python-format
 msgid "Playlist with name '%(playlist_name)s' already exists"
 msgstr "'%(playlist_name)s' adlı oynatma listesi zaten mevcut"
 
-#: src/blueprints/playlist.py:113
+#: src/blueprints/playlist.py:116
 msgid "Failed to create playlist"
 msgstr "Oynatma listesi oluşturulamadı"
 
-#: src/blueprints/playlist.py:122
+#: src/blueprints/playlist.py:125
 msgid "Created new Playlist!"
 msgstr "Yeni oynatma listesi oluşturuldu!"
 
-#: src/blueprints/playlist.py:136
+#: src/blueprints/playlist.py:139
 msgid "Missing required fields"
 msgstr "Gerekli alanlar eksik"
 
-#: src/blueprints/playlist.py:140 src/blueprints/playlist.py:159
+#: src/blueprints/playlist.py:143 src/blueprints/playlist.py:162
 #, python-format
 msgid "Playlist '%(playlist_name)s' does not exist"
 msgstr "'%(playlist_name)s' adlı oynatma listesi mevcut değil"
 
-#: src/blueprints/playlist.py:144
+#: src/blueprints/playlist.py:147
 msgid "Failed to delete playlist"
 msgstr "Oynatma listesi silinemedi"
 
-#: src/blueprints/playlist.py:147
+#: src/blueprints/playlist.py:150
 #, python-format
 msgid "Updated playlist '%(playlist_name)s'!"
 msgstr "'%(playlist_name)s' oynatma listesi güncellendi!"
 
-#: src/blueprints/playlist.py:169
+#: src/blueprints/playlist.py:172
 #, python-format
 msgid "Deleted playlist '%(playlist_name)s'!"
 msgstr "'%(playlist_name)s' oynatma listesi silindi!"
 
-#: src/blueprints/playlist.py:194
+#: src/blueprints/playlist.py:197
 msgid "just now"
 msgstr "az önce"
 
-#: src/blueprints/playlist.py:196
+#: src/blueprints/playlist.py:199
 #, python-format
 msgid "%(minutes)d minutes ago"
 msgstr "%(minutes)d dakika önce"
 
-#: src/blueprints/playlist.py:198
+#: src/blueprints/playlist.py:201
 #, python-format
 msgid "today at %(time)s"
 msgstr "bugün %(time)s"
 
-#: src/blueprints/playlist.py:200
+#: src/blueprints/playlist.py:203
 #, python-format
 msgid "yesterday at %(time)s"
 msgstr "dün %(time)s"
 
-#: src/blueprints/playlist.py:205
+#: src/blueprints/playlist.py:208
 #, python-format
 msgid "%(date)s at %(time)s"
 msgstr "%(date)s %(time)s"
@@ -189,40 +189,45 @@ msgstr "Oynatma listesi bulunamadı"
 msgid "Plugin instance not found"
 msgstr "Eklenti örneği bulunamadı"
 
-#: src/blueprints/plugin.py:217
+#: src/blueprints/plugin.py:221
 msgid "Deleted plugin instance."
 msgstr "Eklenti örneği silindi."
 
-#: src/blueprints/plugin.py:233
+#: src/blueprints/plugin.py:223
+#, python-format
+msgid "Also removed from: %(dashboards)s"
+msgstr "Şu panolardan da çıkarıldı: %(dashboards)s"
+
+#: src/blueprints/plugin.py:240
 #, python-format
 msgid "Plugin instance: %(instance_name)s does not exist"
 msgstr "Eklenti örneği mevcut değil: %(instance_name)s"
 
-#: src/blueprints/plugin.py:267
+#: src/blueprints/plugin.py:274
 #, python-format
 msgid "Updated plugin instance %(instance_name)s."
 msgstr "%(instance_name)s eklenti örneği güncellendi."
 
-#: src/blueprints/plugin.py:283
+#: src/blueprints/plugin.py:290
 #, python-format
 msgid "Playlist %(playlist_name)s not found"
 msgstr "%(playlist_name)s oynatma listesi bulunamadı"
 
-#: src/blueprints/plugin.py:287
+#: src/blueprints/plugin.py:294
 #, python-format
 msgid "Plugin instance '%(plugin_instance_name)s' not found"
 msgstr "'%(plugin_instance_name)s' eklenti örneği bulunamadı"
 
-#: src/blueprints/plugin.py:293 src/blueprints/plugin.py:324
+#: src/blueprints/plugin.py:300 src/blueprints/plugin.py:331
 msgid "Display updated"
 msgstr "Ekran güncellendi"
 
-#: src/blueprints/plugin.py:314 src/blueprints/plugin.py:339
+#: src/blueprints/plugin.py:321 src/blueprints/plugin.py:346
 #, python-format
 msgid "Plugin '%(plugin_id)s' not found"
 msgstr "'%(plugin_id)s' eklentisi bulunamadı"
 
-#: src/blueprints/plugin.py:343 src/plugins/dashboard/dashboard.py:228
+#: src/blueprints/plugin.py:350 src/plugins/dashboard/dashboard.py:268
 msgid "The plugin returned no image."
 msgstr "Eklenti bir görsel döndürmedi."
 
@@ -283,8 +288,8 @@ msgstr "Metin İstemi:"
 #: src/plugins/image_url/settings.html:3 src/plugins/rss/settings.html:4
 #: src/plugins/rss/settings.html:28 src/plugins/screenshot/settings.html:3
 #: src/plugins/todo_list/settings.html:37 src/plugins/unsplash/settings.html:3
-#: src/plugins/weather/settings.html:47 src/templates/playlist.html:484
-#: src/templates/plugin.html:516 src/templates/settings.html:202
+#: src/plugins/weather/settings.html:47 src/templates/playlist.html:488
+#: src/templates/plugin.html:517 src/templates/settings.html:202
 msgid "Type something..."
 msgstr "Bir şeyler yazın..."
 
@@ -694,38 +699,56 @@ msgstr "Panoya en az bir bileşen ekleyin."
 msgid "Failed to render the dashboard."
 msgstr "Pano çizilemedi."
 
-#: src/plugins/dashboard/dashboard.py:210
+#: src/plugins/dashboard/dashboard.py:250
 msgid "A dashboard cannot contain another dashboard."
 msgstr "Bir pano başka bir pano içeremez."
 
-#: src/plugins/dashboard/dashboard.py:214
+#: src/plugins/dashboard/dashboard.py:254
 #, python-format
 msgid "Plugin instance '%(name)s' not found."
 msgstr "'%(name)s' eklenti örneği bulunamadı."
 
-#: src/plugins/dashboard/dashboard.py:217
+#: src/plugins/dashboard/dashboard.py:257
 #, python-format
 msgid "Plugin '%(plugin_id)s' is not installed."
 msgstr "'%(plugin_id)s' eklentisi yüklü değil."
 
-#: src/plugins/dashboard/settings.html:118
+#: src/plugins/dashboard/settings.html:132
 msgid "Widgets:"
 msgstr "Bileşenler:"
 
-#: src/plugins/dashboard/settings.html:123
+#: src/plugins/dashboard/settings.html:137
 msgid "Add Widget"
 msgstr "Bileşen Ekle"
 
-#: src/plugins/dashboard/settings.html:125
+#: src/plugins/dashboard/settings.html:140
+msgid "Open the settings of the selected widget"
+msgstr "Seçili bileşenin ayarlarını aç"
+
+#: src/plugins/dashboard/settings.html:141
+#: src/plugins/dashboard/settings.html:201
+msgid "Edit"
+msgstr "Düzenle"
+
+#: src/plugins/dashboard/settings.html:145
+msgid "Delete the selected widget everywhere"
+msgstr "Seçili bileşeni her yerden sil"
+
+#: src/plugins/dashboard/settings.html:146 src/templates/apikeys.html:217
+#: src/templates/playlist.html:499
+msgid "Delete"
+msgstr "Sil"
+
+#: src/plugins/dashboard/settings.html:148
 msgid "Reload the list of saved widgets"
 msgstr "Kayıtlı bileşen listesini yenile"
 
-#: src/plugins/dashboard/settings.html:129
-#: src/plugins/dashboard/settings.html:176
+#: src/plugins/dashboard/settings.html:152
+#: src/plugins/dashboard/settings.html:199
 msgid "Preview"
 msgstr "Önizle"
 
-#: src/plugins/dashboard/settings.html:134
+#: src/plugins/dashboard/settings.html:157
 msgid ""
 "Any plugin can be a widget: pick it under \"Create new widget\", "
 "configure it in the tab that opens and save it with \"Add to Playlist\" "
@@ -737,7 +760,7 @@ msgstr ""
 "panolarda kullan\" işaretli gelir). Bu sekmeye döndüğünüzde liste "
 "kendiliğinden yenilenir, yerleşiminiz korunur."
 
-#: src/plugins/dashboard/settings.html:142
+#: src/plugins/dashboard/settings.html:165
 #, python-format
 msgid ""
 "Drag a widget to move it, drag its bottom-right corner to resize it. "
@@ -748,55 +771,68 @@ msgstr ""
 "köşesinden çekin. Bileşenler %(columns)s × %(rows)s ızgaraya oturur. "
 "Ekranı güncellemeden gerçek sonucu görmek için Önizle'yi kullanın."
 
-#: src/plugins/dashboard/settings.html:145
+#: src/plugins/dashboard/settings.html:168
 msgid "Some widgets overlap; the later one is drawn on top."
 msgstr "Bazı bileşenler üst üste biniyor; sonra eklenen üstte çizilir."
 
-#: src/plugins/dashboard/settings.html:150
+#: src/plugins/dashboard/settings.html:173
 msgid "Gap between widgets:"
 msgstr "Bileşenler arası boşluk:"
 
-#: src/plugins/dashboard/settings.html:152 src/templates/plugin.html:400
-#: src/templates/plugin.html:404 src/templates/plugin.html:408
-#: src/templates/plugin.html:412
+#: src/plugins/dashboard/settings.html:175 src/templates/plugin.html:401
+#: src/templates/plugin.html:405 src/templates/plugin.html:409
+#: src/templates/plugin.html:413
 msgid "px"
 msgstr "px"
 
-#: src/plugins/dashboard/settings.html:155
+#: src/plugins/dashboard/settings.html:178
 msgid "Widget Borders:"
 msgstr "Bileşen Çerçeveleri:"
 
-#: src/plugins/dashboard/settings.html:169
+#: src/plugins/dashboard/settings.html:192
 msgid "Saved widgets"
 msgstr "Kayıtlı bileşenler"
 
-#: src/plugins/dashboard/settings.html:170
+#: src/plugins/dashboard/settings.html:193
 msgid "Create new widget"
 msgstr "Yeni bileşen oluştur"
 
-#: src/plugins/dashboard/settings.html:171
+#: src/plugins/dashboard/settings.html:194
 msgid "No saved widgets yet"
 msgstr "Henüz kayıtlı bileşen yok"
 
-#: src/plugins/dashboard/settings.html:172
+#: src/plugins/dashboard/settings.html:195
 msgid "dashboard only"
 msgstr "sadece pano"
 
-#: src/plugins/dashboard/settings.html:173
+#: src/plugins/dashboard/settings.html:196
 msgid "not found"
 msgstr "bulunamadı"
 
-#: src/plugins/dashboard/settings.html:174
+#: src/plugins/dashboard/settings.html:197
 msgid "Remove"
 msgstr "Kaldır"
 
-#: src/plugins/dashboard/settings.html:175
+#: src/plugins/dashboard/settings.html:198
 msgid "Rendering…"
 msgstr "Çiziliyor…"
 
-#: src/plugins/dashboard/settings.html:177
+#: src/plugins/dashboard/settings.html:200
 msgid "Preview failed"
 msgstr "Önizleme başarısız"
+
+#: src/plugins/dashboard/settings.html:202 src/templates/playlist.html:464
+msgid "Delete? Click again"
+msgstr "Silinsin mi? Tekrar tıkla"
+
+#: src/plugins/dashboard/settings.html:203 src/templates/playlist.html:464
+#, python-format
+msgid "also removed from %(dashboards)s"
+msgstr "panodan da çıkar: %(dashboards)s"
+
+#: src/plugins/dashboard/settings.html:204
+msgid "Could not delete the widget."
+msgstr "Bileşen silinemedi."
 
 #: src/plugins/github/github_contributions.py:127
 #: src/plugins/github/settings.html:5
@@ -873,7 +909,7 @@ msgstr "Rastgele Sıralama:"
 
 #: src/plugins/image_album/settings.html:36
 #: src/plugins/image_folder/settings.html:13
-#: src/plugins/image_upload/settings.html:21 src/templates/plugin.html:419
+#: src/plugins/image_upload/settings.html:21 src/templates/plugin.html:420
 msgid "Background:"
 msgstr "Arka Plan:"
 
@@ -885,7 +921,7 @@ msgstr "Bulanıklaştır"
 
 #: src/plugins/image_album/settings.html:41
 #: src/plugins/image_folder/settings.html:18
-#: src/plugins/image_upload/settings.html:26 src/templates/plugin.html:423
+#: src/plugins/image_upload/settings.html:26 src/templates/plugin.html:424
 msgid "Color"
 msgstr "Renk"
 
@@ -1195,9 +1231,9 @@ msgid "Use Local Time Zone"
 msgstr "Yerel Saat Dilimini Kullan"
 
 #: src/plugins/weather/settings.html:130 src/templates/apikeys.html:252
-#: src/templates/inky.html:184 src/templates/playlist.html:494
-#: src/templates/playlist.html:511 src/templates/plugin.html:460
-#: src/templates/plugin.html:493 src/templates/plugin.html:532
+#: src/templates/inky.html:184 src/templates/playlist.html:498
+#: src/templates/playlist.html:515 src/templates/plugin.html:461
+#: src/templates/plugin.html:494 src/templates/plugin.html:533
 #: src/templates/settings.html:469
 msgid "Save"
 msgstr "Kaydet"
@@ -1255,8 +1291,8 @@ msgstr "%(days)s GÜN KALDI"
 msgid "API Keys"
 msgstr "API Anahtarları"
 
-#: src/templates/apikeys.html:196 src/templates/playlist.html:387
-#: src/templates/plugin.html:339 src/templates/settings.html:177
+#: src/templates/apikeys.html:196 src/templates/playlist.html:388
+#: src/templates/plugin.html:340 src/templates/settings.html:177
 msgid "← Back"
 msgstr "← Geri"
 
@@ -1267,10 +1303,6 @@ msgstr "ANAHTAR_ADI"
 #: src/templates/apikeys.html:216
 msgid "(unchanged)"
 msgstr "(değiştirilmedi)"
-
-#: src/templates/apikeys.html:217 src/templates/playlist.html:495
-msgid "Delete"
-msgstr "Sil"
 
 #: src/templates/apikeys.html:223
 msgid "No API keys configured yet."
@@ -1328,7 +1360,7 @@ msgid "Toggle Dark Mode"
 msgstr "Koyu Temayı Aç/Kapat"
 
 #: src/templates/inky.html:69 src/templates/playlist.html:6
-#: src/templates/playlist.html:393
+#: src/templates/playlist.html:394
 msgid "Playlists"
 msgstr "Oynatma Listeleri"
 
@@ -1378,53 +1410,58 @@ msgstr "Sıralamak için eklentileri sürükleyin. Bitince \"Kaydet\"e tıklayı
 msgid "Grid"
 msgstr "Izgara"
 
-#: src/templates/playlist.html:187 src/templates/playlist.html:395
-#: src/templates/playlist.html:477
+#: src/templates/playlist.html:188 src/templates/playlist.html:396
+#: src/templates/playlist.html:481
 msgid "New Playlist"
 msgstr "Yeni Oynatma Listesi"
 
-#: src/templates/playlist.html:201
+#: src/templates/playlist.html:202
 msgid "Update Playlist"
 msgstr "Oynatma Listesini Güncelle"
 
-#: src/templates/playlist.html:416
+#: src/templates/playlist.html:417
 msgid "Not shown on its own; used as a widget inside dashboards."
 msgstr "Tek başına gösterilmez; panolarda bileşen olarak kullanılır."
 
-#: src/templates/playlist.html:416
+#: src/templates/playlist.html:417
 msgid "Dashboard only"
 msgstr "Sadece pano"
 
-#: src/templates/playlist.html:426
+#: src/templates/playlist.html:427
 msgid "Click to view full size"
 msgstr "Tam boyut görmek için tıklayın"
 
-#: src/templates/playlist.html:434
+#: src/templates/playlist.html:435
 msgid "Displayed Now"
 msgstr "Şu An Gösteriliyor"
 
-#: src/templates/playlist.html:451
+#: src/templates/playlist.html:444
+#, python-format
+msgid "Refreshed %(time)s"
+msgstr "%(time)s yenilendi"
+
+#: src/templates/playlist.html:452
 msgid "Edit Refresh Settings"
 msgstr "Yenileme Ayarlarını Düzenle"
 
-#: src/templates/playlist.html:458
+#: src/templates/playlist.html:459
 msgid "Display Now"
 msgstr "Şimdi Göster"
 
-#: src/templates/playlist.html:461
+#: src/templates/playlist.html:463
 msgid "Delete Plugin Instance"
 msgstr "Eklenti Örneğini Sil"
 
-#: src/templates/playlist.html:483
+#: src/templates/playlist.html:487
 msgid "Playlist Name:"
 msgstr "Oynatma Listesi Adı:"
 
-#: src/templates/playlist.html:487
+#: src/templates/playlist.html:491
 msgid "Display from"
 msgstr "Gösterim aralığı:"
 
-#: src/templates/playlist.html:504 src/templates/plugin.html:350
-#: src/templates/plugin.html:478
+#: src/templates/playlist.html:508 src/templates/plugin.html:351
+#: src/templates/plugin.html:479
 msgid "Refresh Settings"
 msgstr "Yenileme Ayarları"
 
@@ -1433,43 +1470,43 @@ msgstr "Yenileme Ayarları"
 msgid "%(name)s Settings"
 msgstr "%(name)s Ayarları"
 
-#: src/templates/plugin.html:47 src/templates/settings.html:30
+#: src/templates/plugin.html:48 src/templates/settings.html:30
 msgid "Changes are saved automatically."
 msgstr "Değişiklikler otomatik kaydedilir."
 
-#: src/templates/plugin.html:48 src/templates/settings.html:31
+#: src/templates/plugin.html:49 src/templates/settings.html:31
 msgid "Saving…"
 msgstr "Kaydediliyor…"
 
-#: src/templates/plugin.html:49 src/templates/settings.html:32
+#: src/templates/plugin.html:50 src/templates/settings.html:32
 msgid "Saved ✓"
 msgstr "Kaydedildi ✓"
 
-#: src/templates/plugin.html:49
+#: src/templates/plugin.html:50
 msgid "Draft saved ✓"
 msgstr "Taslak kaydedildi ✓"
 
-#: src/templates/plugin.html:50 src/templates/settings.html:33
+#: src/templates/plugin.html:51 src/templates/settings.html:33
 msgid "Could not save, retrying…"
 msgstr "Kaydedilemedi, yeniden deneniyor…"
 
-#: src/templates/plugin.html:51
+#: src/templates/plugin.html:52
 msgid "A new file is selected: press Save to upload it."
 msgstr "Yeni bir dosya seçildi: yüklemek için Kaydet'e bas."
 
-#: src/templates/plugin.html:56
+#: src/templates/plugin.html:57
 msgid "Your last settings were restored."
 msgstr "Son ayarların geri yüklendi."
 
-#: src/templates/plugin.html:59
+#: src/templates/plugin.html:60
 msgid "Clear"
 msgstr "Temizle"
 
-#: src/templates/plugin.html:347
+#: src/templates/plugin.html:348
 msgid "Requires API Key"
 msgstr "API Anahtarı Gerekir"
 
-#: src/templates/plugin.html:359
+#: src/templates/plugin.html:360
 msgid ""
 "Creating a dashboard widget: configure it below and save it with \"Add to"
 " Playlist\". \"Only use inside dashboards\" is already ticked, so it will"
@@ -1481,63 +1518,63 @@ msgstr ""
 "başına gösterilmez. Ardından Pano sekmesine dönün; bileşen listede "
 "görünür."
 
-#: src/templates/plugin.html:372
+#: src/templates/plugin.html:373
 msgid "Style"
 msgstr "Stil"
 
-#: src/templates/plugin.html:378
+#: src/templates/plugin.html:379
 msgid "Frame:"
 msgstr "Çerçeve:"
 
-#: src/templates/plugin.html:397
+#: src/templates/plugin.html:398
 msgid "Margins:"
 msgstr "Kenar Boşlukları:"
 
-#: src/templates/plugin.html:399
+#: src/templates/plugin.html:400
 msgid "Top"
 msgstr "Üst"
 
-#: src/templates/plugin.html:403
+#: src/templates/plugin.html:404
 msgid "Bottom"
 msgstr "Alt"
 
-#: src/templates/plugin.html:407
+#: src/templates/plugin.html:408
 msgid "Left"
 msgstr "Sol"
 
-#: src/templates/plugin.html:411
+#: src/templates/plugin.html:412
 msgid "Right"
 msgstr "Sağ"
 
-#: src/templates/plugin.html:430
+#: src/templates/plugin.html:431
 msgid "Image"
 msgstr "Görsel"
 
-#: src/templates/plugin.html:432
+#: src/templates/plugin.html:433
 msgid "Upload Image"
 msgstr "Görsel Yükle"
 
-#: src/templates/plugin.html:446
+#: src/templates/plugin.html:447
 msgid "Text Color:"
 msgstr "Metin Rengi:"
 
-#: src/templates/plugin.html:461
+#: src/templates/plugin.html:462
 msgid "Save As..."
 msgstr "Farklı Kaydet..."
 
-#: src/templates/plugin.html:463
+#: src/templates/plugin.html:464
 msgid "Update Now"
 msgstr "Şimdi Güncelle"
 
-#: src/templates/plugin.html:464 src/templates/plugin.html:503
+#: src/templates/plugin.html:465 src/templates/plugin.html:504
 msgid "Add to Playlist"
 msgstr "Listeye Ekle"
 
-#: src/templates/plugin.html:487 src/templates/plugin.html:525
+#: src/templates/plugin.html:488 src/templates/plugin.html:526
 msgid "Only use inside dashboards"
 msgstr "Sadece panolarda kullan"
 
-#: src/templates/plugin.html:488 src/templates/plugin.html:526
+#: src/templates/plugin.html:489 src/templates/plugin.html:527
 msgid ""
 "The instance is not shown on its own in the playlist rotation; it can "
 "still be placed as a widget in a Dashboard."
@@ -1545,11 +1582,11 @@ msgstr ""
 "Bu örnek oynatma listesi sırasında tek başına gösterilmez; yine de bir "
 "Panoya bileşen olarak eklenebilir."
 
-#: src/templates/plugin.html:507
+#: src/templates/plugin.html:508
 msgid "Playlist:"
 msgstr "Oynatma Listesi:"
 
-#: src/templates/plugin.html:515
+#: src/templates/plugin.html:516
 msgid "Instance Name:"
 msgstr "Örnek Adı:"
 
@@ -1922,10 +1959,38 @@ msgstr "Hava Kalitesi"
 msgid "Pressure"
 msgstr "Basınç"
 
+#: src/utils/i18n_strings.py:37
+msgid "Visibility"
+msgstr "Görüş"
+
 #: src/utils/i18n_strings.py:39
+msgid "Good"
+msgstr "İyi"
+
+#: src/utils/i18n_strings.py:40
+msgid "Fair"
+msgstr "Makul"
+
+#: src/utils/i18n_strings.py:41
+msgid "Moderate"
+msgstr "Orta"
+
+#: src/utils/i18n_strings.py:42
+msgid "Poor"
+msgstr "Kötü"
+
+#: src/utils/i18n_strings.py:43
+msgid "Very Poor"
+msgstr "Çok Kötü"
+
+#: src/utils/i18n_strings.py:44
+msgid "Ext Poor"
+msgstr "Aşırı Kötü"
+
+#: src/utils/i18n_strings.py:47
 msgid "Days Left"
 msgstr "Kalan Gün"
 
-#: src/utils/i18n_strings.py:40
+#: src/utils/i18n_strings.py:48
 msgid "Days Passed"
 msgstr "Geçen Gün"

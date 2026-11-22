@@ -172,7 +172,10 @@ verify_debian_dependencies() {
   while read -r package; do
     [[ -z "$package" || "$package" == \#* ]] && continue
     [[ -n "$CLIENT_SERVER_URL" && "$package" == chromium* ]] && continue
-    dpkg -s "$package" > /dev/null 2>&1 || missing+=("$package")
+    dpkg -s "$package" > /dev/null 2>&1 && continue
+    # renamed packages stay available as virtual names (e.g. libfreetype6-dev on Trixie)
+    dpkg-query -W -f='${Provides}\n' 2>/dev/null | grep -qE "(^|, )${package}( |,|$)" \
+      || missing+=("$package")
   done < "$APT_REQUIREMENTS_FILE"
   if (( ${#missing[@]} )); then
     echo_error "ERROR: These system packages could not be installed: ${missing[*]}

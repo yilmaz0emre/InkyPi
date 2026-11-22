@@ -76,12 +76,8 @@ class RefreshTask:
                 with self.condition:
                     woke_from_sleep = False
                     if self.power_manager and self.power_manager.is_active:
-                        ps_cfg = self.power_manager.get_config()
-                        awake_mult = 60 if ps_cfg.get("awake_unit") == "minute" else 1
-                        awake_seconds = max(10, int(ps_cfg.get("awake_duration", 3)) * awake_mult)
-
-                        sleep_mult = 3600 if ps_cfg.get("sleep_unit") == "hour" else 60
-                        sleep_seconds = max(10, int(ps_cfg.get("sleep_duration", 1)) * sleep_mult)
+                        awake_seconds = self.power_manager.get_awake_seconds()
+                        sleep_seconds = self.power_manager.get_sleep_seconds()
 
                         # Maintain the awake window
                         now = time.time()
@@ -160,10 +156,7 @@ class RefreshTask:
                         self.device_config.write_config()
 
                         if self.power_manager and self.power_manager.is_active:
-                            ps_cfg = self.power_manager.get_config()
-                            awake_mult = 60 if ps_cfg.get("awake_unit") == "minute" else 1
-                            awake_seconds = max(10, int(ps_cfg.get("awake_duration", 3)) * awake_mult)
-                            self.power_manager.keep_awake_until = time.time() + awake_seconds
+                            self.power_manager.keep_awake_until = time.time() + self.power_manager.get_awake_seconds()
 
             except Exception as e:
                 logger.exception('Exception during refresh')

@@ -141,3 +141,12 @@ def test_save_settings_does_not_change_power_save_activation(setup):
     client.post("/save_settings", data={**SETTINGS_FORM, "ps_active_now": "on"})
 
     assert power_manager.is_active is False
+
+
+def test_save_settings_clamps_awake_seconds_to_minimum(setup):
+    client, power_manager, _ = setup
+
+    client.post("/save_settings", data={**SETTINGS_FORM, "ps_awake_duration": "10", "ps_awake_unit": "second"})
+
+    assert power_manager.get_config()["awake_duration"] == 60
+    assert power_manager.get_config()["awake_unit"] == "second"

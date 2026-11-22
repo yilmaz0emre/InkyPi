@@ -30,7 +30,7 @@ _Last updated: 2026-11-22_
 
 ## Code review: power save (`ca7d9fb`)
 
-_Reviewed 2026-11-16. C1–C3 and I4–I10 fixed 2026-11-22 (hardware snapshot in `src/config/.power_save_state.json`, restored on wake and on boot; forced refresh after wake)._
+_Reviewed 2026-11-16. C1–C3, I4–I10 and minor/UI items fixed 2026-11-22 (hardware snapshot in `src/config/.power_save_state.json`, restored on wake and on boot; forced refresh after wake)._
 
 ### 🔴 Critical
 
@@ -69,13 +69,13 @@ _Reviewed 2026-11-16. C1–C3 and I4–I10 fixed 2026-11-22 (hardware snapshot i
 
 ### 🟡 Minor / UI
 
-- [ ] `set_active(False)` does not reset `keep_awake_until` (status still showed 592 s after deactivation).
-- [ ] Remaining awake time is static (no countdown); main-page banner uses `alert()`.
-- [ ] English msgids contain Turkish (`"Awake Duration (Bekleme Süresi):"`, `"Sleep Duration (Uyku Süresi):"`)
+- [x] `set_active(False)` does not reset `keep_awake_until` (status still showed 592 s after deactivation).
+- [x] Remaining awake time is static (no countdown); main-page banner uses `alert()`.
+- [x] English msgids contain Turkish (`"Awake Duration (Bekleme Süresi):"`, `"Sleep Duration (Uyku Süresi):"`)
   → Turkish words appear in the English UI. Use plain English msgids.
-- [ ] Real cycle = awake + sleep + reconnect/refresh time, not just sleep. Explain in UI.
-- [ ] Minimum awake is 10 s, but Wi-Fi reconnect takes ~10–25 s → raise minimum to ≥ 60 s.
-- [ ] `vcgencmd display_power` does not work under KMS (Bookworm).
+- [x] Real cycle = awake + sleep + reconnect/refresh time, not just sleep. Explain in UI.
+- [x] Minimum awake is 10 s, but Wi-Fi reconnect takes ~10–25 s → raise minimum to ≥ 60 s.
+- [x] `vcgencmd display_power` does not work under KMS (Bookworm). → HDMI control skipped and UI checkbox disabled when `dtoverlay=vc4-kms-v3d` is set.
 
 ### 📉 Power estimate correction
 

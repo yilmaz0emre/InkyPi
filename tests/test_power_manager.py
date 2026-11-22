@@ -87,6 +87,7 @@ def _fake_sysfs(tmp_path, monkeypatch, trigger="none [mmc0] timer", governor="on
     (cpu / "scaling_governor").write_text(governor)
     monkeypatch.setattr(pm_module, "LED_DIR", str(tmp_path / "leds"))
     monkeypatch.setattr(pm_module, "CPU_GOVERNOR_GLOB", str(tmp_path / "cpu*" / "scaling_governor"))
+    monkeypatch.setattr(pm_module, "is_full_kms", lambda: False)
     monkeypatch.setattr(pm_module, "RFKILL_DIR", str(tmp_path / "rfkill"))
     monkeypatch.setattr(pm_module, "is_raspberry_pi", lambda: True)
     monkeypatch.setattr(pm_module.shutil, "which", lambda name: f"/usr/bin/{name}")
@@ -223,3 +224,56 @@ def test_wait_for_network_uses_dns_and_tcp(monkeypatch):
 
     assert pm.wait_for_network(timeout=1) is True
     assert calls == [pm_module.CONNECTIVITY_CHECK_HOST]
+
+
+# --- Minor / UI items ---
+
+def test_deactivate_resets_keep_awake():
+    pm = PowerManager(device_config=None, dev_mode=True)
+    pm.set_active(True)
+    assert pm.get_status()["remaining_awake_seconds"] > 0
+
+    pm.set_active(False)
+
+    assert pm.keep_awake_until == 0.0
+    assert pm.get_status()["remaining_awake_seconds"] == 0
+
+
+@pytest.mark.parametrize("cfg, expected", [
+    ({"awake_duration": 10, "awake_unit": "second"}, 60),
+    ({"awake_duration": 90, "awake_unit": "second"}, 90),
+    ({"awake_duration": 3, "awake_unit": "minute"}, 180),
+])
+def test_awake_seconds_enforces_minimum(cfg, expected):
+    mock_config = MagicMock()
+    mock_config.get_config.return_value = cfg
+    pm = PowerManager(device_config=mock_config, dev_mode=True)
+
+    assert pm.get_awake_seconds() == expected
+
+
+@pytest.mark.parametrize("config_txt, expected", [
+    ("dtoverlay=vc4-kms-v3d\n", True),
+    ("dtoverlay=vc4-kms-v3d,cma-512\n", True),
+    ("#dtoverlay=vc4-kms-v3d\n", False),
+    ("dtoverlay=vc4-fkms-v3d\n", False),
+    ("", False),
+])
+def test_is_full_kms(tmp_path, monkeypatch, config_txt, expected):
+    path = tmp_path / "config.txt"
+    path.write_text(config_txt)
+    monkeypatch.setattr(pm_module, "BOOT_CONFIG_PATHS", (str(path),))
+
+    assert pm_module.is_full_kms() is expected
+
+
+def test_hdmi_skipped_under_kms(tmp_path, monkeypatch):
+    _, _, commands = _fake_sysfs(tmp_path, monkeypatch)
+    monkeypatch.setattr(pm_module, "is_full_kms", lambda: True)
+    pm = PowerManager(state_file=str(tmp_path / "state.json"))
+
+    pm.enter_low_power_mode()
+    pm.exit_low_power_mode()
+
+    assert pm.get_status()["hdmi_control_supported"] is False
+    assert not any(cmd[0] == "vcgencmd" for cmd in commands)

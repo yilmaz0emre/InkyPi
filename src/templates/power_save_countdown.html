@@ -1,0 +1,36 @@
+<script>
+    // Live countdown for elements like:
+    // <span class="ps-countdown" data-remaining="120" data-template="Awake for {time}" data-expired="..."></span>
+    (function () {
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return minutes + ':' + String(secs).padStart(2, '0');
+        }
+
+        window.startPowerSaveCountdowns = function () {
+            document.querySelectorAll('.ps-countdown').forEach(function (el) {
+                if (el._countdownTimer) clearInterval(el._countdownTimer);
+                const end = Date.now() + (parseInt(el.dataset.remaining, 10) || 0) * 1000;
+                function tick() {
+                    const remaining = Math.max(0, Math.round((end - Date.now()) / 1000));
+                    el.textContent = remaining > 0
+                        ? el.dataset.template.replace('{time}', formatTime(remaining))
+                        : el.dataset.expired;
+                    if (remaining <= 0) clearInterval(el._countdownTimer);
+                }
+                tick();
+                el._countdownTimer = setInterval(tick, 1000);
+            });
+        };
+
+        window.updatePowerSaveCountdowns = function (remainingSeconds) {
+            document.querySelectorAll('.ps-countdown').forEach(function (el) {
+                el.dataset.remaining = remainingSeconds;
+            });
+            window.startPowerSaveCountdowns();
+        };
+
+        document.addEventListener('DOMContentLoaded', window.startPowerSaveCountdowns);
+    })();
+</script>

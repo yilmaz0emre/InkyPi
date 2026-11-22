@@ -1,6 +1,7 @@
 from flask_babel import gettext as _
 from flask import Blueprint, request, jsonify, current_app, render_template, Response
 from utils.time_utils import calculate_seconds
+from utils.power_manager import MIN_AWAKE_SECONDS
 from datetime import datetime, timedelta
 import os
 import pytz
@@ -32,7 +33,7 @@ def settings_page():
     power_manager = current_app.config.get('POWER_MANAGER')
     power_save_status = power_manager.get_status() if power_manager else {}
     timezones = sorted(pytz.all_timezones_set)
-    return render_template('settings.html', device_settings=device_config.get_config(), timezones=timezones, power_save_status=power_save_status)
+    return render_template('settings.html', device_settings=device_config.get_config(), timezones=timezones, power_save_status=power_save_status, min_awake_seconds=MIN_AWAKE_SECONDS)
 
 @settings_bp.route('/save_settings', methods=['POST'])
 def save_settings():
@@ -91,9 +92,13 @@ def save_settings():
             ps_sleep_duration = 1
         ps_sleep_unit = form_data.get("ps_sleep_unit", "hour")
 
+        if ps_awake_unit not in ["second", "minute"]:
+            ps_awake_unit = "minute"
+        # Store what is actually used, so the form never shows a value below the enforced minimum
+        min_awake = MIN_AWAKE_SECONDS if ps_awake_unit == "second" else 1
         ps_config = {
-            "awake_duration": max(1, ps_awake_duration),
-            "awake_unit": ps_awake_unit if ps_awake_unit in ["second", "minute"] else "minute",
+            "awake_duration": max(min_awake, ps_awake_duration),
+            "awake_unit": ps_awake_unit,
             "sleep_duration": max(1, ps_sleep_duration),
             "sleep_unit": ps_sleep_unit if ps_sleep_unit in ["minute", "hour"] else "hour",
             "turn_off_wifi": form_data.get("ps_turn_off_wifi") == "on",

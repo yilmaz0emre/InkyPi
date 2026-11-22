@@ -25,6 +25,29 @@ LED_DIR = "/sys/class/leds"
 RFKILL_DIR = "/sys/class/rfkill"
 # Host used to confirm real connectivity (DNS + TCP) after Wi-Fi wakes up
 CONNECTIVITY_CHECK_HOST = ("one.one.one.one", 443)
+# Wi-Fi reconnect alone takes ~10-25 s, so shorter awake windows leave no time for web access
+MIN_AWAKE_SECONDS = 60
+MIN_SLEEP_SECONDS = 60
+BOOT_CONFIG_PATHS = ("/boot/firmware/config.txt", "/boot/config.txt")
+
+
+def is_full_kms():
+    """Return True if the full KMS driver (vc4-kms-v3d) is enabled.
+
+    Under full KMS the firmware no longer owns the display, so `vcgencmd display_power`
+    has no effect (Bookworm default). The fake-KMS overlay (vc4-fkms-v3d) still supports it.
+    """
+    for path in BOOT_CONFIG_PATHS:
+        try:
+            with open(path, encoding="utf-8", errors="ignore") as f:
+                for line in f:
+                    line = line.split("#", 1)[0].strip()
+                    if line.startswith("dtoverlay=") and line.split("=", 1)[1].split(",")[0].strip() == "vc4-kms-v3d":
+                        return True
+            return False
+        except OSError:
+            continue
+    return False
 CPU_GOVERNOR_GLOB = "/sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
 
 
@@ -53,6 +76,7 @@ class PowerManager:
         self.device_config = device_config
         self.dev_mode = dev_mode
         self.is_pi = is_raspberry_pi() and not dev_mode
+        self.hdmi_control_supported = not (self.is_pi and is_full_kms())
         self.state_file = state_file
 
         # Runtime-only state: always False on boot / power-loss for safety
@@ -108,20 +132,32 @@ class PowerManager:
             "is_in_low_power": self.is_in_low_power,
             "remaining_awake_seconds": remaining_awake,
             "is_raspberry_pi": self.is_pi,
+            "hdmi_control_supported": self.hdmi_control_supported,
             "config": self.get_config(),
         }
+
+    def get_awake_seconds(self):
+        """Configured awake window in seconds (at least MIN_AWAKE_SECONDS)."""
+        cfg = self.get_config()
+        mult = 60 if cfg.get("awake_unit") == "minute" else 1
+        return max(MIN_AWAKE_SECONDS, int(cfg.get("awake_duration", 3)) * mult)
+
+    def get_sleep_seconds(self):
+        """Configured low-power sleep in seconds (at least MIN_SLEEP_SECONDS)."""
+        cfg = self.get_config()
+        mult = 3600 if cfg.get("sleep_unit") == "hour" else 60
+        return max(MIN_SLEEP_SECONDS, int(cfg.get("sleep_duration", 1)) * mult)
 
     def set_active(self, active: bool):
         """Activate or deactivate power saving mode for this runtime session."""
         self.is_active = bool(active)
         logger.info(f"Power saving mode active set to: {self.is_active}")
         if self.is_active:
-            ps_cfg = self.get_config()
-            awake_mult = 60 if ps_cfg.get("awake_unit") == "minute" else 1
-            awake_seconds = max(10, int(ps_cfg.get("awake_duration", 3)) * awake_mult)
-            self.keep_awake_until = max(self.keep_awake_until, time.time() + awake_seconds)
-        elif self.is_in_low_power:
-            self.exit_low_power_mode()
+            self.keep_awake_until = max(self.keep_awake_until, time.time() + self.get_awake_seconds())
+        else:
+            self.keep_awake_until = 0.0
+            if self.is_in_low_power:
+                self.exit_low_power_mode()
 
     def request_keep_awake(self, seconds=300):
         """Extend the awake window so the user can continue configuring the web UI."""
@@ -228,6 +264,9 @@ class PowerManager:
         if not self.is_pi:
             logger.info(f"[Mock] HDMI power set to {enable}")
             return True
+        if not self.hdmi_control_supported:
+            logger.debug("Skipping HDMI power control: not supported under full KMS (vc4-kms-v3d)")
+            return False
         val = "1" if enable else "0"
         if shutil.which("vcgencmd"):
             self._run_cmd(["vcgencmd", "display_power", val])
@@ -299,7 +338,7 @@ class PowerManager:
             # Only record Bluetooth as ours to restore if it was on; never re-enable a radio the user turned off
             "bluetooth_disabled": bool(config.get("turn_off_bluetooth", True))
                                   and not (self.is_pi and self.is_bluetooth_blocked()),
-            "hdmi_disabled": bool(config.get("turn_off_hdmi", True)),
+            "hdmi_disabled": bool(config.get("turn_off_hdmi", True)) and self.hdmi_control_supported,
             "leds": self.get_led_state() if self.is_pi and config.get("turn_off_led", True) else None,
             "cpu_governor": self.get_cpu_governor() if self.is_pi else None,
         }
@@ -362,7 +401,7 @@ class PowerManager:
         if config.get("turn_off_led", True):
             self.turn_off_leds()
 
-        if config.get("turn_off_hdmi", True):
+        if self._saved_state["hdmi_disabled"]:
             self.set_hdmi_power(False)
 
         if self._saved_state["bluetooth_disabled"]:

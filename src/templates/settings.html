@@ -106,7 +106,7 @@
                     showResponseModal('failure', result.error || 'Failed');
                 }
             } catch (e) {
-                alert('Error: ' + e);
+                showResponseModal('failure', 'Error: ' + e);
             }
         }
 
@@ -119,15 +119,27 @@
                 });
                 const result = await response.json();
                 if (response.ok) {
+                    updatePowerSaveCountdowns(result.status.remaining_awake_seconds);
                     showResponseModal('success', result.message);
-                    setTimeout(() => window.location.reload(), 1000);
                 } else {
                     showResponseModal('failure', result.error || 'Failed');
                 }
             } catch (e) {
-                alert('Error: ' + e);
+                showResponseModal('failure', 'Error: ' + e);
             }
         }
+
+        // Seconds unit enforces the same minimum awake window as the backend
+        function updateAwakeMinimum() {
+            const unit = document.getElementById('ps_awake_unit');
+            const input = document.getElementById('ps_awake_duration');
+            if (!unit || !input) return;
+            input.min = unit.value === 'second' ? {{ min_awake_seconds | default(60) }} : 1;
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            updateAwakeMinimum();
+            document.getElementById('ps_awake_unit')?.addEventListener('change', updateAwakeMinimum);
+        });
 
         function updateSliderValue(slider) {
             const valueDisplay = document.getElementById(`${slider.id}-value`);
@@ -257,11 +269,10 @@
                                         <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; background-color: #2e7d32; color: #fff; font-weight: bold; font-size: 0.85rem;">
                                             🟢 {{ _('ACTIVE') }}
                                         </span>
-                                        {% if power_save_status.remaining_awake_seconds > 0 %}
-                                            <span style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 6px;">
-                                                ({{ _('Awake for %(seconds)ds', seconds=power_save_status.remaining_awake_seconds) }})
-                                            </span>
-                                        {% endif %}
+                                        <span class="ps-countdown" style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 6px;"
+                                              data-remaining="{{ power_save_status.remaining_awake_seconds }}"
+                                              data-template="({{ _('Awake for %(time)s', time='{time}') }})"
+                                              data-expired="({{ _('Entering low-power sleep...') }})"></span>
                                     {% else %}
                                         <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; background-color: #757575; color: #fff; font-weight: bold; font-size: 0.85rem;">
                                             ⚪ {{ _('INACTIVE (Normal Mode)') }}
@@ -288,9 +299,9 @@
                             </div>
                         </div>
 
-                        <!-- Awake Duration (Bekleme Süresi) -->
+                        <!-- Awake Duration -->
                         <div class="form-group">
-                            <label for="ps_awake_duration" class="form-label">{{ _('Awake Duration (Bekleme Süresi):') }}</label>
+                            <label for="ps_awake_duration" class="form-label">{{ _('Awake Duration:') }}</label>
                             <span title="{{ _('How long the device stays fully awake with Wi-Fi on after a refresh for web access and configurations.') }}">ⓘ</span>
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
                                 <input type="number" id="ps_awake_duration" name="ps_awake_duration" class="form-input" min="1" value="{{ power_save_status.get('config', {}).get('awake_duration', 3) }}" required style="max-width: 120px;">
@@ -301,9 +312,9 @@
                             </div>
                         </div>
 
-                        <!-- Sleep Duration (Uyku Süresi) -->
+                        <!-- Sleep Duration -->
                         <div class="form-group">
-                            <label for="ps_sleep_duration" class="form-label">{{ _('Sleep Duration (Uyku Süresi):') }}</label>
+                            <label for="ps_sleep_duration" class="form-label">{{ _('Sleep Duration:') }}</label>
                             <span title="{{ _('How long the device enters low-power sleep between display refreshes.') }}">ⓘ</span>
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
                                 <input type="number" id="ps_sleep_duration" name="ps_sleep_duration" class="form-input" min="1" value="{{ power_save_status.get('config', {}).get('sleep_duration', 1) }}" required style="max-width: 120px;">
@@ -312,6 +323,9 @@
                                     <option value="minute" {% if power_save_status.get('config', {}).get('sleep_unit') == 'minute' %}selected{% endif %}>{{ _('Minute') }}</option>
                                 </select>
                             </div>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 10px;">
+                            {{ _('One full cycle takes the awake time plus the sleep time, plus roughly 30-60 seconds to reconnect Wi-Fi and refresh the display. The display refreshes once per cycle. The minimum awake time is 1 minute.') }}
                         </div>
 
                         <!-- Peripheral Switches -->
@@ -327,8 +341,13 @@
                                     <label for="ps_turn_off_bluetooth" class="form-label">{{ _('Turn off Bluetooth') }}</label>
                                 </div>
                                 <div class="form-group nowrap">
+                                    {% if power_save_status.get('hdmi_control_supported', True) %}
                                     <input type="checkbox" id="ps_turn_off_hdmi" name="ps_turn_off_hdmi" {% if power_save_status.get('config', {}).get('turn_off_hdmi', True) %}checked{% endif %}>
                                     <label for="ps_turn_off_hdmi" class="form-label">{{ _('Turn off HDMI') }}</label>
+                                    {% else %}
+                                    <input type="checkbox" id="ps_turn_off_hdmi" disabled>
+                                    <label for="ps_turn_off_hdmi" class="form-label" title="{{ _('Not supported with the KMS display driver (Raspberry Pi OS Bookworm default).') }}">{{ _('Turn off HDMI') }} ⓘ</label>
+                                    {% endif %}
                                 </div>
                                 <div class="form-group nowrap">
                                     <input type="checkbox" id="ps_turn_off_led" name="ps_turn_off_led" {% if power_save_status.get('config', {}).get('turn_off_led', True) %}checked{% endif %}>
@@ -428,5 +447,6 @@
     </div>
     <!-- Success/Error Modal -->
     {% include 'response_modal.html' %}
+    {% include 'power_save_countdown.html' %}
 </body>
 </html>

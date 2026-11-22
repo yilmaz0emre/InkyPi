@@ -402,11 +402,11 @@ install_service_mode() {
   if [[ -n "$SERVER_MODE" ]]; then
     mkdir -p "$SERVICE_DROPIN_DIR"
     # Chromium needs more than the default 200M; a Pi 5 has plenty to spare
-    printf '[Service]\nCPUQuota=\nMemoryMax=1G\n' > "$SERVICE_DROPIN_FILE"
+    printf '# inkypi-mode: server\n[Service]\nCPUQuota=\nMemoryMax=1G\n' > "$SERVICE_DROPIN_FILE"
     echo_success "\tService configured for server mode"
   elif [[ -n "$CLIENT_SERVER_URL" ]]; then
     mkdir -p "$SERVICE_DROPIN_DIR"
-    printf '[Service]\nExecStart=\nExecStart=%s client\nMemoryMax=150M\n' "$BINPATH/$APPNAME" > "$SERVICE_DROPIN_FILE"
+    printf '# inkypi-mode: client\n[Service]\nExecStart=\nExecStart=%s client\nMemoryMax=150M\n' "$BINPATH/$APPNAME" > "$SERVICE_DROPIN_FILE"
     echo_success "\tService configured for thin client mode"
   elif [[ -f "$SERVICE_DROPIN_FILE" ]]; then
     rm -f "$SERVICE_DROPIN_FILE"
@@ -509,14 +509,20 @@ if [[ -z "$SERVER_MODE" ]]; then
   enable_interfaces
 fi
 install_debian_dependencies
-# check OS version for Bookworm to setup zramswap
-if [[ $(get_os_version) = "12" ]] ; then
-  echo "OS version is Bookworm - setting up zramswap"
-  setup_zramswap_service
+# zramswap and earlyoom protect low-memory panel devices (Pi Zero). A render server usually has
+# plenty of RAM and may run other services, which earlyoom could kill (e.g. a large LLM).
+if [[ -n "$SERVER_MODE" ]]; then
+  echo "Server mode - skipping zramswap and earlyoom setup."
 else
-  echo "OS version is not Bookworm - skipping zramswap setup."
+  # check OS version for Bookworm to setup zramswap
+  if [[ $(get_os_version) = "12" ]] ; then
+    echo "OS version is Bookworm - setting up zramswap"
+    setup_zramswap_service
+  else
+    echo "OS version is not Bookworm - skipping zramswap setup."
+  fi
+  setup_earlyoom_service
 fi
-setup_earlyoom_service
 install_src
 install_cli
 create_venv

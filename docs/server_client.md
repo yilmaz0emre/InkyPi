@@ -21,7 +21,7 @@ git clone https://github.com/yilmaz0emre/InkyPi.git && cd InkyPi
 sudo bash install/install.sh -S -R 800x480
 ```
 
-- `-S` installs InkyPi without a panel (`display_type: "server"`). SPI/I2C are left untouched.
+- `-S` installs InkyPi without a panel (`display_type: "server"`). SPI/I2C, zramswap and earlyoom are left untouched (they are meant for low-memory panel devices; earlyoom could kill other services such as a large LLM).
 - `-R` must match the **client's panel** resolution (800x480 for the Waveshare 7.3" ACeP, `epd7in3f`).
 - The service may use up to 1 GB RAM (Chromium needs more than the default 200 MB).
 - Configure everything (plugins, playlists, dashboards, orientation, image settings) in the server's web UI: `http://<server-hostname>.local`.

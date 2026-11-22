@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 14:23+0300\n"
+"POT-Creation-Date: 2026-11-22 14:42+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -278,7 +278,8 @@ msgstr "Kalite:"
 msgid "Randomize Text Prompt:"
 msgstr "Metin İstemini Rastgele Seç:"
 
-#: src/plugins/ai_text/settings.html:3 src/plugins/rss/settings.html:3
+#: src/plugins/ai_text/settings.html:3
+#: src/plugins/currency_gold/settings.html:3 src/plugins/rss/settings.html:3
 #: src/plugins/weather/settings.html:33
 msgid "Title:"
 msgstr "Başlık:"
@@ -415,11 +416,13 @@ msgid "Display Weeks:"
 msgstr "Gösterilecek Hafta Sayısı:"
 
 #: src/plugins/calendar/settings.html:86 src/plugins/comic/settings.html:20
-#: src/plugins/rss/settings.html:15 src/plugins/todo_list/settings.html:51
+#: src/plugins/currency_gold/settings.html:17 src/plugins/rss/settings.html:15
+#: src/plugins/todo_list/settings.html:51
 msgid "Font Size:"
 msgstr "Yazı Boyutu:"
 
-#: src/plugins/calendar/settings.html:88 src/plugins/rss/settings.html:17
+#: src/plugins/calendar/settings.html:88
+#: src/plugins/currency_gold/settings.html:19 src/plugins/rss/settings.html:17
 #: src/plugins/todo_list/settings.html:53
 msgid "Extra Small"
 msgstr "Çok Küçük"
@@ -428,17 +431,20 @@ msgstr "Çok Küçük"
 msgid "Smaller"
 msgstr "Daha Küçük"
 
-#: src/plugins/calendar/settings.html:90 src/plugins/rss/settings.html:18
+#: src/plugins/calendar/settings.html:90
+#: src/plugins/currency_gold/settings.html:20 src/plugins/rss/settings.html:18
 #: src/plugins/todo_list/settings.html:54
 msgid "Small"
 msgstr "Küçük"
 
-#: src/plugins/calendar/settings.html:91 src/plugins/rss/settings.html:19
+#: src/plugins/calendar/settings.html:91
+#: src/plugins/currency_gold/settings.html:21 src/plugins/rss/settings.html:19
 #: src/plugins/todo_list/settings.html:55
 msgid "Normal"
 msgstr "Normal"
 
-#: src/plugins/calendar/settings.html:92 src/plugins/rss/settings.html:20
+#: src/plugins/calendar/settings.html:92
+#: src/plugins/currency_gold/settings.html:22 src/plugins/rss/settings.html:20
 #: src/plugins/todo_list/settings.html:56
 msgid "Large"
 msgstr "Büyük"
@@ -447,7 +453,8 @@ msgstr "Büyük"
 msgid "Larger"
 msgstr "Daha Büyük"
 
-#: src/plugins/calendar/settings.html:94 src/plugins/rss/settings.html:21
+#: src/plugins/calendar/settings.html:94
+#: src/plugins/currency_gold/settings.html:23 src/plugins/rss/settings.html:21
 #: src/plugins/todo_list/settings.html:57
 msgid "Extra Larger"
 msgstr "Çok Büyük"
@@ -483,6 +490,132 @@ msgstr "Çizgi Roman Başlığını ve Açıklamasını Göster:"
 #: src/plugins/countdown/settings.html:7
 msgid "Date"
 msgstr "Tarih"
+
+#: src/plugins/currency_gold/currency_gold.py:30
+msgid "US Dollar"
+msgstr "Amerikan Doları"
+
+#: src/plugins/currency_gold/currency_gold.py:31
+msgid "Euro"
+msgstr "Euro"
+
+#: src/plugins/currency_gold/currency_gold.py:32
+msgid "British Pound"
+msgstr "İngiliz Sterlini"
+
+#: src/plugins/currency_gold/currency_gold.py:33
+msgid "Swiss Franc"
+msgstr "İsviçre Frangı"
+
+#: src/plugins/currency_gold/currency_gold.py:34
+msgid "Canadian Dollar"
+msgstr "Kanada Doları"
+
+#: src/plugins/currency_gold/currency_gold.py:35
+msgid "Australian Dollar"
+msgstr "Avustralya Doları"
+
+#: src/plugins/currency_gold/currency_gold.py:36
+msgid "Saudi Riyal"
+msgstr "Suudi Arabistan Riyali"
+
+#: src/plugins/currency_gold/currency_gold.py:37
+msgid "Chinese Yuan"
+msgstr "Çin Yuanı"
+
+#: src/plugins/currency_gold/currency_gold.py:38
+msgid "Russian Ruble"
+msgstr "Rus Rublesi"
+
+#: src/plugins/currency_gold/currency_gold.py:39
+msgid "Gram Gold"
+msgstr "Gram Altın"
+
+#: src/plugins/currency_gold/currency_gold.py:40
+msgid "Gram Gold (24k Pure)"
+msgstr "Has Altın (gram)"
+
+#: src/plugins/currency_gold/currency_gold.py:41
+msgid "Quarter Gold"
+msgstr "Çeyrek Altın"
+
+#: src/plugins/currency_gold/currency_gold.py:42
+msgid "Half Gold"
+msgstr "Yarım Altın"
+
+#: src/plugins/currency_gold/currency_gold.py:43
+msgid "Full Gold"
+msgstr "Tam Altın"
+
+#: src/plugins/currency_gold/currency_gold.py:44
+msgid "Republic Gold"
+msgstr "Cumhuriyet Altını"
+
+#: src/plugins/currency_gold/currency_gold.py:45
+msgid "22k Bracelet Gold (gram)"
+msgstr "22 Ayar Bilezik (gram)"
+
+#: src/plugins/currency_gold/currency_gold.py:46
+msgid "18k Gold (gram)"
+msgstr "18 Ayar Altın (gram)"
+
+#: src/plugins/currency_gold/currency_gold.py:47
+msgid "14k Gold (gram)"
+msgstr "14 Ayar Altın (gram)"
+
+#: src/plugins/currency_gold/currency_gold.py:48
+msgid "Silver (gram)"
+msgstr "Gümüş (gram)"
+
+#: src/plugins/currency_gold/currency_gold.py:50
+msgid "Currencies"
+msgstr "Döviz"
+
+#: src/plugins/currency_gold/currency_gold.py:50
+msgid "Gold & Precious Metals"
+msgstr "Altın ve Değerli Metaller"
+
+#: src/plugins/currency_gold/currency_gold.py:77
+msgid "Could not fetch exchange rates or gold prices."
+msgstr "Döviz kurları veya altın fiyatları alınamadı."
+
+#: src/plugins/currency_gold/currency_gold.py:88
+#: src/plugins/currency_gold/settings.html:4 src/utils/i18n_strings.py:9
+msgid "Currency & Gold"
+msgstr "Döviz ve Altın"
+
+#: src/plugins/currency_gold/currency_gold.py:168
+msgid "spot gold (calculated)"
+msgstr "ons altın (hesaplanan)"
+
+#: src/plugins/currency_gold/settings.html:7
+msgid "Show Daily Change:"
+msgstr "Günlük Değişimi Göster:"
+
+#: src/plugins/currency_gold/settings.html:44
+msgid ""
+"Prices are provided by Truncgil Finans. If it is unavailable, official "
+"TCMB exchange rates and a calculated gram gold price are used instead."
+msgstr ""
+"Fiyatlar Truncgil Finans'tan alınır. Ulaşılamazsa TCMB'nin resmi kurları "
+"ve hesaplanan gram altın fiyatı kullanılır."
+
+#: src/plugins/currency_gold/render/currency_gold.html:11
+msgid "Buying"
+msgstr "Alış"
+
+#: src/plugins/currency_gold/render/currency_gold.html:12
+msgid "Selling"
+msgstr "Satış"
+
+#: src/plugins/currency_gold/render/currency_gold.html:13
+msgid "Change"
+msgstr "Değişim"
+
+#: src/plugins/currency_gold/render/currency_gold.html:34
+#, python-format
+msgid "Last update: %(time)s"
+msgstr "Son güncelleme: %(time)s"
 
 #: src/plugins/github/github_contributions.py:127
 #: src/plugins/github/settings.html:5
@@ -1411,107 +1544,107 @@ msgstr "NASA Günün Astronomi Fotoğrafı"
 msgid "Calendar"
 msgstr "Takvim"
 
-#: src/utils/i18n_strings.py:9
+#: src/utils/i18n_strings.py:10
 msgid "Clock"
 msgstr "Saat"
 
-#: src/utils/i18n_strings.py:10
+#: src/utils/i18n_strings.py:11
 msgid "Daily Comic"
 msgstr "Günlük Çizgi Roman"
 
-#: src/utils/i18n_strings.py:11
+#: src/utils/i18n_strings.py:12
 msgid "Countdown"
 msgstr "Geri Sayım"
 
-#: src/utils/i18n_strings.py:12
+#: src/utils/i18n_strings.py:13
 msgid "GitHub"
 msgstr "GitHub"
 
-#: src/utils/i18n_strings.py:13
+#: src/utils/i18n_strings.py:14
 msgid "Image Album"
 msgstr "Fotoğraf Albümü"
 
-#: src/utils/i18n_strings.py:14
+#: src/utils/i18n_strings.py:15
 msgid "Image Folder"
 msgstr "Görsel Klasörü"
 
-#: src/utils/i18n_strings.py:15
+#: src/utils/i18n_strings.py:16
 msgid "Image Upload"
 msgstr "Görsel Yükleme"
 
-#: src/utils/i18n_strings.py:16
+#: src/utils/i18n_strings.py:17
 msgid "Image URL"
 msgstr "Görsel Bağlantısı"
 
-#: src/utils/i18n_strings.py:17
+#: src/utils/i18n_strings.py:18
 msgid "Today's Newspaper"
 msgstr "Günün Gazetesi"
 
-#: src/utils/i18n_strings.py:18
+#: src/utils/i18n_strings.py:19
 msgid "RSS Feed"
 msgstr "RSS Akışı"
 
-#: src/utils/i18n_strings.py:19
+#: src/utils/i18n_strings.py:20
 msgid "Screenshot"
 msgstr "Ekran Görüntüsü"
 
-#: src/utils/i18n_strings.py:20
+#: src/utils/i18n_strings.py:21
 msgid "To-Do List"
 msgstr "Yapılacaklar Listesi"
 
-#: src/utils/i18n_strings.py:21
+#: src/utils/i18n_strings.py:22
 msgid "Unsplash"
 msgstr "Unsplash"
 
-#: src/utils/i18n_strings.py:22
+#: src/utils/i18n_strings.py:23
 msgid "Weather"
 msgstr "Hava Durumu"
 
-#: src/utils/i18n_strings.py:23
+#: src/utils/i18n_strings.py:24
 msgid "Wikipedia:Picture of the day"
 msgstr "Vikipedi: Günün Görseli"
 
-#: src/utils/i18n_strings.py:24
+#: src/utils/i18n_strings.py:25
 msgid "Year Progress"
 msgstr "Yıl İlerlemesi"
 
-#: src/utils/i18n_strings.py:27
+#: src/utils/i18n_strings.py:28
 msgid "Sunrise"
 msgstr "Gündoğumu"
 
-#: src/utils/i18n_strings.py:28
+#: src/utils/i18n_strings.py:29
 msgid "Sunset"
 msgstr "Günbatımı"
 
-#: src/utils/i18n_strings.py:29
+#: src/utils/i18n_strings.py:30
 msgid "Wind"
 msgstr "Rüzgar"
 
-#: src/utils/i18n_strings.py:30
+#: src/utils/i18n_strings.py:31
 msgid "Humidity"
 msgstr "Nem"
 
-#: src/utils/i18n_strings.py:31
+#: src/utils/i18n_strings.py:32
 msgid "UV Index"
 msgstr "UV İndeksi"
 
-#: src/utils/i18n_strings.py:32
+#: src/utils/i18n_strings.py:33
 msgid "Rain"
 msgstr "Yağmur"
 
-#: src/utils/i18n_strings.py:33
+#: src/utils/i18n_strings.py:34
 msgid "Air Quality"
 msgstr "Hava Kalitesi"
 
-#: src/utils/i18n_strings.py:34
+#: src/utils/i18n_strings.py:35
 msgid "Pressure"
 msgstr "Basınç"
 
-#: src/utils/i18n_strings.py:37
+#: src/utils/i18n_strings.py:38
 msgid "Days Left"
 msgstr "Kalan Gün"
 
-#: src/utils/i18n_strings.py:38
+#: src/utils/i18n_strings.py:39
 msgid "Days Passed"
 msgstr "Geçen Gün"
 

@@ -1,0 +1,69 @@
+<div class="form-group">
+    <div class="form-group">
+        <label for="title" class="form-label">{{ _('Title:') }}</label>
+        <input type="text" id="title" name="title" placeholder="{{ _('Currency & Gold') }}" class="form-input">
+    </div>
+    <div class="form-group">
+        <label for="showChangeToggle" class="form-label">{{ _('Show Daily Change:') }}</label>
+        <div class="toggle-container">
+            <!-- The hidden field is always submitted, so turning the toggle off is saved too -->
+            <input type="hidden" id="showChange" name="showChange" value="true">
+            <input type="checkbox" id="showChangeToggle" class="toggle-checkbox" checked
+                onchange="document.getElementById('showChange').value = this.checked ? 'true' : 'false'">
+            <label for="showChangeToggle" class="toggle-label"></label>
+        </div>
+    </div>
+    <div class="form-group nowrap">
+        <label for="fontSize" class="form-label">{{ _('Font Size:') }}</label>
+        <select id="fontSize" name="fontSize" class="form-input">
+            <option value="x-small">{{ _('Extra Small') }}</option>
+            <option value="small">{{ _('Small') }}</option>
+            <option value="normal">{{ _('Normal') }}</option>
+            <option value="large">{{ _('Large') }}</option>
+            <option value="x-large">{{ _('Extra Larger') }}</option>
+        </select>
+    </div>
+</div>
+
+{% for group_key, group_label in currency_gold_groups.items() %}
+<div class="form-group">
+    <label class="form-label" style="display: block; margin-bottom: 6px;">{{ _(group_label) }}</label>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 6px 12px;">
+        {% for item in currency_gold_items if item.group == group_key %}
+        <div class="form-group nowrap">
+            <input type="checkbox" id="item-{{ item.key }}" name="items[]" value="{{ item.key }}" class="currency-gold-item">
+            <label for="item-{{ item.key }}" class="form-label">{{ _(item.label) }}</label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+<div class="form-group">
+    <span style="color: var(--text-secondary); font-size: 0.85rem;">
+        {{ _('Prices are provided by Truncgil Finans. If it is unavailable, official TCMB exchange rates and a calculated gram gold price are used instead.') }}
+    </span>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const defaults = {{ currency_gold_defaults | tojson }};
+        let selected = defaults;
+        let fontSize = "normal";
+        let showChange = true;
+
+        if (loadPluginSettings) {
+            document.getElementById('title').value = pluginSettings.title || '';
+            selected = pluginSettings["items[]"] || defaults;
+            fontSize = pluginSettings.fontSize || "normal";
+            showChange = pluginSettings.showChange !== "false";
+        }
+
+        document.querySelectorAll('.currency-gold-item').forEach(checkbox => {
+            checkbox.checked = selected.includes(checkbox.value);
+        });
+        document.getElementById('fontSize').value = fontSize;
+        document.getElementById('showChangeToggle').checked = showChange;
+        document.getElementById('showChange').value = showChange ? 'true' : 'false';
+    });
+</script>

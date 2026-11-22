@@ -1,0 +1,50 @@
+{% extends "plugin.html" %}
+
+{% block content %}
+<div class="currency-gold" style="--font-scale: {{ font_scale }}; --rows: {{ row_count }};">
+    {% if title %}<div class="title">{{ title }}</div>{% endif %}
+
+    <table class="quotes">
+        <thead>
+            <tr>
+                <th class="name"></th>
+                <th class="price">{{ _('Buying') }}</th>
+                <th class="price">{{ _('Selling') }}</th>
+                {% if show_change %}<th class="change">{{ _('Change') }}</th>{% endif %}
+            </tr>
+        </thead>
+        {% for group in groups %}
+        <tbody>
+            <tr class="group-row">
+                <td colspan="{{ 4 if show_change else 3 }}">{{ group.label }}</td>
+            </tr>
+            {% for row in group.rows %}
+            <tr class="quote-row">
+                <td class="name">{{ row.label }}</td>
+                <td class="price">{{ row.buying }}</td>
+                <td class="price selling">{{ row.selling }}</td>
+                {% if show_change %}<td class="change {{ row.direction }}">{{ row.change }}</td>{% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endfor %}
+    </table>
+
+    <div class="footer">
+        {% if updated %}{{ _('Last update: %(time)s', time=updated) }}{% endif %}
+        {% if source %}<span class="source">· {{ source }}</span>{% endif %}
+    </div>
+</div>
+
+<script>
+  // Shrink text until the table and footer fit (many selected items / large font sizes)
+  window.addEventListener("load", () => {
+    const container = document.querySelector(".currency-gold");
+    let fit = 1;
+    while (container.scrollHeight > container.clientHeight && fit > 0.4) {
+      fit -= 0.05;
+      container.style.setProperty("--fit", fit.toFixed(2));
+    }
+  });
+</script>
+{% endblock %}

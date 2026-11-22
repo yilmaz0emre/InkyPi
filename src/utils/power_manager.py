@@ -22,6 +22,9 @@ logger = logging.getLogger(__name__)
 # power loss during sleep so the next boot can undo exactly what was changed.
 DEFAULT_STATE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", ".power_save_state.json")
 LED_DIR = "/sys/class/leds"
+RFKILL_DIR = "/sys/class/rfkill"
+# Host used to confirm real connectivity (DNS + TCP) after Wi-Fi wakes up
+CONNECTIVITY_CHECK_HOST = ("one.one.one.one", 443)
 CPU_GOVERNOR_GLOB = "/sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
 
 
@@ -142,10 +145,9 @@ class PowerManager:
             logger.info("[Mock] Wi-Fi disabled (Power Save)")
             return True
         logger.info("Disabling Wi-Fi for power save...")
+        # rfkill only: taking wlan0 down with `ip link` confuses NetworkManager on Bookworm
         if shutil.which("rfkill"):
             self._run_cmd(["rfkill", "block", "wifi"])
-        if shutil.which("ip"):
-            self._run_cmd(["ip", "link", "set", "wlan0", "down"])
         return True
 
     def enable_wifi(self):
@@ -156,12 +158,22 @@ class PowerManager:
         logger.info("Enabling Wi-Fi...")
         if shutil.which("rfkill"):
             self._run_cmd(["rfkill", "unblock", "wifi"])
-        if shutil.which("ip"):
-            self._run_cmd(["ip", "link", "set", "wlan0", "up"])
         return True
 
+    def wake_wifi(self, timeout=25, attempts=3):
+        """Unblock Wi-Fi and wait for connectivity, retrying the unblock if it does not come back."""
+        for attempt in range(1, attempts + 1):
+            self.enable_wifi()
+            if self.wait_for_network(timeout=timeout):
+                return True
+            logger.warning(f"Wi-Fi did not reconnect (attempt {attempt}/{attempts}).")
+            if shutil.which("nmcli"):
+                self._run_cmd(["nmcli", "radio", "wifi", "on"])
+        logger.error("Wi-Fi failed to reconnect after wake; continuing without network.")
+        return False
+
     def wait_for_network(self, timeout=30):
-        """Wait until network connectivity is restored after waking Wi-Fi."""
+        """Wait until DNS resolves and a TCP connection succeeds after waking Wi-Fi."""
         if not self.is_pi:
             return True
 
@@ -169,11 +181,10 @@ class PowerManager:
         start = time.time()
         while time.time() - start < timeout:
             try:
-                # Test connectivity using DNS socket lookup
-                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                s.settimeout(2.0)
-                s.connect(("1.1.1.1", 53))
-                s.close()
+                # create_connection resolves the hostname (DNS) and opens a real TCP connection,
+                # unlike a UDP connect() which only checks that a route exists
+                with socket.create_connection(CONNECTIVITY_CHECK_HOST, timeout=3.0):
+                    pass
                 logger.info("Network connected successfully.")
                 return True
             except Exception:
@@ -189,6 +200,20 @@ class PowerManager:
         if shutil.which("rfkill"):
             self._run_cmd(["rfkill", "block", "bluetooth"])
         return True
+
+    def is_bluetooth_blocked(self):
+        """Return True if every Bluetooth radio is already soft-blocked (e.g. disabled by the user)."""
+        radios = []
+        for rfkill_path in glob.glob(os.path.join(RFKILL_DIR, "*")):
+            try:
+                with open(os.path.join(rfkill_path, "type")) as f:
+                    if f.read().strip() != "bluetooth":
+                        continue
+                with open(os.path.join(rfkill_path, "soft")) as f:
+                    radios.append(f.read().strip() == "1")
+            except Exception:
+                pass
+        return bool(radios) and all(radios)
 
     def enable_bluetooth(self):
         """Turn on Bluetooth."""
@@ -271,7 +296,9 @@ class PowerManager:
         """Record what is about to be changed so it can be undone on wake or next boot."""
         return {
             "wifi_disabled": bool(config.get("turn_off_wifi", True)),
-            "bluetooth_disabled": bool(config.get("turn_off_bluetooth", True)),
+            # Only record Bluetooth as ours to restore if it was on; never re-enable a radio the user turned off
+            "bluetooth_disabled": bool(config.get("turn_off_bluetooth", True))
+                                  and not (self.is_pi and self.is_bluetooth_blocked()),
             "hdmi_disabled": bool(config.get("turn_off_hdmi", True)),
             "leds": self.get_led_state() if self.is_pi and config.get("turn_off_led", True) else None,
             "cpu_governor": self.get_cpu_governor() if self.is_pi else None,
@@ -338,7 +365,7 @@ class PowerManager:
         if config.get("turn_off_hdmi", True):
             self.set_hdmi_power(False)
 
-        if config.get("turn_off_bluetooth", True):
+        if self._saved_state["bluetooth_disabled"]:
             self.disable_bluetooth()
 
         self.set_cpu_governor("powersave")
@@ -358,8 +385,7 @@ class PowerManager:
         # Undo what was actually changed on entry, even if the config was edited meanwhile
         state = self._saved_state or self._capture_state(self.get_config())
         if state.get("wifi_disabled"):
-            self.enable_wifi()
-            self.wait_for_network(timeout=25)
+            self.wake_wifi(timeout=25)
 
         self._restore_hardware(state)
         if not state.get("cpu_governor"):

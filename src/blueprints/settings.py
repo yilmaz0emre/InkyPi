@@ -102,17 +102,16 @@ def save_settings():
             "turn_off_led": form_data.get("ps_turn_off_led") == "on",
         }
         settings["power_save_config"] = ps_config
-
-        if power_manager:
-            if form_data.get("ps_active_now") == "on":
-                power_manager.set_active(True)
-            elif "ps_active_now_submitted" in form_data:
-                power_manager.set_active(False)
+        previous_ps_config = power_manager.get_config() if power_manager else None
 
         device_config.update_config(settings)
 
-        refresh_task = current_app.config['REFRESH_TASK']
-        refresh_task.signal_config_change()
+        # Only wake the background thread when its schedule changed; any signal cuts a
+        # power save sleep short (Wi-Fi can stay on during sleep)
+        if plugin_cycle_interval_seconds != previous_interval_seconds or (
+                power_manager and power_manager.get_config() != previous_ps_config):
+            refresh_task = current_app.config['REFRESH_TASK']
+            refresh_task.signal_config_change()
     except RuntimeError as e:
         return jsonify({"error": str(e)}), 500
     except Exception as e:
@@ -126,14 +125,22 @@ def power_save_toggle():
     if not power_manager:
         return jsonify({"error": _("Power manager not available")}), 500
 
-    data = request.get_json() or {}
-    active = data.get("active", not power_manager.is_active)
+    data = request.get_json(silent=True) or {}
+    if "active" in data:
+        active = _parse_bool(data["active"])
+        if active is None:
+            return jsonify({"error": _("Invalid value for 'active'")}), 400
+    else:
+        active = not power_manager.is_active
     power_manager.set_active(active)
     if refresh_task:
         refresh_task.signal_config_change()
 
-    msg = _("Power save mode activated.") if active else _("Power save mode deactivated.")
+    msg = _("Power save mode activated.") if power_manager.is_active else _("Power save mode deactivated.")
     return jsonify({"success": True, "active": power_manager.is_active, "message": msg, "status": power_manager.get_status()})
+
+KEEP_AWAKE_MIN_SECONDS = 60
+KEEP_AWAKE_MAX_SECONDS = 3600
 
 @settings_bp.route('/power_save/keep_awake', methods=['POST'])
 def power_save_keep_awake():
@@ -141,10 +148,28 @@ def power_save_keep_awake():
     if not power_manager:
         return jsonify({"error": _("Power manager not available")}), 500
 
-    data = request.get_json() or {}
-    seconds = int(data.get("seconds", 300))
+    data = request.get_json(silent=True) or {}
+    try:
+        seconds = int(data.get("seconds", 300))
+    except (ValueError, TypeError):
+        return jsonify({"error": _("Invalid keep-awake duration")}), 400
+    seconds = min(max(seconds, KEEP_AWAKE_MIN_SECONDS), KEEP_AWAKE_MAX_SECONDS)
     power_manager.request_keep_awake(seconds)
     return jsonify({"success": True, "message": _("Extended awake duration by %(minutes)d minutes.", minutes=seconds//60), "status": power_manager.get_status()})
+
+def _parse_bool(value):
+    """Parse a JSON boolean, tolerating string/int forms; returns None if not recognizable."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in ("true", "1", "on", "yes"):
+            return True
+        if normalized in ("false", "0", "off", "no"):
+            return False
+    return None
 
 @settings_bp.route('/power_save/status')
 def power_save_status():

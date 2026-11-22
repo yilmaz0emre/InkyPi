@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-14 23:07+0300\n"
+"POT-Creation-Date: 2026-11-22 14:14+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -85,7 +85,7 @@ msgstr "Oynatma listesine eklenemedi"
 #: src/blueprints/playlist.py:68 src/blueprints/playlist.py:114
 #: src/blueprints/plugin.py:62 src/blueprints/plugin.py:154
 #: src/blueprints/plugin.py:201 src/blueprints/plugin.py:226
-#: src/blueprints/plugin.py:257 src/blueprints/settings.py:119
+#: src/blueprints/plugin.py:257 src/blueprints/settings.py:118
 #, python-format
 msgid "An error occurred: %(error)s"
 msgstr "Bir hata oluştu: %(error)s"
@@ -220,23 +220,31 @@ msgstr "Saat biçimi gereklidir"
 msgid "Plugin cycle interval must be less than 24 hours"
 msgstr "Eklenti döngü aralığı 24 saatten az olmalıdır"
 
-#: src/blueprints/settings.py:120
+#: src/blueprints/settings.py:119
 msgid "Saved settings."
 msgstr "Ayarlar kaydedildi."
 
-#: src/blueprints/settings.py:127 src/blueprints/settings.py:142
+#: src/blueprints/settings.py:126 src/blueprints/settings.py:149
 msgid "Power manager not available"
 msgstr "Güç yöneticisi mevcut değil"
 
-#: src/blueprints/settings.py:135
+#: src/blueprints/settings.py:132
+msgid "Invalid value for 'active'"
+msgstr "'active' için geçersiz değer"
+
+#: src/blueprints/settings.py:139
 msgid "Power save mode activated."
 msgstr "Güç tasarruf modu aktif edildi."
 
-#: src/blueprints/settings.py:135
+#: src/blueprints/settings.py:139
 msgid "Power save mode deactivated."
 msgstr "Güç tasarruf modu devre dışı bırakıldı."
 
-#: src/blueprints/settings.py:147
+#: src/blueprints/settings.py:155
+msgid "Invalid keep-awake duration"
+msgstr "Geçersiz uyanık kalma süresi"
+
+#: src/blueprints/settings.py:158
 #, python-format
 msgid "Extended awake duration by %(minutes)d minutes."
 msgstr "Uyanık kalma süresi %(minutes)d dakika uzatıldı."

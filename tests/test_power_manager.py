@@ -1,4 +1,5 @@
 import time
+import pytest
 from unittest.mock import MagicMock
 from utils.power_manager import PowerManager
 
@@ -86,6 +87,7 @@ def _fake_sysfs(tmp_path, monkeypatch, trigger="none [mmc0] timer", governor="on
     (cpu / "scaling_governor").write_text(governor)
     monkeypatch.setattr(pm_module, "LED_DIR", str(tmp_path / "leds"))
     monkeypatch.setattr(pm_module, "CPU_GOVERNOR_GLOB", str(tmp_path / "cpu*" / "scaling_governor"))
+    monkeypatch.setattr(pm_module, "RFKILL_DIR", str(tmp_path / "rfkill"))
     monkeypatch.setattr(pm_module, "is_raspberry_pi", lambda: True)
     monkeypatch.setattr(pm_module.shutil, "which", lambda name: f"/usr/bin/{name}")
     commands = []
@@ -161,3 +163,63 @@ def test_determine_next_plugin_force_skips_cycle_interval():
     assert task._determine_next_plugin(playlist_manager, latest_refresh, now) == (None, None)
     _, plugin = task._determine_next_plugin(playlist_manager, latest_refresh, now, force=True)
     assert plugin is playlist.get_next_plugin.return_value
+
+
+# --- I4: Bluetooth left alone if the user had it off ---
+
+def _fake_rfkill(tmp_path, monkeypatch, bluetooth_soft):
+    radio = tmp_path / "rfkill" / "rfkill0"
+    radio.mkdir(parents=True)
+    (radio / "type").write_text("bluetooth")
+    (radio / "soft").write_text(bluetooth_soft)
+    monkeypatch.setattr(pm_module, "RFKILL_DIR", str(tmp_path / "rfkill"))
+
+
+@pytest.mark.parametrize("soft, should_toggle", [("0", True), ("1", False)])
+def test_bluetooth_only_restored_if_it_was_on(tmp_path, monkeypatch, soft, should_toggle):
+    _, _, commands = _fake_sysfs(tmp_path, monkeypatch)
+    _fake_rfkill(tmp_path, monkeypatch, soft)
+    pm = PowerManager(state_file=str(tmp_path / "state.json"))
+
+    pm.enter_low_power_mode()
+    pm.exit_low_power_mode()
+
+    assert (["rfkill", "block", "bluetooth"] in commands) is should_toggle
+    assert (["rfkill", "unblock", "bluetooth"] in commands) is should_toggle
+
+
+# --- I5: no `ip link`, retry Wi-Fi wake ---
+
+def test_wifi_uses_rfkill_only_and_retries_wake(tmp_path, monkeypatch):
+    _, _, commands = _fake_sysfs(tmp_path, monkeypatch)
+    results = iter([False, True])
+    monkeypatch.setattr(PowerManager, "wait_for_network", lambda self, timeout=30: next(results))
+    pm = PowerManager(state_file=str(tmp_path / "state.json"))
+    commands.clear()
+
+    pm.enter_low_power_mode()
+    pm.exit_low_power_mode()
+
+    assert not any(cmd[0] == "ip" for cmd in commands)
+    assert commands.count(["rfkill", "unblock", "wifi"]) == 2
+    assert ["nmcli", "radio", "wifi", "on"] in commands
+
+
+# --- I6: real connectivity check ---
+
+def test_wait_for_network_uses_dns_and_tcp(monkeypatch):
+    monkeypatch.setattr(pm_module, "is_raspberry_pi", lambda: True)
+    monkeypatch.setattr(PowerManager, "restore_hardware_on_boot", lambda self: None)
+    calls = []
+
+    class FakeConn:
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+
+    monkeypatch.setattr(pm_module.socket, "create_connection", lambda addr, timeout: calls.append(addr) or FakeConn())
+    pm = PowerManager()
+
+    assert pm.wait_for_network(timeout=1) is True
+    assert calls == [pm_module.CONNECTIVITY_CHECK_HOST]

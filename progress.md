@@ -30,7 +30,7 @@ _Last updated: 2026-11-22_
 
 ## Code review: power save (`ca7d9fb`)
 
-_Reviewed 2026-11-16. C1–C3 fixed 2026-11-22 (hardware snapshot in `src/config/.power_save_state.json`, restored on wake and on boot; forced refresh after wake)._
+_Reviewed 2026-11-16. C1–C3 and I4–I10 fixed 2026-11-22 (hardware snapshot in `src/config/.power_save_state.json`, restored on wake and on boot; forced refresh after wake)._
 
 ### 🔴 Critical
 
@@ -53,18 +53,18 @@ _Reviewed 2026-11-16. C1–C3 fixed 2026-11-22 (hardware snapshot in `src/config
 
 ### 🟠 Important
 
-- [ ] **I4** — ~~CPU governor hard-coded back to `ondemand`~~ (fixed with C1 snapshot); Bluetooth re-enabled even if it was off
+- [x] **I4** — ~~CPU governor hard-coded back to `ondemand`~~ (fixed with C1 snapshot); Bluetooth re-enabled even if it was off
   before. Save original state and restore it (`exit_low_power_mode`).
-- [ ] **I5** — `ip link set wlan0 down` can confuse NetworkManager (Bookworm); `rfkill` alone is
+- [x] **I5** — `ip link set wlan0 down` can confuse NetworkManager (Bookworm); `rfkill` alone is
   enough. No retry if reconnection fails (`disable_wifi` / `enable_wifi`).
-- [ ] **I6** — `wait_for_network` UDP `connect()` only checks for a route, not real connectivity/DNS.
-- [ ] **I7** — `/power_save/keep_awake`: `seconds` not validated/clamped (negative, huge values;
+- [x] **I6** — `wait_for_network` UDP `connect()` only checks for a route, not real connectivity/DNS.
+- [x] **I7** — `/power_save/keep_awake`: `seconds` not validated/clamped (negative, huge values;
   non-numeric → 500).
-- [ ] **I8** — `/power_save/toggle`: string `"false"` is treated as truthy; response message uses raw
+- [x] **I8** — `/power_save/toggle`: string `"false"` is treated as truthy; response message uses raw
   input instead of `power_manager.is_active`.
-- [ ] **I9** — `save_settings` now always calls `signal_config_change()` (previously only on interval
+- [x] **I9** — `save_settings` now always calls `signal_config_change()` (previously only on interval
   change). If Wi-Fi is kept on during sleep, saving settings cuts the sleep short.
-- [ ] **I10** — `ps_active_now` / `ps_active_now_submitted` handling in `save_settings` is dead code
+- [x] **I10** — `ps_active_now` / `ps_active_now_submitted` handling in `save_settings` is dead code
   (no such form fields).
 
 ### 🟡 Minor / UI
@@ -86,14 +86,14 @@ wake (PiSugar / RTC-based power board).
 
 ### 🧪 Tests & git
 
-- [ ] Tests only cover `PowerManager` in mock mode. Add tests for the `RefreshTask` power-save loop,
-  the `/power_save/*` endpoints and boot-time hardware restore (C1).
+- [ ] Still missing: a test for the `RefreshTask` power-save sleep/wake loop. (`/power_save/*` endpoints,
+  boot-time hardware restore and forced refresh after wake are now covered.)
 - [ ] Power save feature was committed and pushed to `feature/i18n-turkish`, mixing two features.
   Consider moving it to a separate `feature/power-save` branch.
 
 ## Next / open
 
-- [ ] Fix power save review items I4–I10 (C1–C3 done, see above)
+- [x] Fix power save review items C1–C3 and I4–I10
 - [ ] Test power save mode on real Pi hardware (Wi-Fi reconnect via `wait_for_network`, rfkill, LED)
 - [ ] Review untranslated / fuzzy entries in `src/translations/tr/LC_MESSAGES/messages.po`
 - [ ] Check plugin render templates (rendered on the display) for remaining hard-coded English

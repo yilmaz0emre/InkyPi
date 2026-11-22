@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 15:35+0300\n"
+"POT-Creation-Date: 2026-11-22 15:42+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -325,7 +325,9 @@ msgstr "Takvimler:"
 msgid "Add Calendar"
 msgstr "Takvim Ekle"
 
-#: src/plugins/calendar/settings.html:9 src/plugins/weather/settings.html:46
+#: src/plugins/calendar/settings.html:9
+#: src/plugins/currency_gold/settings.html:17
+#: src/plugins/weather/settings.html:46
 msgid "Layout:"
 msgstr "Düzen:"
 
@@ -421,13 +423,13 @@ msgid "Display Weeks:"
 msgstr "Gösterilecek Hafta Sayısı:"
 
 #: src/plugins/calendar/settings.html:86 src/plugins/comic/settings.html:20
-#: src/plugins/currency_gold/settings.html:26 src/plugins/rss/settings.html:15
+#: src/plugins/currency_gold/settings.html:27 src/plugins/rss/settings.html:15
 #: src/plugins/todo_list/settings.html:51
 msgid "Font Size:"
 msgstr "Yazı Boyutu:"
 
 #: src/plugins/calendar/settings.html:88
-#: src/plugins/currency_gold/settings.html:28 src/plugins/rss/settings.html:17
+#: src/plugins/currency_gold/settings.html:29 src/plugins/rss/settings.html:17
 #: src/plugins/todo_list/settings.html:53
 msgid "Extra Small"
 msgstr "Çok Küçük"
@@ -437,19 +439,19 @@ msgid "Smaller"
 msgstr "Daha Küçük"
 
 #: src/plugins/calendar/settings.html:90
-#: src/plugins/currency_gold/settings.html:29 src/plugins/rss/settings.html:18
+#: src/plugins/currency_gold/settings.html:30 src/plugins/rss/settings.html:18
 #: src/plugins/todo_list/settings.html:54
 msgid "Small"
 msgstr "Küçük"
 
 #: src/plugins/calendar/settings.html:91
-#: src/plugins/currency_gold/settings.html:30 src/plugins/rss/settings.html:19
+#: src/plugins/currency_gold/settings.html:31 src/plugins/rss/settings.html:19
 #: src/plugins/todo_list/settings.html:55
 msgid "Normal"
 msgstr "Normal"
 
 #: src/plugins/calendar/settings.html:92
-#: src/plugins/currency_gold/settings.html:31 src/plugins/rss/settings.html:20
+#: src/plugins/currency_gold/settings.html:32 src/plugins/rss/settings.html:20
 #: src/plugins/todo_list/settings.html:56
 msgid "Large"
 msgstr "Büyük"
@@ -459,7 +461,7 @@ msgid "Larger"
 msgstr "Daha Büyük"
 
 #: src/plugins/calendar/settings.html:94
-#: src/plugins/currency_gold/settings.html:32 src/plugins/rss/settings.html:21
+#: src/plugins/currency_gold/settings.html:33 src/plugins/rss/settings.html:21
 #: src/plugins/todo_list/settings.html:57
 msgid "Extra Larger"
 msgstr "Çok Büyük"
@@ -572,45 +574,45 @@ msgstr "14 Ayar Altın (gram)"
 msgid "Silver (gram)"
 msgstr "Gümüş (gram)"
 
-#: src/plugins/currency_gold/currency_gold.py:63
+#: src/plugins/currency_gold/currency_gold.py:67
 msgid "Pure Au gr"
 msgstr "Has gr"
 
-#: src/plugins/currency_gold/currency_gold.py:64
+#: src/plugins/currency_gold/currency_gold.py:68
 msgid "Quarter"
 msgstr "Çeyrek"
 
-#: src/plugins/currency_gold/currency_gold.py:65
+#: src/plugins/currency_gold/currency_gold.py:69
 msgid "Half"
 msgstr "Yarım"
 
-#: src/plugins/currency_gold/currency_gold.py:66
+#: src/plugins/currency_gold/currency_gold.py:70
 #: src/plugins/weather/settings.html:49
 msgid "Full"
 msgstr "Tam"
 
-#: src/plugins/currency_gold/currency_gold.py:67
+#: src/plugins/currency_gold/currency_gold.py:71
 msgid "Republic"
 msgstr "Cumh."
 
-#: src/plugins/currency_gold/currency_gold.py:74
+#: src/plugins/currency_gold/currency_gold.py:78
 msgid "Currencies"
 msgstr "Döviz"
 
-#: src/plugins/currency_gold/currency_gold.py:74
+#: src/plugins/currency_gold/currency_gold.py:78
 msgid "Gold & Precious Metals"
 msgstr "Altın ve Değerli Metaller"
 
-#: src/plugins/currency_gold/currency_gold.py:101
+#: src/plugins/currency_gold/currency_gold.py:105
 msgid "Could not fetch exchange rates or gold prices."
 msgstr "Döviz kurları veya altın fiyatları alınamadı."
 
-#: src/plugins/currency_gold/currency_gold.py:113
+#: src/plugins/currency_gold/currency_gold.py:118
 #: src/plugins/currency_gold/settings.html:4 src/utils/i18n_strings.py:9
 msgid "Currency & Gold"
 msgstr "Döviz ve Altın"
 
-#: src/plugins/currency_gold/currency_gold.py:195
+#: src/plugins/currency_gold/currency_gold.py:215
 msgid "spot gold (calculated)"
 msgstr "ons altın (hesaplanan)"
 
@@ -618,13 +620,9 @@ msgstr "ons altın (hesaplanan)"
 msgid "Show Daily Change:"
 msgstr "Günlük Değişimi Göster:"
 
-#: src/plugins/currency_gold/settings.html:17
-msgid "Labels:"
-msgstr "Etiketler:"
-
 #: src/plugins/currency_gold/settings.html:19
-msgid "Automatic (short when small)"
-msgstr "Otomatik (küçükken kısa)"
+msgid "Automatic (by size)"
+msgstr "Otomatik (boyuta göre)"
 
 #: src/plugins/currency_gold/settings.html:20
 msgid "Full names"
@@ -634,15 +632,19 @@ msgstr "Tam adlar"
 msgid "Short ($, €, Au gr)"
 msgstr "Kısa ($, €, Au gr)"
 
-#: src/plugins/currency_gold/settings.html:23
-msgid ""
-"Short labels drop the title and group headings and use symbols, so a "
-"small dashboard widget stays readable."
-msgstr ""
-"Kısa etiketlerde başlık ve grup başlıkları gizlenir, semboller "
-"kullanılır; böylece küçük bir pano bileşeni okunaklı kalır."
+#: src/plugins/currency_gold/settings.html:22
+msgid "Strip (side by side, like a TV ticker)"
+msgstr "Şerit (yan yana, TV alt bandı gibi)"
 
-#: src/plugins/currency_gold/settings.html:53
+#: src/plugins/currency_gold/settings.html:24
+msgid ""
+"Automatic picks the strip for wide, low boxes (e.g. a 12×2 dashboard "
+"widget), short labels for other small boxes and full names otherwise."
+msgstr ""
+"Otomatik; geniş ve basık kutularda (ör. 12×2 pano bileşeni) şeridi, diğer"
+" küçük kutularda kısa etiketleri, aksi halde tam adları seçer."
+
+#: src/plugins/currency_gold/settings.html:54
 msgid ""
 "Prices are provided by Truncgil Finans. If it is unavailable, official "
 "TCMB exchange rates and a calculated gram gold price are used instead."
@@ -650,19 +652,19 @@ msgstr ""
 "Fiyatlar Truncgil Finans'tan alınır. Ulaşılamazsa TCMB'nin resmi kurları "
 "ve hesaplanan gram altın fiyatı kullanılır."
 
-#: src/plugins/currency_gold/render/currency_gold.html:11
+#: src/plugins/currency_gold/render/currency_gold.html:35
 msgid "Buying"
 msgstr "Alış"
 
-#: src/plugins/currency_gold/render/currency_gold.html:12
+#: src/plugins/currency_gold/render/currency_gold.html:36
 msgid "Selling"
 msgstr "Satış"
 
-#: src/plugins/currency_gold/render/currency_gold.html:13
+#: src/plugins/currency_gold/render/currency_gold.html:37
 msgid "Change"
 msgstr "Değişim"
 
-#: src/plugins/currency_gold/render/currency_gold.html:39
+#: src/plugins/currency_gold/render/currency_gold.html:63
 #, python-format
 msgid "Last update: %(time)s"
 msgstr "Son güncelleme: %(time)s"

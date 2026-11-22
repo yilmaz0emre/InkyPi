@@ -14,13 +14,14 @@
         </div>
     </div>
     <div class="form-group nowrap">
-        <label for="labelStyle" class="form-label">{{ _('Labels:') }}</label>
+        <label for="labelStyle" class="form-label">{{ _('Layout:') }}</label>
         <select id="labelStyle" name="labelStyle" class="form-input">
-            <option value="auto">{{ _('Automatic (short when small)') }}</option>
+            <option value="auto">{{ _('Automatic (by size)') }}</option>
             <option value="full">{{ _('Full names') }}</option>
             <option value="short">{{ _('Short ($, €, Au gr)') }}</option>
+            <option value="strip">{{ _('Strip (side by side, like a TV ticker)') }}</option>
         </select>
-        <span title="{{ _('Short labels drop the title and group headings and use symbols, so a small dashboard widget stays readable.') }}">ⓘ</span>
+        <span title="{{ _('Automatic picks the strip for wide, low boxes (e.g. a 12×2 dashboard widget), short labels for other small boxes and full names otherwise.') }}">ⓘ</span>
     </div>
     <div class="form-group nowrap">
         <label for="fontSize" class="form-label">{{ _('Font Size:') }}</label>

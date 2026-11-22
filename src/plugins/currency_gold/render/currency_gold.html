@@ -1,6 +1,46 @@
 {% extends "plugin.html" %}
 
 {% block content %}
+{% if layout == "strip" %}
+<!-- Strip layout: all items in one row, like a TV ticker -->
+<style>
+  /* The base template pads by 1.5vw, which leaves almost no height in a very low strip */
+  body { padding: 6dvh 1.5vw !important; }
+</style>
+<div class="currency-strip" style="--font-scale: {{ font_scale }};">
+    {% for group in groups %}{% for row in group.rows %}
+    <div class="strip-item">
+        <span class="strip-label">{{ row.label }}</span>
+        <span class="strip-price">{{ row.selling }}</span>
+        {% if show_change and row.arrow %}<span class="strip-change {{ row.direction }}">{{ row.arrow }}</span>{% endif %}
+    </div>
+    {% endfor %}{% endfor %}
+</div>
+
+<script>
+  // Largest text that fits: try one row, then wrapping onto several rows (many items), keep the bigger
+  window.addEventListener("load", () => {
+    const strip = document.querySelector(".currency-strip");
+    const overflowing = () => strip.scrollWidth > strip.clientWidth || strip.scrollHeight > strip.clientHeight;
+    const largestFit = () => {
+      let fit = 1;
+      strip.style.setProperty("--fit", fit);
+      while (overflowing() && fit > 0.2) {
+        fit -= 0.025;
+        strip.style.setProperty("--fit", fit.toFixed(3));
+      }
+      return fit;
+    };
+    const oneRow = largestFit();
+    strip.classList.add("wrap");
+    const wrapped = largestFit();
+    if (wrapped <= oneRow * 1.15) {
+      strip.classList.remove("wrap");
+      strip.style.setProperty("--fit", oneRow.toFixed(3));
+    }
+  });
+</script>
+{% else %}
 <div class="currency-gold{% if compact %} compact{% endif %}" style="--font-scale: {{ font_scale }}; --rows: {{ row_count }};">
     {% if title and not compact %}<div class="title">{{ title }}</div>{% endif %}
 
@@ -55,4 +95,5 @@
     }
   });
 </script>
+{% endif %}
 {% endblock %}

@@ -48,6 +48,10 @@ ITEMS = {
     "14AYARALTIN": (N_("14k Gold (gram)"), "gold"),
     "GUMUS": (N_("Silver (gram)"), "gold"),
 }
+# "auto" switches to the one-row strip layout for boxes at least this wide relative to their height
+STRIP_MIN_ASPECT = 3
+STRIP_MAX_HEIGHT = 200
+
 # Short labels for the compact layout (small dashboard widgets). Symbols are not translated.
 SHORT_LABELS = {
     "USD": "$",
@@ -108,11 +112,13 @@ class CurrencyGold(BasePlugin):
         time_format = device_config.get_config("time_format", default="24h")
         language = i18n.get_language()
 
-        compact = use_compact_layout(settings.get("labelStyle", "auto"), dimensions)
+        layout = choose_layout(settings.get("labelStyle", "auto"), dimensions)
+        compact = layout == "compact"
         template_params = {
             "title": settings.get("title") or i18n.gettext("Currency & Gold"),
+            "layout": layout,
             "compact": compact,
-            "groups": build_rows(selected, quotes, language, short_labels=compact),
+            "groups": build_rows(selected, quotes, language, short_labels=layout != "full"),
             "show_change": settings.get("showChange", "true") != "false",
             "updated": format_updated(updated_at, timezone, time_format, language),
             "source": source,
@@ -123,6 +129,20 @@ class CurrencyGold(BasePlugin):
         template_params["row_count"] = sum(len(group["rows"]) + (0 if compact else 1) for group in template_params["groups"])
 
         return self.render_image(dimensions, "currency_gold.html", "currency_gold.css", template_params)
+
+
+def choose_layout(style, dimensions):
+    """Pick "full" (table), "compact" (table with short labels) or "strip" (one row, like a TV ticker).
+
+    "auto" uses the strip for wide, low boxes (e.g. a 12x2 dashboard widget) and the compact table
+    for other small boxes.
+    """
+    if style == "strip":
+        return "strip"
+    width, height = dimensions
+    if style == "auto" and width >= STRIP_MIN_ASPECT * height and height < STRIP_MAX_HEIGHT:
+        return "strip"
+    return "compact" if use_compact_layout(style, dimensions) else "full"
 
 
 def get_selected_items(settings):

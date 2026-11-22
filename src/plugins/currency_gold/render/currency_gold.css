@@ -102,3 +102,51 @@
     font-size: calc(min(3.5dvh, 2.6vw) * var(--font-scale) * max(var(--fit), 0.8));
     padding-top: 1dvh;
 }
+
+/* Strip layout: one row of items, like a TV ticker (wide, low dashboard widgets) */
+.currency-strip {
+    --fit: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: "Jost";
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    font-size: calc(min(55dvh, 9vw) * var(--font-scale) * var(--fit));
+}
+
+.strip-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3em;
+    padding: 0 0.6em;
+}
+
+.strip-item + .strip-item {
+    border-left: 2px solid;
+}
+
+/* Many items: wrap onto several rows; separators become a light frame per item */
+.currency-strip.wrap {
+    flex-wrap: wrap;
+    align-content: space-evenly;
+    justify-content: center;
+    row-gap: 0.15em;
+}
+
+.currency-strip.wrap .strip-item {
+    border-left: 0;
+    border-right: 2px solid;
+}
+
+.strip-label {
+    font-weight: bold;
+}
+
+.strip-change {
+    font-size: 0.7em;
+}

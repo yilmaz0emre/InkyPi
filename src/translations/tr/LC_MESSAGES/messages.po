@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 23:25+0300\n"
+"POT-Creation-Date: 2026-11-22 23:37+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -49,8 +49,8 @@ msgstr "Görsel bulunamadı"
 msgid "Order must be a list"
 msgstr "Sıralama bir liste olmalıdır"
 
-#: src/blueprints/playlist.py:28 src/blueprints/playlist.py:97
-#: src/blueprints/playlist.py:150
+#: src/blueprints/playlist.py:28 src/blueprints/playlist.py:102
+#: src/blueprints/playlist.py:155
 msgid "Playlist name is required"
 msgstr "Oynatma listesi adı gereklidir"
 
@@ -87,130 +87,142 @@ msgstr "Yenileme saati gereklidir"
 msgid "Failed to add to playlist"
 msgstr "Oynatma listesine eklenemedi"
 
-#: src/blueprints/playlist.py:69 src/blueprints/playlist.py:115
-#: src/blueprints/plugin.py:66 src/blueprints/plugin.py:158
-#: src/blueprints/plugin.py:209 src/blueprints/plugin.py:234
-#: src/blueprints/plugin.py:265 src/blueprints/plugin.py:294
+#: src/blueprints/playlist.py:74 src/blueprints/playlist.py:120
+#: src/blueprints/plugin.py:76 src/blueprints/plugin.py:215
+#: src/blueprints/plugin.py:266 src/blueprints/plugin.py:291
+#: src/blueprints/plugin.py:322 src/blueprints/plugin.py:351
 #: src/blueprints/settings.py:123
 #, python-format
 msgid "An error occurred: %(error)s"
 msgstr "Bir hata oluştu: %(error)s"
 
-#: src/blueprints/playlist.py:70
+#: src/blueprints/playlist.py:75
 msgid "Scheduled refresh configured."
 msgstr "Zamanlanmış yenileme yapılandırıldı."
 
-#: src/blueprints/playlist.py:99
+#: src/blueprints/playlist.py:104
 msgid "Start time and End time are required"
 msgstr "Başlangıç ve bitiş saati gereklidir"
 
-#: src/blueprints/playlist.py:104
+#: src/blueprints/playlist.py:109
 #, python-format
 msgid "Playlist with name '%(playlist_name)s' already exists"
 msgstr "'%(playlist_name)s' adlı oynatma listesi zaten mevcut"
 
-#: src/blueprints/playlist.py:108
+#: src/blueprints/playlist.py:113
 msgid "Failed to create playlist"
 msgstr "Oynatma listesi oluşturulamadı"
 
-#: src/blueprints/playlist.py:117
+#: src/blueprints/playlist.py:122
 msgid "Created new Playlist!"
 msgstr "Yeni oynatma listesi oluşturuldu!"
 
-#: src/blueprints/playlist.py:131
+#: src/blueprints/playlist.py:136
 msgid "Missing required fields"
 msgstr "Gerekli alanlar eksik"
 
-#: src/blueprints/playlist.py:135 src/blueprints/playlist.py:154
+#: src/blueprints/playlist.py:140 src/blueprints/playlist.py:159
 #, python-format
 msgid "Playlist '%(playlist_name)s' does not exist"
 msgstr "'%(playlist_name)s' adlı oynatma listesi mevcut değil"
 
-#: src/blueprints/playlist.py:139
+#: src/blueprints/playlist.py:144
 msgid "Failed to delete playlist"
 msgstr "Oynatma listesi silinemedi"
 
-#: src/blueprints/playlist.py:142
+#: src/blueprints/playlist.py:147
 #, python-format
 msgid "Updated playlist '%(playlist_name)s'!"
 msgstr "'%(playlist_name)s' oynatma listesi güncellendi!"
 
-#: src/blueprints/playlist.py:164
+#: src/blueprints/playlist.py:169
 #, python-format
 msgid "Deleted playlist '%(playlist_name)s'!"
 msgstr "'%(playlist_name)s' oynatma listesi silindi!"
 
-#: src/blueprints/playlist.py:189
+#: src/blueprints/playlist.py:194
 msgid "just now"
 msgstr "az önce"
 
-#: src/blueprints/playlist.py:191
+#: src/blueprints/playlist.py:196
 #, python-format
 msgid "%(minutes)d minutes ago"
 msgstr "%(minutes)d dakika önce"
 
-#: src/blueprints/playlist.py:193
+#: src/blueprints/playlist.py:198
 #, python-format
 msgid "today at %(time)s"
 msgstr "bugün %(time)s"
 
-#: src/blueprints/playlist.py:195
+#: src/blueprints/playlist.py:200
 #, python-format
 msgid "yesterday at %(time)s"
 msgstr "dün %(time)s"
 
-#: src/blueprints/playlist.py:200
+#: src/blueprints/playlist.py:205
 #, python-format
 msgid "%(date)s at %(time)s"
 msgstr "%(date)s %(time)s"
 
-#: src/blueprints/plugin.py:53
+#: src/blueprints/plugin.py:57
 #, python-format
 msgid "Plugin instance: %(plugin_instance_name)s does not exist"
 msgstr "Eklenti örneği mevcut değil: %(plugin_instance_name)s"
 
-#: src/blueprints/plugin.py:139
+#: src/blueprints/plugin.py:86
+msgid "Plugin not found"
+msgstr "Eklenti bulunamadı"
+
+#: src/blueprints/plugin.py:103
+msgid "Type an address or place name."
+msgstr "Bir adres ya da yer adı yaz."
+
+#: src/blueprints/plugin.py:118 src/plugins/weather/settings.html:426
+msgid "Address search is not available right now."
+msgstr "Adres araması şu anda kullanılamıyor."
+
+#: src/blueprints/plugin.py:196
 msgid "Playlist not found"
 msgstr "Oynatma listesi bulunamadı"
 
-#: src/blueprints/plugin.py:144 src/blueprints/plugin.py:151
+#: src/blueprints/plugin.py:201 src/blueprints/plugin.py:208
 msgid "Plugin instance not found"
 msgstr "Eklenti örneği bulunamadı"
 
-#: src/blueprints/plugin.py:160
+#: src/blueprints/plugin.py:217
 msgid "Deleted plugin instance."
 msgstr "Eklenti örneği silindi."
 
-#: src/blueprints/plugin.py:176
+#: src/blueprints/plugin.py:233
 #, python-format
 msgid "Plugin instance: %(instance_name)s does not exist"
 msgstr "Eklenti örneği mevcut değil: %(instance_name)s"
 
-#: src/blueprints/plugin.py:210
+#: src/blueprints/plugin.py:267
 #, python-format
 msgid "Updated plugin instance %(instance_name)s."
 msgstr "%(instance_name)s eklenti örneği güncellendi."
 
-#: src/blueprints/plugin.py:226
+#: src/blueprints/plugin.py:283
 #, python-format
 msgid "Playlist %(playlist_name)s not found"
 msgstr "%(playlist_name)s oynatma listesi bulunamadı"
 
-#: src/blueprints/plugin.py:230
+#: src/blueprints/plugin.py:287
 #, python-format
 msgid "Plugin instance '%(plugin_instance_name)s' not found"
 msgstr "'%(plugin_instance_name)s' eklenti örneği bulunamadı"
 
-#: src/blueprints/plugin.py:236 src/blueprints/plugin.py:267
+#: src/blueprints/plugin.py:293 src/blueprints/plugin.py:324
 msgid "Display updated"
 msgstr "Ekran güncellendi"
 
-#: src/blueprints/plugin.py:257 src/blueprints/plugin.py:282
+#: src/blueprints/plugin.py:314 src/blueprints/plugin.py:339
 #, python-format
 msgid "Plugin '%(plugin_id)s' not found"
 msgstr "'%(plugin_id)s' eklentisi bulunamadı"
 
-#: src/blueprints/plugin.py:286 src/plugins/dashboard/dashboard.py:228
+#: src/blueprints/plugin.py:343 src/plugins/dashboard/dashboard.py:228
 msgid "The plugin returned no image."
 msgstr "Eklenti bir görsel döndürmedi."
 
@@ -271,8 +283,8 @@ msgstr "Metin İstemi:"
 #: src/plugins/image_url/settings.html:3 src/plugins/rss/settings.html:4
 #: src/plugins/rss/settings.html:28 src/plugins/screenshot/settings.html:3
 #: src/plugins/todo_list/settings.html:37 src/plugins/unsplash/settings.html:3
-#: src/plugins/weather/settings.html:41 src/templates/playlist.html:484
-#: src/templates/plugin.html:504 src/templates/settings.html:179
+#: src/plugins/weather/settings.html:47 src/templates/playlist.html:484
+#: src/templates/plugin.html:516 src/templates/settings.html:202
 msgid "Type something..."
 msgstr "Bir şeyler yazın..."
 
@@ -290,7 +302,7 @@ msgstr "Metin İstemini Rastgele Seç:"
 
 #: src/plugins/ai_text/settings.html:3
 #: src/plugins/currency_gold/settings.html:3 src/plugins/rss/settings.html:3
-#: src/plugins/weather/settings.html:33
+#: src/plugins/weather/settings.html:39
 msgid "Title:"
 msgstr "Başlık:"
 
@@ -332,7 +344,7 @@ msgstr "Takvim Ekle"
 
 #: src/plugins/calendar/settings.html:9
 #: src/plugins/currency_gold/settings.html:17
-#: src/plugins/weather/settings.html:46
+#: src/plugins/weather/settings.html:52
 msgid "Layout:"
 msgstr "Düzen:"
 
@@ -358,11 +370,11 @@ msgstr "Ay"
 msgid "List"
 msgstr "Liste"
 
-#: src/plugins/calendar/settings.html:20 src/templates/settings.html:187
+#: src/plugins/calendar/settings.html:20 src/templates/settings.html:210
 msgid "Language:"
 msgstr "Dil:"
 
-#: src/plugins/calendar/settings.html:30 src/plugins/weather/settings.html:56
+#: src/plugins/calendar/settings.html:30 src/plugins/weather/settings.html:62
 msgid "Display:"
 msgstr "Görünüm:"
 
@@ -592,7 +604,7 @@ msgid "Half"
 msgstr "Yarım"
 
 #: src/plugins/currency_gold/currency_gold.py:70
-#: src/plugins/weather/settings.html:49
+#: src/plugins/weather/settings.html:55
 msgid "Full"
 msgstr "Tam"
 
@@ -744,9 +756,9 @@ msgstr "Bazı bileşenler üst üste biniyor; sonra eklenen üstte çizilir."
 msgid "Gap between widgets:"
 msgstr "Bileşenler arası boşluk:"
 
-#: src/plugins/dashboard/settings.html:152 src/templates/plugin.html:388
-#: src/templates/plugin.html:392 src/templates/plugin.html:396
-#: src/templates/plugin.html:400
+#: src/plugins/dashboard/settings.html:152 src/templates/plugin.html:400
+#: src/templates/plugin.html:404 src/templates/plugin.html:408
+#: src/templates/plugin.html:412
 msgid "px"
 msgstr "px"
 
@@ -861,7 +873,7 @@ msgstr "Rastgele Sıralama:"
 
 #: src/plugins/image_album/settings.html:36
 #: src/plugins/image_folder/settings.html:13
-#: src/plugins/image_upload/settings.html:21 src/templates/plugin.html:407
+#: src/plugins/image_upload/settings.html:21 src/templates/plugin.html:419
 msgid "Background:"
 msgstr "Arka Plan:"
 
@@ -873,7 +885,7 @@ msgstr "Bulanıklaştır"
 
 #: src/plugins/image_album/settings.html:41
 #: src/plugins/image_folder/settings.html:18
-#: src/plugins/image_upload/settings.html:26 src/templates/plugin.html:411
+#: src/plugins/image_upload/settings.html:26 src/templates/plugin.html:423
 msgid "Color"
 msgstr "Renk"
 
@@ -902,7 +914,7 @@ msgid "Newspaper:"
 msgstr "Gazete:"
 
 #: src/plugins/newspaper/settings.html:12
-#: src/plugins/newspaper/settings.html:34 src/templates/settings.html:219
+#: src/plugins/newspaper/settings.html:34 src/templates/settings.html:242
 msgid "Type to search..."
 msgstr "Aramak için yazın..."
 
@@ -1056,7 +1068,7 @@ msgstr "Camgöbeği"
 msgid "Blue"
 msgstr "Mavi"
 
-#: src/plugins/unsplash/settings.html:41 src/templates/settings.html:196
+#: src/plugins/unsplash/settings.html:41 src/templates/settings.html:219
 msgid "Orientation:"
 msgstr "Yönlendirme:"
 
@@ -1076,47 +1088,55 @@ msgstr "Enlem"
 msgid "Longitude"
 msgstr "Boylam"
 
-#: src/plugins/weather/settings.html:14 src/plugins/weather/settings.html:121
+#: src/plugins/weather/settings.html:14 src/plugins/weather/settings.html:127
 msgid "Select Location"
 msgstr "Konum Seç"
 
+#: src/plugins/weather/settings.html:17
+msgid "Or type an address or place, e.g. Moda, Kadıköy"
+msgstr "Ya da adres veya yer yaz, ör. Moda, Kadıköy"
+
 #: src/plugins/weather/settings.html:18
+msgid "Find"
+msgstr "Bul"
+
+#: src/plugins/weather/settings.html:24
 msgid "Weather Provider:"
 msgstr "Hava Durumu Sağlayıcısı:"
 
-#: src/plugins/weather/settings.html:24
+#: src/plugins/weather/settings.html:30
 msgid "Units:"
 msgstr "Birimler:"
 
-#: src/plugins/weather/settings.html:26
+#: src/plugins/weather/settings.html:32
 msgid "Imperial (°F)"
 msgstr "İngiliz Ölçü Birimi (°F)"
 
-#: src/plugins/weather/settings.html:27
+#: src/plugins/weather/settings.html:33
 msgid "Metric (°C)"
 msgstr "Metrik (°C)"
 
-#: src/plugins/weather/settings.html:28
+#: src/plugins/weather/settings.html:34
 msgid "Standard (K)"
 msgstr "Standart (K)"
 
-#: src/plugins/weather/settings.html:37
+#: src/plugins/weather/settings.html:43
 msgid "Location"
 msgstr "Konum"
 
-#: src/plugins/weather/settings.html:40
+#: src/plugins/weather/settings.html:46
 msgid "Custom"
 msgstr "Özel"
 
-#: src/plugins/weather/settings.html:48
+#: src/plugins/weather/settings.html:54
 msgid "Automatic (compact when small)"
 msgstr "Otomatik (küçükken kısa)"
 
-#: src/plugins/weather/settings.html:50
+#: src/plugins/weather/settings.html:56
 msgid "Compact (icon and temperature)"
 msgstr "Kısa (ikon ve sıcaklık)"
 
-#: src/plugins/weather/settings.html:52
+#: src/plugins/weather/settings.html:58
 msgid ""
 "The compact layout shows only the location, icon, temperature and today's"
 " high/low (plus a short forecast if enabled and there is room), so a "
@@ -1126,61 +1146,73 @@ msgstr ""
 " değerleri gösterilir (tahmin açıksa ve yer varsa birkaç günlük kısa "
 "tahmin de); böylece küçük bir pano bileşeni okunaklı kalır."
 
-#: src/plugins/weather/settings.html:60
+#: src/plugins/weather/settings.html:66
 msgid "Refresh Time"
 msgstr "Yenileme Saati"
 
-#: src/plugins/weather/settings.html:65
+#: src/plugins/weather/settings.html:71
 msgid "Metrics"
 msgstr "Metrikler"
 
-#: src/plugins/weather/settings.html:70
+#: src/plugins/weather/settings.html:76
 msgid "Weather Graph"
 msgstr "Hava Durumu Grafiği"
 
-#: src/plugins/weather/settings.html:75
+#: src/plugins/weather/settings.html:81
 msgid "Rain Amount"
 msgstr "Yağış Miktarı"
 
-#: src/plugins/weather/settings.html:81
+#: src/plugins/weather/settings.html:87
 msgid "Moon Phase"
 msgstr "Ayın Evresi"
 
-#: src/plugins/weather/settings.html:86
+#: src/plugins/weather/settings.html:92
 msgid "Graph icons every"
 msgstr "Grafik simge sıklığı:"
 
-#: src/plugins/weather/settings.html:94
+#: src/plugins/weather/settings.html:100
 msgid "hours"
 msgstr "saat"
 
-#: src/plugins/weather/settings.html:99
+#: src/plugins/weather/settings.html:105
 msgid "Forecast"
 msgstr "Tahmin"
 
-#: src/plugins/weather/settings.html:105
+#: src/plugins/weather/settings.html:111
 msgid "days"
 msgstr "gün"
 
-#: src/plugins/weather/settings.html:109 src/templates/settings.html:212
+#: src/plugins/weather/settings.html:115 src/templates/settings.html:235
 msgid "Time Zone:"
 msgstr "Saat Dilimi:"
 
-#: src/plugins/weather/settings.html:111
+#: src/plugins/weather/settings.html:117
 msgid "Use Location Time Zone"
 msgstr "Konum Saat Dilimini Kullan"
 
-#: src/plugins/weather/settings.html:112
+#: src/plugins/weather/settings.html:118
 msgid "Use Local Time Zone"
 msgstr "Yerel Saat Dilimini Kullan"
 
-#: src/plugins/weather/settings.html:124 src/templates/apikeys.html:252
+#: src/plugins/weather/settings.html:130 src/templates/apikeys.html:252
 #: src/templates/inky.html:184 src/templates/playlist.html:494
-#: src/templates/playlist.html:511 src/templates/plugin.html:448
-#: src/templates/plugin.html:481 src/templates/plugin.html:520
-#: src/templates/settings.html:445
+#: src/templates/playlist.html:511 src/templates/plugin.html:460
+#: src/templates/plugin.html:493 src/templates/plugin.html:532
+#: src/templates/settings.html:469
 msgid "Save"
 msgstr "Kaydet"
+
+#: src/plugins/weather/settings.html:399
+msgid "Selected:"
+msgstr "Seçildi:"
+
+#: src/plugins/weather/settings.html:405
+msgid "Searching…"
+msgstr "Aranıyor…"
+
+#: src/plugins/weather/settings.html:414
+msgid "No place found. Try adding the city."
+msgstr "Yer bulunamadı. Şehri de eklemeyi dene."
 
 #: src/plugins/weather/render/weather.html:34
 #, python-format
@@ -1224,7 +1256,7 @@ msgid "API Keys"
 msgstr "API Anahtarları"
 
 #: src/templates/apikeys.html:196 src/templates/playlist.html:387
-#: src/templates/plugin.html:327 src/templates/settings.html:154
+#: src/templates/plugin.html:339 src/templates/settings.html:177
 msgid "← Back"
 msgstr "← Geri"
 
@@ -1301,7 +1333,7 @@ msgid "Playlists"
 msgstr "Oynatma Listeleri"
 
 #: src/templates/inky.html:72 src/templates/inky.html:90
-#: src/templates/settings.html:6 src/templates/settings.html:160
+#: src/templates/settings.html:6 src/templates/settings.html:183
 msgid "Settings"
 msgstr "Ayarlar"
 
@@ -1314,11 +1346,11 @@ msgstr "Güç Tasarrufu Aktif"
 msgid "Awake for %(time)s before low-power sleep"
 msgstr "Düşük güç uykusuna geçmeden önce %(time)s uyanık"
 
-#: src/templates/inky.html:83 src/templates/settings.html:275
+#: src/templates/inky.html:83 src/templates/settings.html:298
 msgid "Entering low-power sleep..."
 msgstr "Düşük güç uykusuna geçiliyor..."
 
-#: src/templates/inky.html:87 src/templates/settings.html:288
+#: src/templates/inky.html:87 src/templates/settings.html:311
 msgid "Min Awake"
 msgstr "Dk Uyanık"
 
@@ -1391,8 +1423,8 @@ msgstr "Oynatma Listesi Adı:"
 msgid "Display from"
 msgstr "Gösterim aralığı:"
 
-#: src/templates/playlist.html:504 src/templates/plugin.html:338
-#: src/templates/plugin.html:466
+#: src/templates/playlist.html:504 src/templates/plugin.html:350
+#: src/templates/plugin.html:478
 msgid "Refresh Settings"
 msgstr "Yenileme Ayarları"
 
@@ -1401,43 +1433,43 @@ msgstr "Yenileme Ayarları"
 msgid "%(name)s Settings"
 msgstr "%(name)s Ayarları"
 
-#: src/templates/plugin.html:48
+#: src/templates/plugin.html:47 src/templates/settings.html:30
 msgid "Changes are saved automatically."
 msgstr "Değişiklikler otomatik kaydedilir."
 
-#: src/templates/plugin.html:49
+#: src/templates/plugin.html:48 src/templates/settings.html:31
 msgid "Saving…"
 msgstr "Kaydediliyor…"
 
-#: src/templates/plugin.html:50
+#: src/templates/plugin.html:49 src/templates/settings.html:32
 msgid "Saved ✓"
 msgstr "Kaydedildi ✓"
 
-#: src/templates/plugin.html:51
+#: src/templates/plugin.html:49
+msgid "Draft saved ✓"
+msgstr "Taslak kaydedildi ✓"
+
+#: src/templates/plugin.html:50 src/templates/settings.html:33
 msgid "Could not save, retrying…"
 msgstr "Kaydedilemedi, yeniden deneniyor…"
 
-#: src/templates/plugin.html:52
+#: src/templates/plugin.html:51
 msgid "A new file is selected: press Save to upload it."
 msgstr "Yeni bir dosya seçildi: yüklemek için Kaydet'e bas."
 
-#: src/templates/plugin.html:53
-msgid "Draft kept in this browser."
-msgstr "Taslak bu tarayıcıda saklandı."
-
-#: src/templates/plugin.html:54
+#: src/templates/plugin.html:56
 msgid "Your last settings were restored."
 msgstr "Son ayarların geri yüklendi."
 
-#: src/templates/plugin.html:55
+#: src/templates/plugin.html:59
 msgid "Clear"
 msgstr "Temizle"
 
-#: src/templates/plugin.html:335
+#: src/templates/plugin.html:347
 msgid "Requires API Key"
 msgstr "API Anahtarı Gerekir"
 
-#: src/templates/plugin.html:347
+#: src/templates/plugin.html:359
 msgid ""
 "Creating a dashboard widget: configure it below and save it with \"Add to"
 " Playlist\". \"Only use inside dashboards\" is already ticked, so it will"
@@ -1449,63 +1481,63 @@ msgstr ""
 "başına gösterilmez. Ardından Pano sekmesine dönün; bileşen listede "
 "görünür."
 
-#: src/templates/plugin.html:360
+#: src/templates/plugin.html:372
 msgid "Style"
 msgstr "Stil"
 
-#: src/templates/plugin.html:366
+#: src/templates/plugin.html:378
 msgid "Frame:"
 msgstr "Çerçeve:"
 
-#: src/templates/plugin.html:385
+#: src/templates/plugin.html:397
 msgid "Margins:"
 msgstr "Kenar Boşlukları:"
 
-#: src/templates/plugin.html:387
+#: src/templates/plugin.html:399
 msgid "Top"
 msgstr "Üst"
 
-#: src/templates/plugin.html:391
+#: src/templates/plugin.html:403
 msgid "Bottom"
 msgstr "Alt"
 
-#: src/templates/plugin.html:395
+#: src/templates/plugin.html:407
 msgid "Left"
 msgstr "Sol"
 
-#: src/templates/plugin.html:399
+#: src/templates/plugin.html:411
 msgid "Right"
 msgstr "Sağ"
 
-#: src/templates/plugin.html:418
+#: src/templates/plugin.html:430
 msgid "Image"
 msgstr "Görsel"
 
-#: src/templates/plugin.html:420
+#: src/templates/plugin.html:432
 msgid "Upload Image"
 msgstr "Görsel Yükle"
 
-#: src/templates/plugin.html:434
+#: src/templates/plugin.html:446
 msgid "Text Color:"
 msgstr "Metin Rengi:"
 
-#: src/templates/plugin.html:449
+#: src/templates/plugin.html:461
 msgid "Save As..."
 msgstr "Farklı Kaydet..."
 
-#: src/templates/plugin.html:451
+#: src/templates/plugin.html:463
 msgid "Update Now"
 msgstr "Şimdi Güncelle"
 
-#: src/templates/plugin.html:452 src/templates/plugin.html:491
+#: src/templates/plugin.html:464 src/templates/plugin.html:503
 msgid "Add to Playlist"
 msgstr "Listeye Ekle"
 
-#: src/templates/plugin.html:475 src/templates/plugin.html:513
+#: src/templates/plugin.html:487 src/templates/plugin.html:525
 msgid "Only use inside dashboards"
 msgstr "Sadece panolarda kullan"
 
-#: src/templates/plugin.html:476 src/templates/plugin.html:514
+#: src/templates/plugin.html:488 src/templates/plugin.html:526
 msgid ""
 "The instance is not shown on its own in the playlist rotation; it can "
 "still be placed as a widget in a Dashboard."
@@ -1513,11 +1545,11 @@ msgstr ""
 "Bu örnek oynatma listesi sırasında tek başına gösterilmez; yine de bir "
 "Panoya bileşen olarak eklenebilir."
 
-#: src/templates/plugin.html:495
+#: src/templates/plugin.html:507
 msgid "Playlist:"
 msgstr "Oynatma Listesi:"
 
-#: src/templates/plugin.html:503
+#: src/templates/plugin.html:515
 msgid "Instance Name:"
 msgstr "Örnek Adı:"
 
@@ -1529,7 +1561,7 @@ msgstr "Yenileme"
 msgid "Determines how often the data and image should be refreshed."
 msgstr "Veri ve görselin ne sıklıkla yenileneceğini belirler."
 
-#: src/templates/refresh_settings_form.html:8 src/templates/settings.html:242
+#: src/templates/refresh_settings_form.html:8 src/templates/settings.html:265
 msgid "Every"
 msgstr "Her"
 
@@ -1537,13 +1569,13 @@ msgstr "Her"
 msgid "Enter a number"
 msgstr "Bir sayı girin"
 
-#: src/templates/refresh_settings_form.html:11 src/templates/settings.html:245
-#: src/templates/settings.html:309 src/templates/settings.html:323
+#: src/templates/refresh_settings_form.html:11 src/templates/settings.html:268
+#: src/templates/settings.html:332 src/templates/settings.html:346
 msgid "Minute"
 msgstr "Dakika"
 
-#: src/templates/refresh_settings_form.html:12 src/templates/settings.html:246
-#: src/templates/settings.html:322
+#: src/templates/refresh_settings_form.html:12 src/templates/settings.html:269
+#: src/templates/settings.html:345
 msgid "Hour"
 msgstr "Saat"
 
@@ -1575,7 +1607,7 @@ msgstr "İsteğiniz işlenirken bir hata oluştu."
 msgid "Toggle Light Mode"
 msgstr "Açık Temayı Aç/Kapat"
 
-#: src/templates/settings.html:78
+#: src/templates/settings.html:101
 msgid ""
 "The system is rebooting. The UI will be unavailable until the reboot is "
 "complete."
@@ -1583,7 +1615,7 @@ msgstr ""
 "Sistem yeniden başlatılıyor. İşlem tamamlanana kadar arayüze "
 "erişilemeyecektir."
 
-#: src/templates/settings.html:80
+#: src/templates/settings.html:103
 msgid ""
 "The system is shutting down. The UI will remain unavailable until it is "
 "manually restarted."
@@ -1591,92 +1623,92 @@ msgstr ""
 "Sistem kapatılıyor. Cihaz manuel olarak açılana kadar arayüze "
 "erişilemeyecektir."
 
-#: src/templates/settings.html:163
+#: src/templates/settings.html:186
 msgid "Download Logs"
 msgstr "Günlükleri İndir"
 
-#: src/templates/settings.html:164
+#: src/templates/settings.html:187
 msgid "Reboot"
 msgstr "Yeniden Başlat"
 
-#: src/templates/settings.html:165
+#: src/templates/settings.html:188
 msgid "Shutdown"
 msgstr "Kapat"
 
-#: src/templates/settings.html:175
+#: src/templates/settings.html:198
 msgid "Device Name:"
 msgstr "Cihaz Adı:"
 
-#: src/templates/settings.html:198
+#: src/templates/settings.html:221
 msgid "Horizontal"
 msgstr "Yatay"
 
-#: src/templates/settings.html:199
+#: src/templates/settings.html:222
 msgid "Vertical"
 msgstr "Dikey"
 
-#: src/templates/settings.html:204
+#: src/templates/settings.html:227
 msgid "Invert Image"
 msgstr "Görseli Ters Çevir"
 
-#: src/templates/settings.html:231
+#: src/templates/settings.html:254
 msgid "Time Format:"
 msgstr "Saat Biçimi:"
 
-#: src/templates/settings.html:233
+#: src/templates/settings.html:256
 msgid "12 Hour (AM/PM)"
 msgstr "12 Saat (ÖÖ/ÖS)"
 
-#: src/templates/settings.html:234
+#: src/templates/settings.html:257
 msgid "24 Hour"
 msgstr "24 Saat"
 
-#: src/templates/settings.html:240
+#: src/templates/settings.html:263
 msgid "Plugin Cycle Interval:"
 msgstr "Eklenti Geçiş Aralığı:"
 
-#: src/templates/settings.html:241
+#: src/templates/settings.html:264
 msgid "Determines how often the display switches to a new plugin."
 msgstr "Ekranın ne sıklıkla yeni bir eklentiye geçeceğini belirler."
 
-#: src/templates/settings.html:251
+#: src/templates/settings.html:274
 msgid "Log System Stats"
 msgstr "Sistem İstatistiklerini Günlüğe Kaydet"
 
-#: src/templates/settings.html:260
+#: src/templates/settings.html:283
 msgid "Battery & Power Management"
 msgstr "Batarya ve Güç Yönetimi"
 
-#: src/templates/settings.html:267
+#: src/templates/settings.html:290
 msgid "Mode Status:"
 msgstr "Mod Durumu:"
 
-#: src/templates/settings.html:270
+#: src/templates/settings.html:293
 msgid "ACTIVE"
 msgstr "AKTİF"
 
-#: src/templates/settings.html:274
+#: src/templates/settings.html:297
 #, python-format
 msgid "Awake for %(time)s"
 msgstr "%(time)s uyanık"
 
-#: src/templates/settings.html:278
+#: src/templates/settings.html:301
 msgid "INACTIVE (Normal Mode)"
 msgstr "KAPALI (Sürekli Güç Modu)"
 
-#: src/templates/settings.html:285
+#: src/templates/settings.html:308
 msgid "Deactivate Mode"
 msgstr "Modu Kapat"
 
-#: src/templates/settings.html:292
+#: src/templates/settings.html:315
 msgid "Activate Mode Now"
 msgstr "Modu Şimdi Başlat"
 
-#: src/templates/settings.html:298
+#: src/templates/settings.html:321
 msgid "Physical Power-off / Boot Safety:"
 msgstr "Fiziksel Güç Kesintisi / İlk Açılış Güvenliği:"
 
-#: src/templates/settings.html:298
+#: src/templates/settings.html:321
 msgid ""
 "Whenever Raspberry Pi physically loses power or restarts, this mode is "
 "automatically kept OFF. You will always be able to access the web "
@@ -1688,11 +1720,11 @@ msgstr ""
 "web arayüzüne her zaman erişebilirsiniz. İstediğiniz zaman bu menüden "
 "modu tekrar kurabilirsiniz."
 
-#: src/templates/settings.html:304
+#: src/templates/settings.html:327
 msgid "Awake Duration:"
 msgstr "Uyanık Kalma Süresi:"
 
-#: src/templates/settings.html:305
+#: src/templates/settings.html:328
 msgid ""
 "How long the device stays fully awake with Wi-Fi on after a refresh for "
 "web access and configurations."
@@ -1700,21 +1732,21 @@ msgstr ""
 "Ekran yenilendikten sonra cihazın web erişimi ve ayarlar için Wi-Fi açık "
 "şekilde uyanık kaldığı süre."
 
-#: src/templates/settings.html:310
+#: src/templates/settings.html:333
 msgid "Second"
 msgstr "Saniye"
 
-#: src/templates/settings.html:317
+#: src/templates/settings.html:340
 msgid "Sleep Duration:"
 msgstr "Uyku Süresi:"
 
-#: src/templates/settings.html:318
+#: src/templates/settings.html:341
 msgid "How long the device enters low-power sleep between display refreshes."
 msgstr ""
 "Ekran yenilemeleri arasında cihazın donanımları kapatıp derin enerji "
 "tasarrufunda uyuduğu süre."
 
-#: src/templates/settings.html:328
+#: src/templates/settings.html:351
 msgid ""
 "One full cycle takes the awake time plus the sleep time, plus roughly "
 "30-60 seconds to reconnect Wi-Fi and refresh the display. The display "
@@ -1724,53 +1756,53 @@ msgstr ""
 "ekran yenilemesi için yaklaşık 30-60 saniyeden oluşur. Ekran her döngüde "
 "bir kez yenilenir. En kısa uyanık kalma süresi 1 dakikadır."
 
-#: src/templates/settings.html:333
+#: src/templates/settings.html:356
 msgid "Sleep Hardware Controls:"
 msgstr "Uykuda Kapatılacak Donanımlar:"
 
-#: src/templates/settings.html:337
+#: src/templates/settings.html:360
 msgid "Turn off Wi-Fi"
 msgstr "Wi-Fi Bağlantısını Kapat"
 
-#: src/templates/settings.html:341
+#: src/templates/settings.html:364
 msgid "Turn off Bluetooth"
 msgstr "Bluetooth'u Kapat"
 
-#: src/templates/settings.html:346 src/templates/settings.html:349
+#: src/templates/settings.html:369 src/templates/settings.html:372
 msgid "Turn off HDMI"
 msgstr "HDMI Çıkışını Kapat"
 
-#: src/templates/settings.html:349
+#: src/templates/settings.html:372
 msgid ""
 "Not supported with the KMS display driver (Raspberry Pi OS Bookworm "
 "default)."
 msgstr "KMS ekran sürücüsüyle desteklenmez (Raspberry Pi OS Bookworm varsayılanı)."
 
-#: src/templates/settings.html:354
+#: src/templates/settings.html:377
 msgid "Turn off Status LEDs"
 msgstr "Durum LED'lerini Kapat"
 
-#: src/templates/settings.html:363
+#: src/templates/settings.html:386
 msgid "Image Settings"
 msgstr "Görsel Ayarları"
 
-#: src/templates/settings.html:367
+#: src/templates/settings.html:390
 msgid "Saturation:"
 msgstr "Doygunluk:"
 
-#: src/templates/settings.html:381
+#: src/templates/settings.html:404
 msgid "Contrast:"
 msgstr "Kontrast:"
 
-#: src/templates/settings.html:395
+#: src/templates/settings.html:418
 msgid "Sharpness:"
 msgstr "Keskinlik:"
 
-#: src/templates/settings.html:409
+#: src/templates/settings.html:432
 msgid "Brightness:"
 msgstr "Parlaklık:"
 
-#: src/templates/settings.html:424
+#: src/templates/settings.html:447
 msgid "Inky Driver Saturation:"
 msgstr "Inky Sürücü Doygunluğu:"
 

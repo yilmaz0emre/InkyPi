@@ -17,7 +17,7 @@
     <script src="{{ url_for('static', filename='scripts/dark_mode.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/response_modal.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/refresh_settings_manager.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/plugin_autosave.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/autosave.js') }}"></script>
     <!-- Select2 CSS -->
     <link href="{{ url_for('static', filename='styles/select2.min.css') }}" rel="stylesheet" />
     <!-- jQuery -->
@@ -26,33 +26,44 @@
     <script src="{{ url_for('static', filename='scripts/select2.min.js') }}"></script>
 
     <script>
-        let pluginSettings = {{ plugin_settings | tojson if plugin_settings else {} }};
+        const pluginSettings = {{ plugin_settings | tojson if plugin_settings else {} }};
         const pluginInstanceName ='{{ plugin_instance }}';
-        let loadPluginSettings = pluginInstanceName != '';
+        // a new plugin can start from the draft stored on the device
+        const draftRestored = {{ draft_restored | default(false) | tojson }};
+        const loadPluginSettings = pluginInstanceName != '' || draftRestored;
 
-        // A new (unsaved) plugin starts from the draft the user left last time, if any.
-        const pluginDraft = loadPluginSettings ? null : PluginAutosave.loadDraft("{{ plugin.id }}");
-        if (pluginDraft) {
-            pluginSettings = pluginDraft;
-            loadPluginSettings = true;
-        }
         let autosave = null;
         document.addEventListener('DOMContentLoaded', () => {
-            autosave = PluginAutosave.init({
-                pluginId: "{{ plugin.id }}",
-                instanceName: pluginInstanceName,
-                saveUrl: "{{ url_for('plugin.update_plugin_instance', instance_name='') }}" + pluginInstanceName,
-                uploadedFiles: () => uploadedFiles,
-                draftRestored: !!pluginDraft,
+            const draftUrl = "{{ url_for('plugin.plugin_draft', plugin_id=plugin.id) }}";
+            autosave = Autosave.attach({
+                form: document.getElementById('settingsForm'),
+                status: document.getElementById('autosaveStatus'),
+                url: pluginInstanceName
+                    ? "{{ url_for('plugin.update_plugin_instance', instance_name='') }}" + pluginInstanceName
+                    : draftUrl,
+                method: 'PUT',
+                extraFiles: () => uploadedFiles,
                 messages: {
-                    autosaveOn: {{ _('Changes are saved automatically.') | tojson }},
+                    idle: pluginInstanceName ? {{ _('Changes are saved automatically.') | tojson }} : '',
                     saving: {{ _('Saving…') | tojson }},
-                    saved: {{ _('Saved ✓') | tojson }},
+                    saved: pluginInstanceName ? {{ _('Saved ✓') | tojson }} : {{ _('Draft saved ✓') | tojson }},
                     failed: {{ _('Could not save, retrying…') | tojson }},
                     fileNeedsSave: {{ _('A new file is selected: press Save to upload it.') | tojson }},
-                    draftSaved: {{ _('Draft kept in this browser.') | tojson }},
-                    draftRestored: {{ _('Your last settings were restored.') | tojson }},
-                    clearDraft: {{ _('Clear') | tojson }},
+                },
+                onReady(setStatus) {
+                    if (!draftRestored) return;
+                    const status = document.getElementById('autosaveStatus');
+                    setStatus({{ _('Your last settings were restored.') | tojson }} + ' ', '');
+                    const clear = document.createElement('a');
+                    clear.href = '#';
+                    clear.textContent = {{ _('Clear') | tojson }};
+                    clear.addEventListener('click', async event => {
+                        event.preventDefault();
+                        autosave.reset();
+                        await fetch(draftUrl, { method: 'DELETE' });
+                        window.location.reload();
+                    });
+                    status.appendChild(clear);
                 },
             });
         });
@@ -135,7 +146,8 @@
                 if (response.ok) {
                     showResponseModal('success', `Success! ${result.message}`);
                     if (autosave) {
-                        if (action == "add_to_playlist") autosave.discardDraft();
+                        // the server drops the draft once the plugin is added to a playlist
+                        if (action == "add_to_playlist") autosave.reset();
                         else if (action == "update_instance") autosave.markSaved();
                     }
                 } else {

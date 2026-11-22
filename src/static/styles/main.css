@@ -377,6 +377,27 @@ small {
     color: var(--failure-color);
 }
 
+/* Address search results (weather location) */
+.address-results {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+.address-result {
+    text-align: left;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+.address-result:hover {
+    border-color: var(--accent-primary);
+}
+
 /* Back button */
 .back-button {
     background-color: var(--button-bg);

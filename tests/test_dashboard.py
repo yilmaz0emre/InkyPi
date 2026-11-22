@@ -367,17 +367,98 @@ def test_instance_page_has_autosave(page_client, device_config):
     html = page_client.get("/plugin/currency_gold?instance=Kur").get_data(as_text=True)
 
     assert 'id="autosaveStatus"' in html
-    assert "scripts/plugin_autosave.js" in html
+    assert "scripts/autosave.js" in html
     # messages are embedded with |tojson, which escapes non-ASCII letters
     assert json.dumps("Değişiklikler otomatik kaydedilir.") in html
     assert "const pluginInstanceName ='Kur'" in html
 
 
-def test_new_plugin_page_can_restore_a_draft(page_client):
-    html = page_client.get("/plugin/currency_gold").get_data(as_text=True)
+def test_draft_is_stored_on_the_device_and_restored(page_client, device_config):
+    res = page_client.put("/plugin_draft/currency_gold", data={
+        "plugin_id": "currency_gold", "labelStyle": "strip", "items[]": ["USD", "GRA"]})
+    assert res.status_code == 200
 
-    assert "PluginAutosave.loadDraft(\"currency_gold\")" in html
-    assert "let loadPluginSettings" in html
+    # written to the config file, so it survives a restart of the server
+    reloaded = Config()
+    assert reloaded.get_config("plugin_drafts") == {
+        "currency_gold": {"labelStyle": "strip", "items[]": ["USD", "GRA"]}}
+
+    html = page_client.get("/plugin/currency_gold").get_data(as_text=True)
+    assert "const draftRestored = true;" in html
+    assert '"labelStyle": "strip"' in html
+
+    assert page_client.delete("/plugin_draft/currency_gold").status_code == 200
+    assert "const draftRestored = false;" in page_client.get("/plugin/currency_gold").get_data(as_text=True)
+
+
+def test_draft_for_unknown_plugin_is_rejected(page_client):
+    assert page_client.put("/plugin_draft/nope", data={"a": "b"}).status_code == 404
+
+
+def test_adding_to_playlist_drops_the_draft(page_client, device_config):
+    page_client.put("/plugin_draft/clock", data={"plugin_id": "clock", "selectedClockFace": "Digital Clock"})
+    page_client.put("/plugin_draft/currency_gold", data={"plugin_id": "currency_gold", "labelStyle": "short"})
+    playlist = device_config.get_playlist_manager().playlists[0].name
+    refresh = {"playlist": playlist, "instance_name": "Saat", "refreshType": "interval",
+               "unit": "hour", "interval": "1"}
+
+    res = page_client.post("/add_plugin", data={
+        "plugin_id": "clock", "selectedClockFace": "Digital Clock", "refresh_settings": json.dumps(refresh)})
+
+    assert res.status_code == 200, res.get_json()
+    assert set(Config().get_config("plugin_drafts")) == {"currency_gold"}
+
+
+def test_settings_page_has_autosave(page_client, device_config):
+    from blueprints.settings import settings_bp
+    page_client.application.register_blueprint(settings_bp)
+
+    html = page_client.get("/settings").get_data(as_text=True)
+
+    assert 'id="autosaveStatus"' in html
+    assert "scripts/autosave.js" in html
+
+
+def test_geocode_returns_places(page_client, monkeypatch):
+    from blueprints import plugin as plugin_module
+
+    calls = {}
+
+    class FakeResponse:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return [{"name": "Moda Caddesi", "display_name": "Moda Caddesi, Kadıköy, İstanbul, Türkiye",
+                     "lat": "40.98", "lon": "29.02"}]
+
+    class FakeSession:
+        def get(self, url, params=None, headers=None, timeout=None):
+            calls.update(url=url, params=params, headers=headers)
+            return FakeResponse()
+
+    monkeypatch.setattr(plugin_module, "get_http_session", lambda: FakeSession())
+
+    res = page_client.get("/geocode?q=Moda Kadıköy")
+
+    assert res.status_code == 200
+    assert res.get_json()["results"] == [{
+        "name": "Moda Caddesi", "label": "Moda Caddesi, Kadıköy, İstanbul, Türkiye", "lat": "40.98", "lon": "29.02"}]
+    assert calls["params"]["q"] == "Moda Kadıköy"
+    assert calls["url"] == plugin_module.NOMINATIM_SEARCH_URL
+
+
+def test_geocode_needs_a_query_and_reports_failures(page_client, monkeypatch):
+    from blueprints import plugin as plugin_module
+
+    assert page_client.get("/geocode?q=").status_code == 400
+
+    class BrokenSession:
+        def get(self, *args, **kwargs):
+            raise OSError("offline")
+
+    monkeypatch.setattr(plugin_module, "get_http_session", lambda: BrokenSession())
+    assert page_client.get("/geocode?q=Moda").status_code == 502
 
 
 def test_autosave_request_keeps_lists_and_refresh(client, device_config):

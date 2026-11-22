@@ -16,7 +16,29 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/main.css') }}">
     <script src="{{ url_for('static', filename='scripts/dark_mode.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/response_modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/autosave.js') }}"></script>
     <script>
+        let autosave = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialLanguage = document.getElementById('language').value;
+            autosave = Autosave.attach({
+                form: document.querySelector('.settings-form'),
+                status: document.getElementById('autosaveStatus'),
+                url: "{{ url_for('settings.save_settings') }}",
+                method: 'POST',
+                messages: {
+                    idle: {{ _('Changes are saved automatically.') | tojson }},
+                    saving: {{ _('Saving…') | tojson }},
+                    saved: {{ _('Saved ✓') | tojson }},
+                    failed: {{ _('Could not save, retrying…') | tojson }},
+                },
+                onSaved(result, settings) {
+                    // the page has to be rendered again in the new language
+                    if (settings.language !== initialLanguage) window.location.reload();
+                },
+            });
+        });
+
         async function handleAction() {
             const form = document.querySelector('.settings-form');
             const formData = new FormData(form);
@@ -29,6 +51,7 @@
                 
                 const result = await response.json();
                 if (response.ok) {
+                    if (autosave) autosave.markSaved();
                     showResponseModal('success', `Success! ${result.message}`);
                     setTimeout(() => window.location.reload(), 1200);
                 } else {
@@ -439,7 +462,8 @@
                 </div>
             </div>
         </form>
- 
+
+        <div id="autosaveStatus" class="autosave-status" aria-live="polite"></div>
         <!-- Buttons -->
         <div class="buttons-container">
             <button type="button" onclick="handleAction()" class="action-button">{{ _('Save') }}</button>

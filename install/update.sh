@@ -77,23 +77,37 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# server / thin client mode, as written by install.sh -S / -C (empty for a normal install)
+INSTALL_MODE=$(sed -n 's/^# inkypi-mode: //p' "/etc/systemd/system/$SERVICE_FILE.d/mode.conf" 2>/dev/null)
+
 apt-get update -y > /dev/null
 if [ -f "$APT_REQUIREMENTS_FILE" ]; then
   echo "Installing system dependencies... "
-  xargs -a "$APT_REQUIREMENTS_FILE" sudo apt-get install -y > /dev/null && echo_success "Installed system dependencies."
+  # a thin client (installed with install.sh -C) never renders HTML, so it does not need Chromium
+  requirements="$APT_REQUIREMENTS_FILE"
+  if [[ "$INSTALL_MODE" == "client" ]]; then
+    requirements=$(mktemp)
+    grep -v '^chromium' "$APT_REQUIREMENTS_FILE" > "$requirements"
+  fi
+  xargs -a "$requirements" sudo apt-get install -y > /dev/null && echo_success "Installed system dependencies."
 else
   echo_error "ERROR: System dependencies file $APT_REQUIREMENTS_FILE not found!"
   exit 1
 fi
 
-# check OS version for Bookworm to setup zramswap
-if [[ $(get_os_version) = "12" ]] ; then
-  echo "OS version is Bookworm - setting up zramswap"
-  setup_zramswap_service
+# zramswap and earlyoom are for low-memory panel devices; a render server is left alone
+if [[ "$INSTALL_MODE" == "server" ]]; then
+  echo "Server mode - skipping zramswap and earlyoom setup."
 else
-  echo "OS version is not Bookworm - skipping zramswap setup."
+  # check OS version for Bookworm to setup zramswap
+  if [[ $(get_os_version) = "12" ]] ; then
+    echo "OS version is Bookworm - setting up zramswap"
+    setup_zramswap_service
+  else
+    echo "OS version is not Bookworm - skipping zramswap setup."
+  fi
+  setup_earlyoom_service
 fi
-setup_earlyoom_service
 
 # Check if virtual environment exists
 if [ ! -d "$VENV_PATH" ]; then

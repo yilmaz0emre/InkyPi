@@ -16,6 +16,16 @@
 #
 #                               If not specified then the Pimoroni Inky display
 #                               is assumed.
+#
+#        -S                     (optional) Server mode: no panel attached. InkyPi runs
+#                               the web UI and renders images for thin clients
+#                               (e.g. on a Raspberry Pi 5). Use -R to set the
+#                               resolution of the clients' panel.
+#        -R <width>x<height>    (optional, with -S) Panel resolution, default 800x480.
+#        -C <server_url>        (optional) Thin client mode: show the images rendered
+#                               by an InkyPi server, e.g. -C http://pi5.local
+#                               Combine with -W for a Waveshare panel. No web UI and
+#                               no Chromium are installed on the client.
 # =============================================================================
 
 # Formatting stuff
@@ -53,6 +63,13 @@ PIP_REQUIREMENTS_FILE="$SCRIPT_DIR/requirements.txt"
 WS_TYPE=""
 WS_REQUIREMENTS_FILE="$SCRIPT_DIR/ws-requirements.txt"
 
+# Server / thin client modes (see usage above)
+SERVER_MODE=""
+SERVER_RESOLUTION="800x480"
+CLIENT_SERVER_URL=""
+SERVICE_DROPIN_DIR="/etc/systemd/system/$APPNAME.service.d"
+SERVICE_DROPIN_FILE="$SERVICE_DROPIN_DIR/mode.conf"
+
 # Where the driver is fetched from in the Waveshare e-Paper repository.  Most
 # models live in the common driver directory, but models that are only
 # published under E-paper_Separate_Program can override WS_DRIVER_DIR by
@@ -89,19 +106,44 @@ resolve_waveshare_type() {
 
 # Parse the arguments, looking for the -W option.
 parse_arguments() {
-    while getopts ":W:" opt; do
+    while getopts ":W:SR:C:" opt; do
         case $opt in
             W) resolve_waveshare_type "$OPTARG"
                 echo "Optional parameter WS is set for Waveshare support.  Screen type is: $WS_TYPE"
                 ;;
+            S) SERVER_MODE="true"
+                echo "Server mode: no panel, rendering for thin clients."
+                ;;
+            R) SERVER_RESOLUTION="$OPTARG"
+                ;;
+            C) CLIENT_SERVER_URL="${OPTARG%/}"
+                echo "Thin client mode: showing images from $CLIENT_SERVER_URL"
+                ;;
             \?) echo "Invalid option: -$OPTARG." >&2
                 exit 1
                 ;;
-            :) echo "Option -$OPTARG requires an the model type of the Waveshare screen." >&2
+            :) echo "Option -$OPTARG requires a value." >&2
                exit 1
                ;;
         esac
     done
+
+    if [[ -n "$SERVER_MODE" && -n "$CLIENT_SERVER_URL" ]]; then
+        echo "Options -S (server) and -C (thin client) cannot be combined." >&2
+        exit 1
+    fi
+    if [[ -n "$SERVER_MODE" && -n "$WS_TYPE" ]]; then
+        echo "Option -W is for the device with the panel (use it with -C), not with -S." >&2
+        exit 1
+    fi
+    if [[ ! "$SERVER_RESOLUTION" =~ ^[0-9]+x[0-9]+$ ]]; then
+        echo "Invalid resolution '$SERVER_RESOLUTION', expected e.g. 800x480." >&2
+        exit 1
+    fi
+    if [[ -n "$CLIENT_SERVER_URL" && ! "$CLIENT_SERVER_URL" =~ ^https?:// ]]; then
+        echo "Invalid server URL '$CLIENT_SERVER_URL', expected e.g. http://pi5.local" >&2
+        exit 1
+    fi
 }
 
 check_permissions() {
@@ -232,7 +274,13 @@ install_debian_dependencies() {
     sudo apt-get update > /dev/null &
     show_loader "Fetch available system dependencies updates. " 
 
-    xargs -a "$APT_REQUIREMENTS_FILE" sudo apt-get install -y > /dev/null &
+    # a thin client never renders HTML, so it does not need Chromium
+    local requirements="$APT_REQUIREMENTS_FILE"
+    if [[ -n "$CLIENT_SERVER_URL" ]]; then
+      requirements=$(mktemp)
+      grep -v '^chromium' "$APT_REQUIREMENTS_FILE" > "$requirements"
+    fi
+    xargs -a "$requirements" sudo apt-get install -y > /dev/null &
     show_loader "Installing system dependencies. "
   else
     echo "ERROR: System dependencies file $APT_REQUIREMENTS_FILE not found!"
@@ -326,6 +374,47 @@ update_config() {
   fi
 }
 
+#
+# Server / thin client settings in device.json (uses jq from debian-requirements.txt).
+#
+configure_mode() {
+  local DEVICE_JSON="$CONFIG_DIR/device.json"
+  local tmp
+  tmp=$(mktemp)
+  if [[ -n "$SERVER_MODE" ]]; then
+    local width=${SERVER_RESOLUTION%x*}
+    local height=${SERVER_RESOLUTION#*x}
+    jq --argjson w "$width" --argjson h "$height" \
+      '.display_type = "server" | .resolution = [$w, $h]' "$DEVICE_JSON" > "$tmp" && mv "$tmp" "$DEVICE_JSON"
+    echo_success "\tServer mode configured: display_type=server, resolution=${width}x${height}"
+  elif [[ -n "$CLIENT_SERVER_URL" ]]; then
+    jq --arg url "$CLIENT_SERVER_URL" \
+      '.thin_client = ((.thin_client // {}) + {server_url: $url})' "$DEVICE_JSON" > "$tmp" && mv "$tmp" "$DEVICE_JSON"
+    echo_success "\tThin client configured: server_url=$CLIENT_SERVER_URL"
+  fi
+  rm -f "$tmp"
+}
+
+#
+# systemd drop-in for the selected mode; kept separate so updates of inkypi.service keep it.
+#
+install_service_mode() {
+  if [[ -n "$SERVER_MODE" ]]; then
+    mkdir -p "$SERVICE_DROPIN_DIR"
+    # Chromium needs more than the default 200M; a Pi 5 has plenty to spare
+    printf '# inkypi-mode: server\n[Service]\nCPUQuota=\nMemoryMax=1G\n' > "$SERVICE_DROPIN_FILE"
+    echo_success "\tService configured for server mode"
+  elif [[ -n "$CLIENT_SERVER_URL" ]]; then
+    mkdir -p "$SERVICE_DROPIN_DIR"
+    printf '# inkypi-mode: client\n[Service]\nExecStart=\nExecStart=%s client\nMemoryMax=150M\n' "$BINPATH/$APPNAME" > "$SERVICE_DROPIN_FILE"
+    echo_success "\tService configured for thin client mode"
+  elif [[ -f "$SERVICE_DROPIN_FILE" ]]; then
+    rm -f "$SERVICE_DROPIN_FILE"
+    echo_success "\tRemoved previous server/client service settings"
+  fi
+  sudo systemctl daemon-reload
+}
+
 stop_service() {
     echo "Checking if $SERVICE_FILE is running"
     if /usr/bin/systemctl is-active --quiet $SERVICE_FILE
@@ -383,7 +472,11 @@ ask_for_reboot() {
   ip_address=$(get_ip_address)
   echo_header "$(echo_success "${APPNAME^^} Installation Complete!")"
   echo_header "[•] A reboot of your Raspberry Pi is required for the changes to take effect"
-  echo_header "[•] After your Pi is rebooted, you can access the web UI by going to $(echo_blue "'$hostname.local'") or $(echo_blue "'$ip_address'") in your browser."
+  if [[ -n "$CLIENT_SERVER_URL" ]]; then
+    echo_header "[•] Thin client: after the reboot the panel shows the images of $(echo_blue "$CLIENT_SERVER_URL"). Configure everything in that server's web UI."
+  else
+    echo_header "[•] After your Pi is rebooted, you can access the web UI by going to $(echo_blue "'$hostname.local'") or $(echo_blue "'$ip_address'") in your browser."
+  fi
   echo_header "[•] If you encounter any issues or have suggestions, please submit them here: https://github.com/fatihak/InkyPi/issues"
 
   read -p "Would you like to restart your Raspberry Pi now? [Y/N] " userInput
@@ -411,16 +504,25 @@ stop_service
 if [[ -n "$WS_TYPE" ]]; then
   fetch_waveshare_driver
 fi
-enable_interfaces
-install_debian_dependencies
-# check OS version for Bookworm to setup zramswap
-if [[ $(get_os_version) = "12" ]] ; then
-  echo "OS version is Bookworm - setting up zramswap"
-  setup_zramswap_service
-else
-  echo "OS version is not Bookworm - skipping zramswap setup."
+# a render server has no panel, so SPI/I2C stay untouched
+if [[ -z "$SERVER_MODE" ]]; then
+  enable_interfaces
 fi
-setup_earlyoom_service
+install_debian_dependencies
+# zramswap and earlyoom protect low-memory panel devices (Pi Zero). A render server usually has
+# plenty of RAM and may run other services, which earlyoom could kill (e.g. a large LLM).
+if [[ -n "$SERVER_MODE" ]]; then
+  echo "Server mode - skipping zramswap and earlyoom setup."
+else
+  # check OS version for Bookworm to setup zramswap
+  if [[ $(get_os_version) = "12" ]] ; then
+    echo "OS version is Bookworm - setting up zramswap"
+    setup_zramswap_service
+  else
+    echo "OS version is not Bookworm - skipping zramswap setup."
+  fi
+  setup_earlyoom_service
+fi
 install_src
 install_cli
 create_venv
@@ -430,9 +532,14 @@ install_config
 if [[ -n "$WS_TYPE" ]]; then
   update_config
 fi
+configure_mode
 install_app_service
+install_service_mode
 
-echo "Update JS and CSS files"
-bash $SCRIPT_DIR/update_vendors.sh > /dev/null
+# the web UI assets are not needed on a thin client
+if [[ -z "$CLIENT_SERVER_URL" ]]; then
+  echo "Update JS and CSS files"
+  bash $SCRIPT_DIR/update_vendors.sh > /dev/null
+fi
 
 ask_for_reboot

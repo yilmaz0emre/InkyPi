@@ -16,6 +16,7 @@ usage() {
     echo ""
     echo "Usage:"
     echo "  inkypi run"
+    echo "  inkypi client      (thin client: show images rendered by an InkyPi server)"
     echo "  inkypi plugin <subcommand> [args]"
     echo ""
 }
@@ -25,6 +26,11 @@ run_app() {
     exec python -u "$(realpath "$PROGRAM_PATH/src/inkypi.py")"
 }
 
+run_client() {
+    source "$VENV_PATH/bin/activate"
+    exec python -u "$(realpath "$PROGRAM_PATH/src/thin_client.py")"
+}
+
 run_plugin_cli() {
     exec "$PROGRAM_PATH/cli/inkypi-plugin" "$@"
 }
@@ -32,6 +38,9 @@ run_plugin_cli() {
 case "$command" in
     run)
         run_app
+        ;;
+    client)
+        run_client
         ;;
     plugin)
         run_plugin_cli "$@"

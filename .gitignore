@@ -177,3 +177,7 @@ src/config/.power_save_state.json*
 /src/static/scripts/
 /src/static/styles/
 /src/static/images/current_image.png
+/src/static/images/display_image.png*
+
+# Thin client state (last image, Last-Modified) on the Pi Zero
+src/config/.thin_client/

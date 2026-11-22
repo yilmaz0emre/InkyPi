@@ -167,9 +167,21 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
   `show_loader` waits with `kill -0` + `wait` (the old `ps a` check raced ahead without a terminal),
   verify Debian dependencies, `configure_mode` fails loudly when `jq` is missing
 - [ ] Pi 5 settings start fresh: set language to Turkish, recreate widgets and the dashboard there
-- [ ] Flash Pi Zero (Raspberry Pi OS Lite 64-bit, hostname `inkypi-zero`, SSH key from this Mac), then
-  `install.sh -W epd7in3f -C http://raspberrypi.local`
-- [ ] Verify on hardware: panel refresh, offline badge, power save
+- [x] Pi Zero 2 W installed as thin client (2026-11-22): `inkypi-zero@inkypi-zero.local` (192.168.1.107),
+  Raspberry Pi OS Lite 64-bit **Trixie**, `install.sh -W epd7in3f -C http://raspberrypi.local`.
+  First image fetched from the Pi 5 and drawn; full `epd7in3f` refresh ≈ 63 s, client uses ~60 MB RAM
+- [x] Installer fixes found on the Zero: renamed packages still provided under the old name are accepted
+  (`libfreetype6-dev` on Trixie, PR #6); install/update stop when pip fails instead of reporting success
+  (PR #7)
+- Pi Zero network quirks:
+  - It cannot reach Raspberry Pi hosts (archive.raspberrypi.com, piwheels.org); Debian, PyPI and GitHub
+    work, and the Mac and Pi 5 reach them fine. Install workaround: reverse SOCKS tunnel from the Mac
+    (`ssh -N -R 127.0.0.1:1080 inkypi-zero@…` + temporary apt proxy for that host) and
+    `PIP_CONFIG_FILE=/dev/null` (PyPI has aarch64 wheels). Router (Keenetic) filter still to check
+  - Wi-Fi dropped under load (memory, voltage and load were fine) until Wi-Fi power save was disabled:
+    `/etc/NetworkManager/conf.d/wifi-powersave-off.conf` (`wifi.powersave = 2`)
+  - systemd journal is volatile (`Storage=volatile`), so logs from before a reboot are lost
+- [ ] Verify on hardware: offline badge, power save (on battery)
 - Pi 5 rebooted 2026-11-22 onto kernel 6.12.115; InkyPi and Docker services came back on their own.
   Disk is tight (2.5 GB free of 58 GB); ask before rebooting (it also runs n8n/open-webui/ollama)
 - Decided 2026-11-22: device updates are **manual** (on request: `git pull && sudo bash install/update.sh`

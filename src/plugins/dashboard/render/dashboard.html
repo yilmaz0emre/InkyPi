@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: {{ width }}px;
+            height: {{ height }}px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .widget {
+            position: absolute;
+            box-sizing: border-box;
+            overflow: hidden;
+            background: #fff;
+        }
+        .widget.border {
+            border: {{ border_width }}px solid #000;
+        }
+        .widget iframe,
+        .widget img {
+            display: block;
+            border: 0;
+        }
+        .widget .error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-family: sans-serif;
+            font-size: 14px;
+            text-align: center;
+        }
+        .widget .error strong {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    {% for widget in widgets %}
+    <div class="widget{% if widget.border %} border{% endif %}"
+         style="left: {{ widget.left }}px; top: {{ widget.top }}px; width: {{ widget.width }}px; height: {{ widget.height }}px;">
+        {% if widget.kind == "html" %}
+        <iframe src="{{ widget.src }}" width="{{ widget.inner_width }}" height="{{ widget.inner_height }}" scrolling="no"></iframe>
+        {% elif widget.kind == "image" %}
+        <img src="{{ widget.src }}" width="{{ widget.inner_width }}" height="{{ widget.inner_height }}" alt="">
+        {% else %}
+        <div class="error">
+            <strong>⚠ {{ widget.name }}</strong>
+            <span>{{ widget.error }}</span>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</body>
+</html>

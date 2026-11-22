@@ -57,7 +57,8 @@ def add_plugin():
             "plugin_id": plugin_id,
             "refresh": refresh_config,
             "plugin_settings": plugin_settings,
-            "name": instance_name
+            "name": instance_name,
+            "dashboard_only": refresh_settings.get("dashboardOnly") == "on",
         }
         result = playlist_manager.add_plugin_to_playlist(playlist, plugin_dict)
         if not result:

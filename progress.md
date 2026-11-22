@@ -115,6 +115,23 @@ wake (PiSugar / RTC-based power board).
   - Tests: `tests/test_currency_gold.py` (parsing, fallback, formatting, Turkish render)
 - [ ] Check on real hardware: readability on the actual panel (colour vs. black/white), vertical orientation
 
+## Dashboard plugin (`feature/dashboard`)
+
+- [x] `src/plugins/dashboard/`: several saved plugin instances on one screen, with a web layout editor
+  - Widgets reference saved instances; new per-instance flag **"Only use inside dashboards"**
+    (`PluginInstance.dashboard_only`) keeps them out of the playlist rotation
+  - **Single browser render:** `render_image()` has a capture mode (`capture_rendered_html()` in
+    `base_plugin.py`) returning the HTML instead of screenshotting; each HTML widget is loaded in its own
+    `<iframe src=file://…>` (not `srcdoc`, which forces standards mode and broke the weather layout),
+    PIL widgets are embedded as data URIs, then one screenshot. 3 widgets ≈ 1–2 s on a Mac
+  - Editor: 12×12 grid, drag to move, corner to resize, overlap warning, gap + borders; **Preview**
+    via new generic `POST /preview_plugin` (returns PNG, display untouched)
+  - A failing widget shows an error box instead of failing the whole dashboard
+  - Tests: `tests/test_dashboard.py`; editor drag/resize verified in headless Chrome
+- [ ] Some plugins are not designed for small boxes (e.g. weather text gets very small); consider
+  per-widget minimum sizes or compact layouts
+- [ ] Measure render time on a Pi Zero 2 W
+
 ## Notes
 
 - Use `venv/` for tests; system `python3` lacks pytest.

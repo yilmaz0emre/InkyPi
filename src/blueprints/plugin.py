@@ -1,8 +1,9 @@
 from flask_babel import gettext as _
-from flask import Blueprint, request, jsonify, current_app, render_template, send_from_directory
+from flask import Blueprint, request, jsonify, current_app, render_template, send_from_directory, send_file
 from plugins.plugin_registry import get_plugin_instance
 from utils.app_utils import resolve_path, handle_request_files, parse_form
 from refresh_task import ManualRefresh, PlaylistRefresh
+import io
 import json
 import os
 import logging
@@ -55,6 +56,7 @@ def plugin_page(plugin_id):
                 template_params["plugin_settings"] = plugin_instance.settings
                 template_params["plugin_instance"] = plugin_instance_name
                 template_params["refresh_settings"] = plugin_instance.refresh
+                template_params["dashboard_only"] = plugin_instance.dashboard_only
 
             template_params["playlists"] = playlist_manager.get_playlist_names()
         except Exception as e:
@@ -171,6 +173,10 @@ def update_plugin_instance(instance_name):
         if not plugin_instance:
             return jsonify({"error": _("Plugin instance: %(instance_name)s does not exist", instance_name=instance_name)}), 500
 
+        dashboard_only = form_data.pop("dashboard_only", None)
+        if dashboard_only is not None:
+            plugin_instance.dashboard_only = dashboard_only == "true"
+
         # Handle refresh settings if provided
         refresh_settings_json = form_data.pop("refresh_settings", None)
         if refresh_settings_json:
@@ -257,3 +263,30 @@ def update_now():
         return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
 
     return jsonify({"success": True, "message": _("Display updated")}), 200
+
+
+@plugin_bp.route('/preview_plugin', methods=['POST'])
+def preview_plugin():
+    """Render the plugin with the submitted settings and return the PNG without touching the display."""
+    device_config = current_app.config['DEVICE_CONFIG']
+
+    try:
+        plugin_settings = parse_form(request.form)
+        plugin_settings.update(handle_request_files(request.files))
+        plugin_id = plugin_settings.pop("plugin_id")
+
+        plugin_config = device_config.get_plugin(plugin_id)
+        if not plugin_config:
+            return jsonify({"error": _("Plugin '%(plugin_id)s' not found", plugin_id=plugin_id)}), 404
+
+        image = get_plugin_instance(plugin_config).generate_image(plugin_settings, device_config)
+        if image is None:
+            return jsonify({"error": _("The plugin returned no image.")}), 500
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
+        return send_file(buffer, mimetype="image/png", max_age=0)
+    except Exception as e:
+        logger.exception(f"Error in preview_plugin: {str(e)}")
+        return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500

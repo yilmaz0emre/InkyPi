@@ -335,3 +335,60 @@ def test_plugin_page_for_dashboard_prechecks_option(client, monkeypatch):
 
     client.get("/plugin/dashboard?for_dashboard=1")
     assert rendered["for_dashboard"] is False
+
+
+# --- plugin page autosave (used by the dashboard editor and every plugin page) ---
+
+
+@pytest.fixture
+def page_client(device_config):
+    """Like `client`, but with the real template and static folders so pages render."""
+    from jinja2 import ChoiceLoader, FileSystemLoader
+
+    from blueprints.main import main_bp
+    from blueprints.playlist import playlist_bp
+    from blueprints.plugin import plugin_bp
+
+    src = Config.BASE_DIR
+    app = Flask(__name__, static_folder=os.path.join(src, "static"))
+    app.jinja_loader = ChoiceLoader([FileSystemLoader(os.path.join(src, d)) for d in ("templates", "plugins")])
+    app.config.update(DEVICE_CONFIG=device_config, REFRESH_TASK=MagicMock(), DISPLAY_MANAGER=MagicMock(),
+                      PROPAGATE_EXCEPTIONS=True)
+    i18n.init_app(app, device_config)
+    for blueprint in (main_bp, plugin_bp, playlist_bp):
+        app.register_blueprint(blueprint)
+    return app.test_client()
+
+
+def test_instance_page_has_autosave(page_client, device_config):
+    add_instance(device_config, "currency_gold", "Kur", {"labelStyle": "short"}, dashboard_only=False)
+    device_config.update_value("language", "tr")
+
+    html = page_client.get("/plugin/currency_gold?instance=Kur").get_data(as_text=True)
+
+    assert 'id="autosaveStatus"' in html
+    assert "scripts/plugin_autosave.js" in html
+    # messages are embedded with |tojson, which escapes non-ASCII letters
+    assert json.dumps("Değişiklikler otomatik kaydedilir.") in html
+    assert "const pluginInstanceName ='Kur'" in html
+
+
+def test_new_plugin_page_can_restore_a_draft(page_client):
+    html = page_client.get("/plugin/currency_gold").get_data(as_text=True)
+
+    assert "PluginAutosave.loadDraft(\"currency_gold\")" in html
+    assert "let loadPluginSettings" in html
+
+
+def test_autosave_request_keeps_lists_and_refresh(client, device_config):
+    """The autosave PUT (settings only, no refresh_settings) must not touch refresh or dashboard flag."""
+    add_instance(device_config, "currency_gold", "Kur", {"labelStyle": "short"}, dashboard_only=True)
+
+    res = client.put("/update_plugin_instance/Kur", data={
+        "plugin_id": "currency_gold", "labelStyle": "strip", "items[]": ["USD", "GRA"]})
+
+    assert res.status_code == 200, res.get_json()
+    instance = device_config.get_playlist_manager().find_plugin("currency_gold", "Kur")
+    assert instance.settings == {"labelStyle": "strip", "items[]": ["USD", "GRA"]}
+    assert instance.refresh == {"interval": 3600}
+    assert instance.dashboard_only is True

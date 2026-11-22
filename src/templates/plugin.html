@@ -17,6 +17,7 @@
     <script src="{{ url_for('static', filename='scripts/dark_mode.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/response_modal.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/refresh_settings_manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/plugin_autosave.js') }}"></script>
     <!-- Select2 CSS -->
     <link href="{{ url_for('static', filename='styles/select2.min.css') }}" rel="stylesheet" />
     <!-- jQuery -->
@@ -25,9 +26,36 @@
     <script src="{{ url_for('static', filename='scripts/select2.min.js') }}"></script>
 
     <script>
-        const pluginSettings = {{ plugin_settings | tojson if plugin_settings else {} }};
+        let pluginSettings = {{ plugin_settings | tojson if plugin_settings else {} }};
         const pluginInstanceName ='{{ plugin_instance }}';
-        const loadPluginSettings = pluginInstanceName != '';
+        let loadPluginSettings = pluginInstanceName != '';
+
+        // A new (unsaved) plugin starts from the draft the user left last time, if any.
+        const pluginDraft = loadPluginSettings ? null : PluginAutosave.loadDraft("{{ plugin.id }}");
+        if (pluginDraft) {
+            pluginSettings = pluginDraft;
+            loadPluginSettings = true;
+        }
+        let autosave = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            autosave = PluginAutosave.init({
+                pluginId: "{{ plugin.id }}",
+                instanceName: pluginInstanceName,
+                saveUrl: "{{ url_for('plugin.update_plugin_instance', instance_name='') }}" + pluginInstanceName,
+                uploadedFiles: () => uploadedFiles,
+                draftRestored: !!pluginDraft,
+                messages: {
+                    autosaveOn: {{ _('Changes are saved automatically.') | tojson }},
+                    saving: {{ _('Saving…') | tojson }},
+                    saved: {{ _('Saved ✓') | tojson }},
+                    failed: {{ _('Could not save, retrying…') | tojson }},
+                    fileNeedsSave: {{ _('A new file is selected: press Save to upload it.') | tojson }},
+                    draftSaved: {{ _('Draft kept in this browser.') | tojson }},
+                    draftRestored: {{ _('Your last settings were restored.') | tojson }},
+                    clearDraft: {{ _('Clear') | tojson }},
+                },
+            });
+        });
         const styleSettings = {{ style_settings | default(false) | tojson }};
         const refreshSettings = {{ refresh_settings | tojson if refresh_settings else {} }};
 
@@ -106,6 +134,10 @@
                 // Handle the response
                 if (response.ok) {
                     showResponseModal('success', `Success! ${result.message}`);
+                    if (autosave) {
+                        if (action == "add_to_playlist") autosave.discardDraft();
+                        else if (action == "update_instance") autosave.markSaved();
+                    }
                 } else {
                     showResponseModal('failure', `Error!  ${result.error}`);
                 }
@@ -410,6 +442,7 @@
             <!-- Hidden input to pass plugin id -->
             <input type="hidden" name="plugin_id" value="{{ plugin.id }}">
 
+            <div id="autosaveStatus" class="autosave-status" aria-live="polite"></div>
             <div class="buttons-container">
                 {% if plugin_instance %}
                     <button type="button" onclick="handleAction('update_instance')" class="action-button">{{ _('Save') }}</button>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 15:09+0300\n"
+"POT-Creation-Date: 2026-11-22 15:29+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -83,9 +83,9 @@ msgid "Failed to add to playlist"
 msgstr "Oynatma listesine eklenemedi"
 
 #: src/blueprints/playlist.py:69 src/blueprints/playlist.py:115
-#: src/blueprints/plugin.py:64 src/blueprints/plugin.py:156
-#: src/blueprints/plugin.py:207 src/blueprints/plugin.py:232
-#: src/blueprints/plugin.py:263 src/blueprints/plugin.py:292
+#: src/blueprints/plugin.py:66 src/blueprints/plugin.py:158
+#: src/blueprints/plugin.py:209 src/blueprints/plugin.py:234
+#: src/blueprints/plugin.py:265 src/blueprints/plugin.py:294
 #: src/blueprints/settings.py:123
 #, python-format
 msgid "An error occurred: %(error)s"
@@ -164,48 +164,48 @@ msgstr "%(date)s %(time)s"
 msgid "Plugin instance: %(plugin_instance_name)s does not exist"
 msgstr "Eklenti örneği mevcut değil: %(plugin_instance_name)s"
 
-#: src/blueprints/plugin.py:137
+#: src/blueprints/plugin.py:139
 msgid "Playlist not found"
 msgstr "Oynatma listesi bulunamadı"
 
-#: src/blueprints/plugin.py:142 src/blueprints/plugin.py:149
+#: src/blueprints/plugin.py:144 src/blueprints/plugin.py:151
 msgid "Plugin instance not found"
 msgstr "Eklenti örneği bulunamadı"
 
-#: src/blueprints/plugin.py:158
+#: src/blueprints/plugin.py:160
 msgid "Deleted plugin instance."
 msgstr "Eklenti örneği silindi."
 
-#: src/blueprints/plugin.py:174
+#: src/blueprints/plugin.py:176
 #, python-format
 msgid "Plugin instance: %(instance_name)s does not exist"
 msgstr "Eklenti örneği mevcut değil: %(instance_name)s"
 
-#: src/blueprints/plugin.py:208
+#: src/blueprints/plugin.py:210
 #, python-format
 msgid "Updated plugin instance %(instance_name)s."
 msgstr "%(instance_name)s eklenti örneği güncellendi."
 
-#: src/blueprints/plugin.py:224
+#: src/blueprints/plugin.py:226
 #, python-format
 msgid "Playlist %(playlist_name)s not found"
 msgstr "%(playlist_name)s oynatma listesi bulunamadı"
 
-#: src/blueprints/plugin.py:228
+#: src/blueprints/plugin.py:230
 #, python-format
 msgid "Plugin instance '%(plugin_instance_name)s' not found"
 msgstr "'%(plugin_instance_name)s' eklenti örneği bulunamadı"
 
-#: src/blueprints/plugin.py:234 src/blueprints/plugin.py:265
+#: src/blueprints/plugin.py:236 src/blueprints/plugin.py:267
 msgid "Display updated"
 msgstr "Ekran güncellendi"
 
-#: src/blueprints/plugin.py:255 src/blueprints/plugin.py:280
+#: src/blueprints/plugin.py:257 src/blueprints/plugin.py:282
 #, python-format
 msgid "Plugin '%(plugin_id)s' not found"
 msgstr "'%(plugin_id)s' eklentisi bulunamadı"
 
-#: src/blueprints/plugin.py:284 src/plugins/dashboard/dashboard.py:216
+#: src/blueprints/plugin.py:286 src/plugins/dashboard/dashboard.py:228
 msgid "The plugin returned no image."
 msgstr "Eklenti bir görsel döndürmedi."
 
@@ -267,7 +267,7 @@ msgstr "Metin İstemi:"
 #: src/plugins/rss/settings.html:28 src/plugins/screenshot/settings.html:3
 #: src/plugins/todo_list/settings.html:37 src/plugins/unsplash/settings.html:3
 #: src/plugins/weather/settings.html:41 src/templates/playlist.html:484
-#: src/templates/plugin.html:465 src/templates/settings.html:179
+#: src/templates/plugin.html:471 src/templates/settings.html:179
 msgid "Type something..."
 msgstr "Bir şeyler yazın..."
 
@@ -421,13 +421,13 @@ msgid "Display Weeks:"
 msgstr "Gösterilecek Hafta Sayısı:"
 
 #: src/plugins/calendar/settings.html:86 src/plugins/comic/settings.html:20
-#: src/plugins/currency_gold/settings.html:17 src/plugins/rss/settings.html:15
+#: src/plugins/currency_gold/settings.html:26 src/plugins/rss/settings.html:15
 #: src/plugins/todo_list/settings.html:51
 msgid "Font Size:"
 msgstr "Yazı Boyutu:"
 
 #: src/plugins/calendar/settings.html:88
-#: src/plugins/currency_gold/settings.html:19 src/plugins/rss/settings.html:17
+#: src/plugins/currency_gold/settings.html:28 src/plugins/rss/settings.html:17
 #: src/plugins/todo_list/settings.html:53
 msgid "Extra Small"
 msgstr "Çok Küçük"
@@ -437,19 +437,19 @@ msgid "Smaller"
 msgstr "Daha Küçük"
 
 #: src/plugins/calendar/settings.html:90
-#: src/plugins/currency_gold/settings.html:20 src/plugins/rss/settings.html:18
+#: src/plugins/currency_gold/settings.html:29 src/plugins/rss/settings.html:18
 #: src/plugins/todo_list/settings.html:54
 msgid "Small"
 msgstr "Küçük"
 
 #: src/plugins/calendar/settings.html:91
-#: src/plugins/currency_gold/settings.html:21 src/plugins/rss/settings.html:19
+#: src/plugins/currency_gold/settings.html:30 src/plugins/rss/settings.html:19
 #: src/plugins/todo_list/settings.html:55
 msgid "Normal"
 msgstr "Normal"
 
 #: src/plugins/calendar/settings.html:92
-#: src/plugins/currency_gold/settings.html:22 src/plugins/rss/settings.html:20
+#: src/plugins/currency_gold/settings.html:31 src/plugins/rss/settings.html:20
 #: src/plugins/todo_list/settings.html:56
 msgid "Large"
 msgstr "Büyük"
@@ -459,7 +459,7 @@ msgid "Larger"
 msgstr "Daha Büyük"
 
 #: src/plugins/calendar/settings.html:94
-#: src/plugins/currency_gold/settings.html:23 src/plugins/rss/settings.html:21
+#: src/plugins/currency_gold/settings.html:32 src/plugins/rss/settings.html:21
 #: src/plugins/todo_list/settings.html:57
 msgid "Extra Larger"
 msgstr "Çok Büyük"
@@ -572,24 +572,44 @@ msgstr "14 Ayar Altın (gram)"
 msgid "Silver (gram)"
 msgstr "Gümüş (gram)"
 
-#: src/plugins/currency_gold/currency_gold.py:50
+#: src/plugins/currency_gold/currency_gold.py:62
+msgid "Pure Au gr"
+msgstr "Has gr"
+
+#: src/plugins/currency_gold/currency_gold.py:63
+msgid "Quarter"
+msgstr "Çeyrek"
+
+#: src/plugins/currency_gold/currency_gold.py:64
+msgid "Half"
+msgstr "Yarım"
+
+#: src/plugins/currency_gold/currency_gold.py:65
+msgid "Full"
+msgstr "Tam"
+
+#: src/plugins/currency_gold/currency_gold.py:66
+msgid "Republic"
+msgstr "Cumh."
+
+#: src/plugins/currency_gold/currency_gold.py:76
 msgid "Currencies"
 msgstr "Döviz"
 
-#: src/plugins/currency_gold/currency_gold.py:50
+#: src/plugins/currency_gold/currency_gold.py:76
 msgid "Gold & Precious Metals"
 msgstr "Altın ve Değerli Metaller"
 
-#: src/plugins/currency_gold/currency_gold.py:77
+#: src/plugins/currency_gold/currency_gold.py:103
 msgid "Could not fetch exchange rates or gold prices."
 msgstr "Döviz kurları veya altın fiyatları alınamadı."
 
-#: src/plugins/currency_gold/currency_gold.py:88
+#: src/plugins/currency_gold/currency_gold.py:115
 #: src/plugins/currency_gold/settings.html:4 src/utils/i18n_strings.py:9
 msgid "Currency & Gold"
 msgstr "Döviz ve Altın"
 
-#: src/plugins/currency_gold/currency_gold.py:168
+#: src/plugins/currency_gold/currency_gold.py:207
 msgid "spot gold (calculated)"
 msgstr "ons altın (hesaplanan)"
 
@@ -597,7 +617,31 @@ msgstr "ons altın (hesaplanan)"
 msgid "Show Daily Change:"
 msgstr "Günlük Değişimi Göster:"
 
-#: src/plugins/currency_gold/settings.html:44
+#: src/plugins/currency_gold/settings.html:17
+msgid "Labels:"
+msgstr "Etiketler:"
+
+#: src/plugins/currency_gold/settings.html:19
+msgid "Automatic (short when small)"
+msgstr "Otomatik (küçükken kısa)"
+
+#: src/plugins/currency_gold/settings.html:20
+msgid "Full names"
+msgstr "Tam adlar"
+
+#: src/plugins/currency_gold/settings.html:21
+msgid "Short ($, €, Au gr)"
+msgstr "Kısa ($, €, Au gr)"
+
+#: src/plugins/currency_gold/settings.html:23
+msgid ""
+"Short labels drop the title and group headings and use symbols, so a "
+"small dashboard widget stays readable."
+msgstr ""
+"Kısa etiketlerde başlık ve grup başlıkları gizlenir, semboller "
+"kullanılır; böylece küçük bir pano bileşeni okunaklı kalır."
+
+#: src/plugins/currency_gold/settings.html:53
 msgid ""
 "Prices are provided by Truncgil Finans. If it is unavailable, official "
 "TCMB exchange rates and a calculated gram gold price are used instead."
@@ -617,64 +661,63 @@ msgstr "Satış"
 msgid "Change"
 msgstr "Değişim"
 
-#: src/plugins/currency_gold/render/currency_gold.html:34
+#: src/plugins/currency_gold/render/currency_gold.html:39
 #, python-format
 msgid "Last update: %(time)s"
 msgstr "Son güncelleme: %(time)s"
 
-#: src/plugins/dashboard/dashboard.py:74
+#: src/plugins/dashboard/dashboard.py:76
 msgid "Add at least one widget to the dashboard."
 msgstr "Panoya en az bir bileşen ekleyin."
 
-#: src/plugins/dashboard/dashboard.py:96
+#: src/plugins/dashboard/dashboard.py:98
 msgid "Failed to render the dashboard."
 msgstr "Pano çizilemedi."
 
-#: src/plugins/dashboard/dashboard.py:198
+#: src/plugins/dashboard/dashboard.py:210
 msgid "A dashboard cannot contain another dashboard."
 msgstr "Bir pano başka bir pano içeremez."
 
-#: src/plugins/dashboard/dashboard.py:202
+#: src/plugins/dashboard/dashboard.py:214
 #, python-format
 msgid "Plugin instance '%(name)s' not found."
 msgstr "'%(name)s' eklenti örneği bulunamadı."
 
-#: src/plugins/dashboard/dashboard.py:205
+#: src/plugins/dashboard/dashboard.py:217
 #, python-format
 msgid "Plugin '%(plugin_id)s' is not installed."
 msgstr "'%(plugin_id)s' eklentisi yüklü değil."
 
-#: src/plugins/dashboard/settings.html:120
-msgid ""
-"No saved plugin instances yet. Configure plugins such as Clock, Weather "
-"or Currency & Gold on their own pages and add them to a playlist (tick "
-"\"Only use inside dashboards\" to keep them out of the rotation); they "
-"will then appear here as widgets."
-msgstr ""
-"Henüz kayıtlı eklenti örneği yok. Saat, Hava Durumu veya Döviz ve Altın "
-"gibi eklentileri kendi sayfalarında ayarlayıp bir oynatma listesine "
-"ekleyin (sırayla tek başına gösterilmemeleri için \"Sadece panolarda "
-"kullan\" seçeneğini işaretleyin); ardından burada bileşen olarak "
-"görünürler."
-
-#: src/plugins/dashboard/settings.html:126
+#: src/plugins/dashboard/settings.html:118
 msgid "Widgets:"
 msgstr "Bileşenler:"
 
-#: src/plugins/dashboard/settings.html:130
-msgid "dashboard only"
-msgstr "sadece pano"
-
-#: src/plugins/dashboard/settings.html:134
+#: src/plugins/dashboard/settings.html:123
 msgid "Add Widget"
 msgstr "Bileşen Ekle"
 
-#: src/plugins/dashboard/settings.html:137
-#: src/plugins/dashboard/settings.html:175
+#: src/plugins/dashboard/settings.html:125
+msgid "Reload the list of saved widgets"
+msgstr "Kayıtlı bileşen listesini yenile"
+
+#: src/plugins/dashboard/settings.html:129
+#: src/plugins/dashboard/settings.html:176
 msgid "Preview"
 msgstr "Önizle"
 
-#: src/plugins/dashboard/settings.html:146
+#: src/plugins/dashboard/settings.html:134
+msgid ""
+"Any plugin can be a widget: pick it under \"Create new widget\", "
+"configure it in the tab that opens and save it with \"Add to Playlist\" "
+"(\"Only use inside dashboards\" is ticked). Back on this tab the list "
+"updates by itself and your layout is kept."
+msgstr ""
+"Her eklenti bileşen olabilir: \"Yeni bileşen oluştur\" altından seçin, "
+"açılan sekmede ayarlayıp \"Listeye Ekle\" ile kaydedin (\"Sadece "
+"panolarda kullan\" işaretli gelir). Bu sekmeye döndüğünüzde liste "
+"kendiliğinden yenilenir, yerleşiminiz korunur."
+
+#: src/plugins/dashboard/settings.html:142
 #, python-format
 msgid ""
 "Drag a widget to move it, drag its bottom-right corner to resize it. "
@@ -685,37 +728,53 @@ msgstr ""
 "köşesinden çekin. Bileşenler %(columns)s × %(rows)s ızgaraya oturur. "
 "Ekranı güncellemeden gerçek sonucu görmek için Önizle'yi kullanın."
 
-#: src/plugins/dashboard/settings.html:149
+#: src/plugins/dashboard/settings.html:145
 msgid "Some widgets overlap; the later one is drawn on top."
 msgstr "Bazı bileşenler üst üste biniyor; sonra eklenen üstte çizilir."
 
-#: src/plugins/dashboard/settings.html:154
+#: src/plugins/dashboard/settings.html:150
 msgid "Gap between widgets:"
 msgstr "Bileşenler arası boşluk:"
 
-#: src/plugins/dashboard/settings.html:156 src/templates/plugin.html:350
-#: src/templates/plugin.html:354 src/templates/plugin.html:358
-#: src/templates/plugin.html:362
+#: src/plugins/dashboard/settings.html:152 src/templates/plugin.html:356
+#: src/templates/plugin.html:360 src/templates/plugin.html:364
+#: src/templates/plugin.html:368
 msgid "px"
 msgstr "px"
 
-#: src/plugins/dashboard/settings.html:159
+#: src/plugins/dashboard/settings.html:155
 msgid "Widget Borders:"
 msgstr "Bileşen Çerçeveleri:"
 
+#: src/plugins/dashboard/settings.html:169
+msgid "Saved widgets"
+msgstr "Kayıtlı bileşenler"
+
+#: src/plugins/dashboard/settings.html:170
+msgid "Create new widget"
+msgstr "Yeni bileşen oluştur"
+
+#: src/plugins/dashboard/settings.html:171
+msgid "No saved widgets yet"
+msgstr "Henüz kayıtlı bileşen yok"
+
 #: src/plugins/dashboard/settings.html:172
+msgid "dashboard only"
+msgstr "sadece pano"
+
+#: src/plugins/dashboard/settings.html:173
 msgid "not found"
 msgstr "bulunamadı"
 
-#: src/plugins/dashboard/settings.html:173
+#: src/plugins/dashboard/settings.html:174
 msgid "Remove"
 msgstr "Kaldır"
 
-#: src/plugins/dashboard/settings.html:174
+#: src/plugins/dashboard/settings.html:175
 msgid "Rendering…"
 msgstr "Çiziliyor…"
 
-#: src/plugins/dashboard/settings.html:176
+#: src/plugins/dashboard/settings.html:177
 msgid "Preview failed"
 msgstr "Önizleme başarısız"
 
@@ -794,7 +853,7 @@ msgstr "Rastgele Sıralama:"
 
 #: src/plugins/image_album/settings.html:36
 #: src/plugins/image_folder/settings.html:13
-#: src/plugins/image_upload/settings.html:21 src/templates/plugin.html:369
+#: src/plugins/image_upload/settings.html:21 src/templates/plugin.html:375
 msgid "Background:"
 msgstr "Arka Plan:"
 
@@ -806,7 +865,7 @@ msgstr "Bulanıklaştır"
 
 #: src/plugins/image_album/settings.html:41
 #: src/plugins/image_folder/settings.html:18
-#: src/plugins/image_upload/settings.html:26 src/templates/plugin.html:373
+#: src/plugins/image_upload/settings.html:26 src/templates/plugin.html:379
 msgid "Color"
 msgstr "Renk"
 
@@ -1091,8 +1150,8 @@ msgstr "Yerel Saat Dilimini Kullan"
 
 #: src/plugins/weather/settings.html:114 src/templates/apikeys.html:252
 #: src/templates/inky.html:184 src/templates/playlist.html:494
-#: src/templates/playlist.html:511 src/templates/plugin.html:409
-#: src/templates/plugin.html:442 src/templates/plugin.html:481
+#: src/templates/playlist.html:511 src/templates/plugin.html:415
+#: src/templates/plugin.html:448 src/templates/plugin.html:487
 #: src/templates/settings.html:445
 msgid "Save"
 msgstr "Kaydet"
@@ -1307,7 +1366,7 @@ msgid "Display from"
 msgstr "Gösterim aralığı:"
 
 #: src/templates/playlist.html:504 src/templates/plugin.html:306
-#: src/templates/plugin.html:427
+#: src/templates/plugin.html:433
 msgid "Refresh Settings"
 msgstr "Yenileme Ayarları"
 
@@ -1320,63 +1379,75 @@ msgstr "%(name)s Ayarları"
 msgid "Requires API Key"
 msgstr "API Anahtarı Gerekir"
 
-#: src/templates/plugin.html:322
+#: src/templates/plugin.html:315
+msgid ""
+"Creating a dashboard widget: configure it below and save it with \"Add to"
+" Playlist\". \"Only use inside dashboards\" is already ticked, so it will"
+" not show up on its own. Then return to the Dashboard tab; the widget "
+"appears in its list."
+msgstr ""
+"Pano bileşeni oluşturuyorsunuz: aşağıda ayarlayıp \"Listeye Ekle\" ile "
+"kaydedin. \"Sadece panolarda kullan\" zaten işaretli, bu yüzden tek "
+"başına gösterilmez. Ardından Pano sekmesine dönün; bileşen listede "
+"görünür."
+
+#: src/templates/plugin.html:328
 msgid "Style"
 msgstr "Stil"
 
-#: src/templates/plugin.html:328
+#: src/templates/plugin.html:334
 msgid "Frame:"
 msgstr "Çerçeve:"
 
-#: src/templates/plugin.html:347
+#: src/templates/plugin.html:353
 msgid "Margins:"
 msgstr "Kenar Boşlukları:"
 
-#: src/templates/plugin.html:349
+#: src/templates/plugin.html:355
 msgid "Top"
 msgstr "Üst"
 
-#: src/templates/plugin.html:353
+#: src/templates/plugin.html:359
 msgid "Bottom"
 msgstr "Alt"
 
-#: src/templates/plugin.html:357
+#: src/templates/plugin.html:363
 msgid "Left"
 msgstr "Sol"
 
-#: src/templates/plugin.html:361
+#: src/templates/plugin.html:367
 msgid "Right"
 msgstr "Sağ"
 
-#: src/templates/plugin.html:380
+#: src/templates/plugin.html:386
 msgid "Image"
 msgstr "Görsel"
 
-#: src/templates/plugin.html:382
+#: src/templates/plugin.html:388
 msgid "Upload Image"
 msgstr "Görsel Yükle"
 
-#: src/templates/plugin.html:396
+#: src/templates/plugin.html:402
 msgid "Text Color:"
 msgstr "Metin Rengi:"
 
-#: src/templates/plugin.html:410
+#: src/templates/plugin.html:416
 msgid "Save As..."
 msgstr "Farklı Kaydet..."
 
-#: src/templates/plugin.html:412
+#: src/templates/plugin.html:418
 msgid "Update Now"
 msgstr "Şimdi Güncelle"
 
-#: src/templates/plugin.html:413 src/templates/plugin.html:452
+#: src/templates/plugin.html:419 src/templates/plugin.html:458
 msgid "Add to Playlist"
 msgstr "Listeye Ekle"
 
-#: src/templates/plugin.html:436 src/templates/plugin.html:474
+#: src/templates/plugin.html:442 src/templates/plugin.html:480
 msgid "Only use inside dashboards"
 msgstr "Sadece panolarda kullan"
 
-#: src/templates/plugin.html:437 src/templates/plugin.html:475
+#: src/templates/plugin.html:443 src/templates/plugin.html:481
 msgid ""
 "The instance is not shown on its own in the playlist rotation; it can "
 "still be placed as a widget in a Dashboard."
@@ -1384,11 +1455,11 @@ msgstr ""
 "Bu örnek oynatma listesi sırasında tek başına gösterilmez; yine de bir "
 "Panoya bileşen olarak eklenebilir."
 
-#: src/templates/plugin.html:456
+#: src/templates/plugin.html:462
 msgid "Playlist:"
 msgstr "Oynatma Listesi:"
 
-#: src/templates/plugin.html:464
+#: src/templates/plugin.html:470
 msgid "Instance Name:"
 msgstr "Örnek Adı:"
 

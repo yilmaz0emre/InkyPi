@@ -58,11 +58,13 @@ class Dashboard(BasePlugin):
         template_params = super().generate_settings_template()
         template_params["dashboard_grid"] = {"columns": GRID_COLUMNS, "rows": GRID_ROWS}
         template_params["dashboard_instances"] = []
+        template_params["dashboard_plugins"] = []
         template_params["dashboard_resolution"] = [800, 480]
         try:
             from flask import current_app
             device_config = current_app.config["DEVICE_CONFIG"]
             template_params["dashboard_instances"] = list_widget_instances(device_config)
+            template_params["dashboard_plugins"] = list_widget_plugins(device_config)
             template_params["dashboard_resolution"] = list(get_oriented_resolution(device_config))
         except Exception as e:
             logger.warning(f"Could not load dashboard widget instances: {e}")
@@ -120,6 +122,16 @@ def list_widget_instances(device_config):
                 "dashboard_only": instance.dashboard_only,
             })
     return instances
+
+
+def list_widget_plugins(device_config):
+    """Installed plugins that a new widget can be created from, sorted by translated name."""
+    plugins = [
+        {"id": p.get("id"), "name": i18n.gettext(p.get("display_name", p.get("id")))}
+        for p in device_config.get_plugins()
+        if p.get("id") != DASHBOARD_PLUGIN_ID and not p.get("disabled", False)
+    ]
+    return sorted(plugins, key=lambda p: p["name"].casefold())
 
 
 def parse_layout(settings):

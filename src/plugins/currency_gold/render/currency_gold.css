@@ -11,6 +11,32 @@
     --row-size: calc(min(70dvh / (var(--rows) + 1), 6vw) * var(--font-scale) * var(--fit));
 }
 
+/* Compact layout (short labels, no headings): give the freed space to the numbers.
+   The size starts large and the fit script shrinks it until the table also fits the width. */
+.currency-gold.compact {
+    --row-size: calc(min(85dvh / (var(--rows) + 1), 14vw) * var(--font-scale) * var(--fit));
+}
+
+.currency-gold.compact .quotes .name {
+    font-weight: bold;
+}
+
+.currency-gold.compact .quotes td,
+.currency-gold.compact .quotes th {
+    padding-left: 0.35em;
+    padding-right: 0.35em;
+}
+
+/* only the ▲/▼ arrow is shown, so the change column stays narrow */
+.currency-gold.compact .quotes .change {
+    padding-left: 0.15em;
+    padding-right: 0;
+}
+
+.currency-gold.compact .footer {
+    font-size: calc(min(5dvh, 4.5vw) * var(--font-scale));
+}
+
 .currency-gold .title {
     text-align: center;
     font-size: calc(min(7dvh, 5vw) * var(--font-scale) * var(--fit));

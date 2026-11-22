@@ -59,6 +59,8 @@ def plugin_page(plugin_id):
                 template_params["dashboard_only"] = plugin_instance.dashboard_only
 
             template_params["playlists"] = playlist_manager.get_playlist_names()
+            # opened from the dashboard editor to create a new widget
+            template_params["for_dashboard"] = request.args.get("for_dashboard") == "1" and plugin_id != "dashboard"
         except Exception as e:
             logger.exception("EXCEPTION CAUGHT: " + str(e))
             return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
@@ -290,3 +292,11 @@ def preview_plugin():
     except Exception as e:
         logger.exception(f"Error in preview_plugin: {str(e)}")
         return jsonify({"error": _("An error occurred: %(error)s", error=str(e))}), 500
+
+
+@plugin_bp.route('/dashboard_instances')
+def dashboard_instances():
+    """Saved plugin instances that can be placed on a dashboard (used by the editor to refresh its list)."""
+    from plugins.dashboard.dashboard import list_widget_instances
+    device_config = current_app.config['DEVICE_CONFIG']
+    return jsonify(list_widget_instances(device_config))

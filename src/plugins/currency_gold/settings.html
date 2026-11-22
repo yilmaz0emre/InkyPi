@@ -14,6 +14,15 @@
         </div>
     </div>
     <div class="form-group nowrap">
+        <label for="labelStyle" class="form-label">{{ _('Labels:') }}</label>
+        <select id="labelStyle" name="labelStyle" class="form-input">
+            <option value="auto">{{ _('Automatic (short when small)') }}</option>
+            <option value="full">{{ _('Full names') }}</option>
+            <option value="short">{{ _('Short ($, €, Au gr)') }}</option>
+        </select>
+        <span title="{{ _('Short labels drop the title and group headings and use symbols, so a small dashboard widget stays readable.') }}">ⓘ</span>
+    </div>
+    <div class="form-group nowrap">
         <label for="fontSize" class="form-label">{{ _('Font Size:') }}</label>
         <select id="fontSize" name="fontSize" class="form-input">
             <option value="x-small">{{ _('Extra Small') }}</option>
@@ -51,18 +60,21 @@
         let selected = defaults;
         let fontSize = "normal";
         let showChange = true;
+        let labelStyle = "auto";
 
         if (loadPluginSettings) {
             document.getElementById('title').value = pluginSettings.title || '';
             selected = pluginSettings["items[]"] || defaults;
             fontSize = pluginSettings.fontSize || "normal";
             showChange = pluginSettings.showChange !== "false";
+            labelStyle = pluginSettings.labelStyle || "auto";
         }
 
         document.querySelectorAll('.currency-gold-item').forEach(checkbox => {
             checkbox.checked = selected.includes(checkbox.value);
         });
         document.getElementById('fontSize').value = fontSize;
+        document.getElementById('labelStyle').value = labelStyle;
         document.getElementById('showChangeToggle').checked = showChange;
         document.getElementById('showChange').value = showChange ? 'true' : 'false';
     });

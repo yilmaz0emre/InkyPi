@@ -114,28 +114,24 @@
 <input type="hidden" id="dashLayout" name="layout" value="">
 <input type="hidden" id="showBorders" name="showBorders" value="true">
 
-{% if not dashboard_instances %}
-<div class="form-group">
-    <span style="color: var(--text-primary);">
-        {{ _('No saved plugin instances yet. Configure plugins such as Clock, Weather or Currency & Gold on their own pages and add them to a playlist (tick "Only use inside dashboards" to keep them out of the rotation); they will then appear here as widgets.') }}
-    </span>
-</div>
-{% endif %}
-
 <div class="form-group">
     <label class="form-label">{{ _('Widgets:') }}</label>
     <div class="dash-toolbar">
-        <select id="dashInstanceSelect" class="form-input" {% if not dashboard_instances %}disabled{% endif %}>
-            {% for instance in dashboard_instances %}
-            <option value="{{ loop.index0 }}">{{ instance.plugin_name }} – {{ instance.name }}{% if instance.dashboard_only %} ({{ _('dashboard only') }}){% endif %}</option>
-            {% endfor %}
-        </select>
-        <button type="button" class="header-button" onclick="dashboardEditor.addSelected()" {% if not dashboard_instances %}disabled{% endif %}>
+        <!-- Filled by the script: saved instances, then every installed plugin to create a new widget -->
+        <select id="dashInstanceSelect" class="form-input"></select>
+        <button type="button" class="header-button" onclick="dashboardEditor.addSelected()">
             + {{ _('Add Widget') }}
+        </button>
+        <button type="button" class="header-button" onclick="dashboardEditor.refreshInstances()" title="{{ _('Reload the list of saved widgets') }}">
+            ↻
         </button>
         <button type="button" class="header-button" id="dashPreviewButton" onclick="dashboardEditor.preview()">
             {{ _('Preview') }}
         </button>
+    </div>
+
+    <div class="dash-hint" style="margin: -4px 0 8px 0;">
+        {{ _('Any plugin can be a widget: pick it under "Create new widget", configure it in the tab that opens and save it with "Add to Playlist" ("Only use inside dashboards" is ticked). Back on this tab the list updates by itself and your layout is kept.') }}
     </div>
 
     <div id="dashCanvas" class="dash-canvas" style="aspect-ratio: {{ dashboard_resolution[0] }} / {{ dashboard_resolution[1] }};">
@@ -167,8 +163,13 @@
 <script>
     const dashboardEditor = (() => {
         const GRID = {{ dashboard_grid | tojson }};
-        const INSTANCES = {{ dashboard_instances | tojson }};
+        const PLUGINS = {{ dashboard_plugins | tojson }};
+        let instances = {{ dashboard_instances | tojson }};
         const TEXT = {
+            savedGroup: {{ _('Saved widgets') | tojson }},
+            newGroup: {{ _('Create new widget') | tojson }},
+            noSaved: {{ _('No saved widgets yet') | tojson }},
+            dashboardOnly: {{ _('dashboard only') | tojson }},
             missing: {{ _('not found') | tojson }},
             remove: {{ _('Remove') | tojson }},
             previewing: {{ _('Rendering…') | tojson }},
@@ -181,7 +182,50 @@
         const previewImage = document.getElementById('dashPreviewImage');
         let widgets = [];
 
-        const findInstance = (w) => INSTANCES.find(i => i.plugin_id === w.plugin_id && i.name === w.name);
+        const findInstance = (w) => instances.find(i => i.plugin_id === w.plugin_id && i.name === w.name);
+
+        function fillSelect() {
+            const select = document.getElementById('dashInstanceSelect');
+            const previous = select.value;
+            select.innerHTML = '';
+
+            const saved = document.createElement('optgroup');
+            saved.label = TEXT.savedGroup;
+            instances.forEach((instance, index) => {
+                const option = new Option(`${instance.plugin_name} – ${instance.name}` + (instance.dashboard_only ? ` (${TEXT.dashboardOnly})` : ''), `saved:${index}`);
+                saved.appendChild(option);
+            });
+            if (!instances.length) {
+                const empty = new Option(TEXT.noSaved, '');
+                empty.disabled = true;
+                saved.appendChild(empty);
+            }
+            select.appendChild(saved);
+
+            const create = document.createElement('optgroup');
+            create.label = TEXT.newGroup;
+            PLUGINS.forEach(plugin => create.appendChild(new Option(`+ ${plugin.name}`, `new:${plugin.id}`)));
+            select.appendChild(create);
+
+            if ([...select.options].some(o => o.value === previous && !o.disabled)) {
+                select.value = previous;
+            } else {
+                const firstEnabled = [...select.options].find(o => !o.disabled);
+                if (firstEnabled) select.value = firstEnabled.value;
+            }
+        }
+
+        async function refreshInstances() {
+            try {
+                const response = await fetch("{{ url_for('plugin.dashboard_instances') }}", { cache: 'no-store' });
+                if (!response.ok) return;
+                instances = await response.json();
+                fillSelect();
+                render();  // widgets whose instance was missing may exist now
+            } catch (e) {
+                console.error('Could not refresh dashboard widgets', e);
+            }
+        }
         const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 
         function save() {
@@ -301,8 +345,14 @@
         }
 
         function addSelected() {
-            const select = document.getElementById('dashInstanceSelect');
-            const instance = INSTANCES[parseInt(select.value, 10)];
+            const value = document.getElementById('dashInstanceSelect').value || '';
+            if (value.startsWith('new:')) {
+                // Configure and save the new widget in its own tab; this tab refreshes the list on focus
+                const pluginId = value.slice(4);
+                window.open("{{ url_for('plugin.plugin_page', plugin_id='') }}" + encodeURIComponent(pluginId) + '?for_dashboard=1', '_blank');
+                return;
+            }
+            const instance = instances[parseInt(value.replace('saved:', ''), 10)];
             if (!instance) return;
             const size = Math.max(2, Math.floor(Math.min(GRID.columns, GRID.rows) / 2));
             widgets.push({ plugin_id: instance.plugin_id, name: instance.name, ...freeSpot(size, size) });
@@ -353,7 +403,10 @@
             render();
         }
 
-        return { load, addSelected, preview };
+        fillSelect();
+        window.addEventListener('focus', refreshInstances);
+
+        return { load, addSelected, preview, refreshInstances };
     })();
 
     document.addEventListener('DOMContentLoaded', () => {

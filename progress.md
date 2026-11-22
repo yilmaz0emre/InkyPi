@@ -128,8 +128,13 @@ wake (PiSugar / RTC-based power board).
     via new generic `POST /preview_plugin` (returns PNG, display untouched)
   - A failing widget shows an error box instead of failing the whole dashboard
   - Tests: `tests/test_dashboard.py`; editor drag/resize verified in headless Chrome
-- [ ] Some plugins are not designed for small boxes (e.g. weather text gets very small); consider
-  per-widget minimum sizes or compact layouts
+- [x] Any installed plugin can be added: editor lists saved widgets plus "Create new widget" for every
+  plugin (opens its page with `?for_dashboard=1`, "Only use inside dashboards" pre-ticked); the list
+  refreshes on tab focus via `GET /dashboard_instances`, the unsaved layout is kept
+- [x] Currency & Gold compact layout: label style auto/full/short; auto switches below 450×260 px to
+  symbols ($, €, Au gr, Çeyrek), no title/group headings, arrow-only change column
+- [ ] Other plugins are not designed for small boxes (e.g. weather text gets very small); consider
+  compact layouts for them too
 - [ ] Measure render time on a Pi Zero 2 W
 
 ## Notes

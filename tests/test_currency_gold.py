@@ -200,3 +200,50 @@ def test_generate_image_raises_when_no_data(monkeypatch):
 
     with pytest.raises(RuntimeError):
         plugin.generate_image({}, MagicMock())
+
+
+# --- compact layout (short labels) ---
+
+@pytest.mark.parametrize("style, dimensions, expected", [
+    ("auto", (800, 480), False),
+    ("auto", (397, 480), True),   # narrow dashboard widget
+    ("auto", (800, 200), True),   # short dashboard widget
+    ("full", (300, 200), False),
+    ("short", (800, 480), True),
+    ("bogus", (800, 480), False),
+])
+def test_use_compact_layout(style, dimensions, expected):
+    assert cg.use_compact_layout(style, dimensions) is expected
+
+
+def test_build_rows_short_labels():
+    quotes = {key: {"buying": 1.0, "selling": 2.0, "change": 0.1} for key in ["USD", "EUR", "GRA", "CEYREKALTIN"]}
+
+    groups = cg.build_rows(["USD", "EUR", "GRA", "CEYREKALTIN"], quotes, "tr", short_labels=True)
+
+    assert [row["label"] for group in groups for row in group["rows"]] == ["$", "€", "Au gr", "Çeyrek"]
+    assert set(cg.SHORT_LABELS) == set(cg.ITEMS)
+
+
+def test_compact_render_hides_headings():
+    config = MagicMock()
+    config.get_config.side_effect = lambda key=None, default=None: {"language": "tr"}.get(key, default)
+    i18n.init(config)
+    try:
+        plugin = cg.CurrencyGold({"id": "currency_gold"})
+        groups = cg.build_rows(["USD", "GRA"], {
+            "USD": {"buying": 50.56, "selling": 50.57, "change": 0.22},
+            "GRA": {"buying": 5730.97, "selling": 5731.95, "change": -3.48},
+        }, "tr", short_labels=True)
+        html = plugin.env.get_template("currency_gold.html").render(
+            title="Döviz ve Altın", compact=True, groups=groups, show_change=True, updated="22 Kas 14:41",
+            source="Truncgil Finans", font_scale=1, row_count=2, plugin_settings={})
+    finally:
+        i18n.init(None)
+
+    assert 'class="currency-gold compact"' in html
+    assert ">$<" in html and ">Au gr<" in html
+    for hidden in ["Döviz ve Altın", "group-row", "Son güncelleme", "Truncgil Finans"]:
+        assert hidden not in html, hidden
+    assert "22 Kas 14:41" in html
+    assert "%0,22" not in html and "▲" in html  # compact change column shows only the arrow

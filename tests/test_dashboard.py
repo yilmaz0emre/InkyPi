@@ -24,6 +24,10 @@ def device_config(tmp_path, monkeypatch):
     monkeypatch.setattr(Config, "config_file", str(config_file))
     config = Config()
     monkeypatch.setattr(config, "plugin_image_dir", str(tmp_path), raising=False)
+    # start from one empty playlist, whatever the local dev config contains
+    playlist_manager = config.get_playlist_manager()
+    playlist_manager.playlists = []
+    playlist_manager.add_default_playlist()
     load_plugins(config.get_plugins())
     i18n.init(config)
     yield config
@@ -128,15 +132,19 @@ def _rect(width=300, height=200, border=True):
     return {"left": 0, "top": 0, "width": width, "height": height, "border": border}
 
 
-def test_html_widget_is_captured_at_inner_size(device_config, monkeypatch):
+@pytest.mark.parametrize("size, label", [
+    ((300, 200), ">$<"),                # small box -> currency plugin switches to short labels
+    ((600, 400), "Amerikan Doları"),
+])
+def test_html_widget_is_captured_at_inner_size(device_config, monkeypatch, size, label):
     monkeypatch.setattr(cg, "fetch_quotes", lambda selected: FAKE_QUOTES)
     add_instance(device_config, "currency_gold", "Kurlar")
 
-    result = db.render_widget({"plugin_id": "currency_gold", "name": "Kurlar"}, _rect(), device_config)
+    result = db.render_widget({"plugin_id": "currency_gold", "name": "Kurlar"}, _rect(*size), device_config)
 
     assert result["kind"] == "html"
-    assert (result["inner_width"], result["inner_height"]) == (300 - 2 * db.BORDER_WIDTH, 200 - 2 * db.BORDER_WIDTH)
-    assert "Amerikan Doları" in result["html"]
+    assert (result["inner_width"], result["inner_height"]) == (size[0] - 2 * db.BORDER_WIDTH, size[1] - 2 * db.BORDER_WIDTH)
+    assert label in result["html"]
 
 
 def test_image_widget_is_embedded_and_resized(device_config, monkeypatch):
@@ -292,3 +300,38 @@ def test_preview_unknown_plugin(client):
     res = client.post("/preview_plugin", data={"plugin_id": "nope"})
 
     assert res.status_code == 404
+
+
+def test_list_widget_plugins_sorted_without_dashboard(device_config):
+    plugins = db.list_widget_plugins(device_config)
+
+    ids = [p["id"] for p in plugins]
+    assert "dashboard" not in ids
+    assert {"clock", "weather", "currency_gold", "calendar"} <= set(ids)
+    names = [p["name"] for p in plugins]
+    assert names == sorted(names, key=str.casefold)
+    assert "Döviz ve Altın" in names  # translated
+
+
+def test_dashboard_instances_endpoint(client, device_config):
+    add_instance(device_config, "clock", "Saat")
+
+    res = client.get("/dashboard_instances")
+
+    assert res.status_code == 200
+    assert [(i["plugin_id"], i["name"]) for i in res.get_json()] == [("clock", "Saat")]
+
+
+def test_plugin_page_for_dashboard_prechecks_option(client, monkeypatch):
+    import blueprints.plugin as plugin_module
+    rendered = {}
+    monkeypatch.setattr(plugin_module, "render_template", lambda template, **params: rendered.update(params) or "ok")
+
+    client.get("/plugin/clock?for_dashboard=1")
+    assert rendered["for_dashboard"] is True
+
+    client.get("/plugin/clock")
+    assert rendered["for_dashboard"] is False
+
+    client.get("/plugin/dashboard?for_dashboard=1")
+    assert rendered["for_dashboard"] is False

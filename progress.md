@@ -95,9 +95,9 @@ wake (PiSugar / RTC-based power board).
 
 - [x] Fix power save review items C1–C3 and I4–I10
 - [ ] Test power save mode on real Pi hardware (Wi-Fi reconnect via `wait_for_network`, rfkill, LED)
-- [ ] Review untranslated / fuzzy entries in `src/translations/tr/LC_MESSAGES/messages.po`
-- [ ] Check plugin render templates (rendered on the display) for remaining hard-coded English
-- [ ] Update docs (`docs/development.md`) with i18n workflow
+- [x] Review untranslated / fuzzy entries in `src/translations/tr/LC_MESSAGES/messages.po` (0 / 341 missing)
+- [x] Check plugin render templates (rendered on the display) for remaining hard-coded English (GitHub metric titles, calendar all-day / more texts, RSS image alt)
+- [x] Update docs (`docs/development.md`) with i18n workflow
 - [ ] Open PR `feature/i18n-turkish` → `main`
 
 ## Notes

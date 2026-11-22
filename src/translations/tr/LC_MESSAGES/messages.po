@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 14:18+0300\n"
+"POT-Creation-Date: 2026-11-22 14:23+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -452,6 +452,14 @@ msgstr "Daha Büyük"
 msgid "Extra Larger"
 msgstr "Çok Büyük"
 
+#: src/plugins/calendar/render/calendar.html:44
+msgid "all-day"
+msgstr "tüm gün"
+
+#: src/plugins/calendar/render/calendar.html:45
+msgid "more"
+msgstr "daha"
+
 #: src/plugins/clock/settings.html:2
 msgid "Clock Face:"
 msgstr "Saat Kadranı:"
@@ -476,13 +484,22 @@ msgstr "Çizgi Roman Başlığını ve Açıklamasını Göster:"
 msgid "Date"
 msgstr "Tarih"
 
-#: src/plugins/github/settings.html:3
-msgid "Type:"
-msgstr "Tür:"
-
+#: src/plugins/github/github_contributions.py:127
 #: src/plugins/github/settings.html:5
 msgid "Contributions"
 msgstr "Katkılar"
+
+#: src/plugins/github/github_contributions.py:128
+msgid "Current Streak"
+msgstr "Güncel Seri"
+
+#: src/plugins/github/github_contributions.py:129
+msgid "Longest Streak"
+msgstr "En Uzun Seri"
+
+#: src/plugins/github/settings.html:3
+msgid "Type:"
+msgstr "Tür:"
 
 #: src/plugins/github/settings.html:6
 msgid "Sponsors"
@@ -604,6 +621,10 @@ msgid "Warning: Do not run with untrusted URLs, as it may pose a security risk."
 msgstr ""
 "Uyarı: Güvenilmeyen bağlantılarla (URL) çalıştırmayın, güvenlik riski "
 "oluşturabilir."
+
+#: src/plugins/rss/render/rss.html:16
+msgid "Related image"
+msgstr "İlgili görsel"
 
 #: src/plugins/screenshot/settings.html:2
 msgid "URL:"

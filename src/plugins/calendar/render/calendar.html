@@ -40,6 +40,9 @@
             slotDuration: '01:00:00',
             expandRows: true,
             locale: "{{ plugin_settings.language or language or 'en' }}",
+            // Only Intl-based date names are localized (no FullCalendar locale bundle), so set the fixed texts
+            allDayText: {{ _('all-day') | tojson }},
+            moreLinkText: {{ _('more') | tojson }},
             firstDay: "{{ plugin_settings.weekStartDay or 0}}",
             slotLabelFormat: timeFormat,
             slotMinTime: "{{ plugin_settings.startTimeInterval or 00}}:00:00",

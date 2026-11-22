@@ -114,6 +114,52 @@ exit                                 # Exit devbox shell and deactivates Python 
 3. Check `mock_display_output/latest.png` for result
 4. Iterate quickly without deployment
 
+Run the unit tests with:
+
+```bash
+python -m pytest -q    # uses pytest.ini (testpaths=tests, pythonpath=src)
+```
+
+## Translations (i18n)
+
+The web UI and plugin output are translated with [Flask-Babel](https://python-babel.github.io/flask-babel/). English is the default; the active language is the `language` key in the device config (selected under **Settings**). Supported languages are listed in `SUPPORTED_LANGUAGES` in `src/utils/i18n.py`, and catalogs live in `src/translations/<lang>/LC_MESSAGES/`.
+
+### Marking strings
+
+| Where | How |
+| --- | --- |
+| Web UI templates (`src/templates/`, plugin `settings.html`) | `{{ _('Save') }}` |
+| Plugin render templates (`render/*.html`) | `{{ _('more') }}` — rendered with the device language |
+| Flask routes (request context) | `from flask_babel import gettext as _` |
+| Plugins / background thread (no request) | `from utils.i18n import gettext` (also `format_date`, `format_time`) |
+| Values defined in Python or JSON but translated later | Wrap with `N_('...')` so they are extracted, then translate where shown, e.g. `{{ _(metric.title) }}`. JSON-only strings (plugin display names) are registered in `src/utils/i18n_strings.py`. |
+
+Use named placeholders, never f-strings inside `_()`:
+
+```python
+_("Saved %(count)s API key(s)", count=len(keys))
+```
+
+### Updating catalogs
+
+```bash
+bash scripts/i18n.sh extract   # scan sources -> src/translations/messages.pot
+bash scripts/i18n.sh update    # merge new strings into each messages.po
+# translate the new / fuzzy entries in src/translations/<lang>/LC_MESSAGES/messages.po
+bash scripts/i18n.sh compile   # messages.po -> messages.mo
+bash scripts/i18n.sh all       # extract + update + compile in one step
+```
+
+`update` pre-fills new entries with *fuzzy* guesses that are often wrong — always review entries marked `#, fuzzy`, then remove the flag. Fuzzy entries are not used at runtime.
+
+The compiled `messages.mo` is committed on purpose so devices can deploy without a build step. **Always commit `messages.po` and `messages.mo` together.**
+
+### Adding a language
+
+1. `pybabel init -i src/translations/messages.pot -d src/translations -l <lang>`
+2. Add the code and its native name to `SUPPORTED_LANGUAGES` in `src/utils/i18n.py`
+3. Translate `messages.po`, run `bash scripts/i18n.sh compile`, and commit both files
+
 ## Other Requirements
 
 InkyPi relies on system packages for some features, which are normally installed via the `install.sh` script. **(Skip if using devbox method)**

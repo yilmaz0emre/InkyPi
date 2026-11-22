@@ -62,3 +62,19 @@ def test_format_time():
     dt = datetime(2026, 11, 14, 15, 5)
     assert i18n.format_time(dt, "24h", language="tr") == "15:05"
     assert i18n.format_time(dt, "24h", language="en") == "15:05"
+
+
+def test_plugin_render_template_translates_dynamic_titles():
+    """Plugin templates translate N_()-marked values passed from Python, e.g. GitHub metric titles."""
+    from plugins.base_plugin.base_plugin import BasePlugin
+
+    config = MagicMock()
+    config.get_config.side_effect = lambda key=None, default=None: {"language": "tr"}.get(key, default)
+    i18n.init(config)
+    try:
+        html = BasePlugin({"id": "github"}).env.get_template("github_contributions.html").render(
+            metrics=[{"title": "Current Streak", "value": 2}], username="x", grid=[], plugin_settings={})
+    finally:
+        i18n.init(None)
+
+    assert "Güncel Seri" in html

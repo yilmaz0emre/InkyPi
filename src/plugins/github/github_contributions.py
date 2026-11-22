@@ -1,6 +1,7 @@
 import requests
 import logging
 from datetime import datetime, date, timedelta
+from utils.i18n import N_
 
 logger = logging.getLogger(__name__)
 
@@ -122,7 +123,8 @@ def calculate_metrics(data):
             in_current_streak = False
 
     return [
-        {"title": "Contributions", "value": total},
-        {"title": "Current Streak", "value": current_streak},
-        {"title": "Longest Streak", "value": longest_streak},
+        # Titles are translated in the render template
+        {"title": N_("Contributions"), "value": total},
+        {"title": N_("Current Streak"), "value": current_streak},
+        {"title": N_("Longest Streak"), "value": longest_streak},
     ]

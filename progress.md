@@ -181,7 +181,13 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
   - Wi-Fi dropped under load (memory, voltage and load were fine) until Wi-Fi power save was disabled:
     `/etc/NetworkManager/conf.d/wifi-powersave-off.conf` (`wifi.powersave = 2`)
   - systemd journal is volatile (`Storage=volatile`), so logs from before a reboot are lost
-- [ ] Verify on hardware: offline badge, power save (on battery)
+- [x] Offline badge verified on the panel (2026-11-23): Zero timers shortened for the test (poll 30 s,
+  offline after 60 s), InkyPi on the Pi 5 stopped → badge drawn once after the second failed poll and
+  seen on the panel; service started again → last image redrawn without the badge. Timers back to the
+  defaults (300 s / 3600 s)
+- [x] Pi Zero language set to Turkish (`language: "tr"` in its device.json), so the badge reads
+  "Çevrimdışı · son güncelleme …"
+- [ ] Verify power save on the panel (once the Zero runs on battery)
 - Pi 5 rebooted 2026-11-22 onto kernel 6.12.115; InkyPi and Docker services came back on their own.
   Disk is tight (2.5 GB free of 58 GB); ask before rebooting (it also runs n8n/open-webui/ollama)
 - Decided 2026-11-22: device updates are **manual** (on request: `git pull && sudo bash install/update.sh`

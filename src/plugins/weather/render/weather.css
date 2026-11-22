@@ -271,6 +271,11 @@
   align-items: center;
 }
 
+/* "100 %" must stay on one line, otherwise it pushes the day's icon out of the box */
+.moon-phase-container span {
+  white-space: nowrap;
+}
+
 .min-max {
   font-size: 12cqmin;
   text-align: center;

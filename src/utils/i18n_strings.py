@@ -34,6 +34,14 @@ N_("UV Index")
 N_("Rain")
 N_("Air Quality")
 N_("Pressure")
+N_("Visibility")
+# air quality scale
+N_("Good")
+N_("Fair")
+N_("Moderate")
+N_("Poor")
+N_("Very Poor")
+N_("Ext Poor")
 
 # Countdown
 N_("Days Left")

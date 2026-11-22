@@ -16,6 +16,7 @@
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/main.css') }}">
     <script src="{{ url_for('static', filename='scripts/dark_mode.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/response_modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/confirm_click.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/refresh_settings_manager.js') }}"></script>
     <style>
         /* Plugin Instance Thumbnail */
@@ -440,7 +441,7 @@
                                 {% if plugin_instance.latest_refresh_time %}
                                     {% set refresh_time = plugin_instance.latest_refresh_time | format_relative_time %}
                                     <span class="latest-refresh" title="{{plugin_instance.latest_refresh_time}}">
-                                        Refreshed {{ refresh_time }}
+                                        {{ _('Refreshed %(time)s', time=refresh_time) }}
                                     </span>
                                 {% endif %}
 
@@ -458,7 +459,10 @@
                                 <button class="edit-button" title="{{ _('Display Now') }}" onclick="displayPluginInstance('{{ playlist.name }}', '{{ plugin_instance.plugin_id }}','{{ plugin_instance.name }}')">
                                     <img src="{{ url_for('static', filename='icons/display.png') }}" alt="display now" class="action-icon">
                                 </button>
-                                <button class="delete-button" title="{{ _('Delete Plugin Instance') }}" onclick="deletePluginInstance('{{ playlist.name }}', '{{ plugin_instance.plugin_id }}','{{ plugin_instance.name }}')">
+                                {% set used_in = dashboards_using(plugin_instance.plugin_id, plugin_instance.name) %}
+                                <button class="delete-button" title="{{ _('Delete Plugin Instance') }}"
+                                        data-confirm="{{ _('Delete? Click again') }}{% if used_in %} · {{ _('also removed from %(dashboards)s', dashboards=used_in | join(', ')) }}{% endif %}"
+                                        onclick="confirmClick(this, () => deletePluginInstance('{{ playlist.name }}', '{{ plugin_instance.plugin_id }}','{{ plugin_instance.name }}'))">
                                     <img src="{{ url_for('static', filename='icons/remove.png') }}" alt="delete plugin" class="action-icon">
                                 </button>
                             </div>

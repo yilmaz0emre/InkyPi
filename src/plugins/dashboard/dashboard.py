@@ -106,6 +106,45 @@ def get_oriented_resolution(device_config):
     return tuple(dimensions)
 
 
+def _dashboard_instances(device_config):
+    for playlist in device_config.get_playlist_manager().playlists:
+        for instance in playlist.plugins:
+            if instance.plugin_id == DASHBOARD_PLUGIN_ID:
+                yield instance
+
+
+def _layout_widgets(settings):
+    """Raw widget list of a dashboard's saved layout (unknown keys kept as they are)."""
+    try:
+        layout = json.loads(settings.get("layout") or "{}")
+    except (TypeError, ValueError):
+        return None, []
+    return layout, layout.get("widgets") or []
+
+
+def dashboards_using(device_config, plugin_id, name):
+    """Names of the dashboards that show the given widget instance."""
+    names = []
+    for dashboard in _dashboard_instances(device_config):
+        _, widgets = _layout_widgets(dashboard.settings)
+        if any(w.get("plugin_id") == plugin_id and w.get("name") == name for w in widgets):
+            names.append(dashboard.name)
+    return names
+
+
+def remove_widget_from_dashboards(device_config, plugin_id, name):
+    """Drop a deleted widget instance from every dashboard layout; returns the dashboards changed."""
+    changed = []
+    for dashboard in _dashboard_instances(device_config):
+        layout, widgets = _layout_widgets(dashboard.settings)
+        kept = [w for w in widgets if not (w.get("plugin_id") == plugin_id and w.get("name") == name)]
+        if layout is not None and len(kept) != len(widgets):
+            layout["widgets"] = kept
+            dashboard.settings["layout"] = json.dumps(layout)
+            changed.append(dashboard.name)
+    return changed
+
+
 def list_widget_instances(device_config):
     """All saved plugin instances that can be placed on a dashboard."""
     plugin_names = {p.get("id"): p.get("display_name", p.get("id")) for p in device_config.get_plugins()}
@@ -120,6 +159,7 @@ def list_widget_instances(device_config):
                 "plugin_name": i18n.gettext(plugin_names.get(instance.plugin_id, instance.plugin_id)),
                 "playlist": playlist.name,
                 "dashboard_only": instance.dashboard_only,
+                "used_in": dashboards_using(device_config, instance.plugin_id, instance.name),
             })
     return instances
 

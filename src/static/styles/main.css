@@ -895,6 +895,19 @@ html[data-theme="dark"] .settings-button.dark-mode-toggle::before {
     cursor: pointer;
 }
 
+/* Second step of a two-click delete (confirm_click.js) */
+.delete-button.confirming,
+.header-button.confirming {
+    background-color: var(--failure-color);
+    color: #fff;
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+.confirm-text {
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
 .edit-button img,
 .delete-button img {
     filter: var(--image-filter);

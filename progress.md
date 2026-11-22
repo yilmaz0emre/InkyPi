@@ -86,8 +86,8 @@ wake (PiSugar / RTC-based power board).
 
 ### 🧪 Tests & git
 
-- [ ] Still missing: a test for the `RefreshTask` power-save sleep/wake loop. (`/power_save/*` endpoints,
-  boot-time hardware restore and forced refresh after wake are now covered.)
+- [x] Tests cover the `RefreshTask` power-save sleep/wake loop (`tests/test_refresh_task_power_save.py`),
+  `/power_save/*` endpoints, boot-time hardware restore and forced refresh after wake.
 - [ ] Power save feature was committed and pushed to `feature/i18n-turkish`, mixing two features.
   Consider moving it to a separate `feature/power-save` branch.
 

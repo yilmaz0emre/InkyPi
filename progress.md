@@ -166,7 +166,11 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
 - [x] Installer fixes from the Pi 5 install (PR #5): stop on a broken package system (`dpkg --audit`),
   `show_loader` waits with `kill -0` + `wait` (the old `ps a` check raced ahead without a terminal),
   verify Debian dependencies, `configure_mode` fails loudly when `jq` is missing
-- [ ] Pi 5 settings start fresh: set language to Turkish, recreate widgets and the dashboard there
+- [x] Pi 5 set up (2026-11-23): language Turkish, timezone Turkey; widgets Doviz, Doviz2, Doviz3, Weather,
+  Weather2 (all dashboard only); "Ana Pano" saved from the user's draft: Currency strip Doviz2 12×2 on
+  top, Weather2 12×10 below, gap 12, borders; refresh 30 min. Rendered in ~1.5 s and shown on the panel
+  - Note: the playlist cycles every hour (`plugin_cycle_interval_seconds` 3600), so the dashboard
+    effectively refreshes hourly; lower the cycle in Settings for 30 min
 - [x] Pi Zero 2 W installed as thin client (2026-11-22): `inkypi-zero@inkypi-zero.local` (192.168.1.107),
   Raspberry Pi OS Lite 64-bit **Trixie**, `install.sh -W epd7in3f -C http://raspberrypi.local`.
   First image fetched from the Pi 5 and drawn; full `epd7in3f` refresh ≈ 63 s, client uses ~60 MB RAM
@@ -206,6 +210,17 @@ Goal: a Raspberry Pi 5 at home renders, the battery Pi Zero 2 W (Waveshare 7.3" 
 - [x] Weather: address / place search (`GET /geocode`, OpenStreetMap Nominatim, UI language, max 5
   results, only on Find) fills latitude/longitude and an empty custom title
 - [x] Installed on the Pi 5 (2026-11-22, `update.sh`); pages, script and geocode checked over HTTP
+
+## Fixes from the Pi 5 setup (`fix/weather-forecast-and-playlist`, PR #9)
+
+- [x] Weather: a 100 % moon phase no longer wraps and pushes the day's icon out of its forecast box;
+  Visibility and the air quality scale translated (only the scale goes through `_()`: plugin Jinja `_()`
+  always %-formats, so a bare `%` unit raised "incomplete format")
+- [x] Playlist page: delete needs a second click within 4 s (`static/scripts/confirm_click.js`) and names
+  the dashboards that also lose the widget; "Refreshed …" translated
+- [x] Deleting a widget removes it from every dashboard layout; `/dashboard_instances` reports `used_in`
+- [x] Dashboard editor: Edit / Delete for the selected saved widget, ✎ on each placed widget
+- [x] Installed on the Pi 5 (2026-11-23); updated dashboard drawn on the panel
 
 ## Notes
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-22 15:29+0300\n"
+"POT-Creation-Date: 2026-11-22 15:35+0300\n"
 "PO-Revision-Date: 2026-11-14 22:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -325,7 +325,7 @@ msgstr "Takvimler:"
 msgid "Add Calendar"
 msgstr "Takvim Ekle"
 
-#: src/plugins/calendar/settings.html:9
+#: src/plugins/calendar/settings.html:9 src/plugins/weather/settings.html:46
 msgid "Layout:"
 msgstr "Düzen:"
 
@@ -355,7 +355,7 @@ msgstr "Liste"
 msgid "Language:"
 msgstr "Dil:"
 
-#: src/plugins/calendar/settings.html:30 src/plugins/weather/settings.html:46
+#: src/plugins/calendar/settings.html:30 src/plugins/weather/settings.html:56
 msgid "Display:"
 msgstr "Görünüm:"
 
@@ -496,120 +496,121 @@ msgstr "Çizgi Roman Başlığını ve Açıklamasını Göster:"
 msgid "Date"
 msgstr "Tarih"
 
-#: src/plugins/currency_gold/currency_gold.py:30
+#: src/plugins/currency_gold/currency_gold.py:31
 msgid "US Dollar"
 msgstr "Amerikan Doları"
 
-#: src/plugins/currency_gold/currency_gold.py:31
+#: src/plugins/currency_gold/currency_gold.py:32
 msgid "Euro"
 msgstr "Euro"
 
-#: src/plugins/currency_gold/currency_gold.py:32
+#: src/plugins/currency_gold/currency_gold.py:33
 msgid "British Pound"
 msgstr "İngiliz Sterlini"
 
-#: src/plugins/currency_gold/currency_gold.py:33
+#: src/plugins/currency_gold/currency_gold.py:34
 msgid "Swiss Franc"
 msgstr "İsviçre Frangı"
 
-#: src/plugins/currency_gold/currency_gold.py:34
+#: src/plugins/currency_gold/currency_gold.py:35
 msgid "Canadian Dollar"
 msgstr "Kanada Doları"
 
-#: src/plugins/currency_gold/currency_gold.py:35
+#: src/plugins/currency_gold/currency_gold.py:36
 msgid "Australian Dollar"
 msgstr "Avustralya Doları"
 
-#: src/plugins/currency_gold/currency_gold.py:36
+#: src/plugins/currency_gold/currency_gold.py:37
 msgid "Saudi Riyal"
 msgstr "Suudi Arabistan Riyali"
 
-#: src/plugins/currency_gold/currency_gold.py:37
+#: src/plugins/currency_gold/currency_gold.py:38
 msgid "Chinese Yuan"
 msgstr "Çin Yuanı"
 
-#: src/plugins/currency_gold/currency_gold.py:38
+#: src/plugins/currency_gold/currency_gold.py:39
 msgid "Russian Ruble"
 msgstr "Rus Rublesi"
 
-#: src/plugins/currency_gold/currency_gold.py:39
+#: src/plugins/currency_gold/currency_gold.py:40
 msgid "Gram Gold"
 msgstr "Gram Altın"
 
-#: src/plugins/currency_gold/currency_gold.py:40
+#: src/plugins/currency_gold/currency_gold.py:41
 msgid "Gram Gold (24k Pure)"
 msgstr "Has Altın (gram)"
 
-#: src/plugins/currency_gold/currency_gold.py:41
+#: src/plugins/currency_gold/currency_gold.py:42
 msgid "Quarter Gold"
 msgstr "Çeyrek Altın"
 
-#: src/plugins/currency_gold/currency_gold.py:42
+#: src/plugins/currency_gold/currency_gold.py:43
 msgid "Half Gold"
 msgstr "Yarım Altın"
 
-#: src/plugins/currency_gold/currency_gold.py:43
+#: src/plugins/currency_gold/currency_gold.py:44
 msgid "Full Gold"
 msgstr "Tam Altın"
 
-#: src/plugins/currency_gold/currency_gold.py:44
+#: src/plugins/currency_gold/currency_gold.py:45
 msgid "Republic Gold"
 msgstr "Cumhuriyet Altını"
 
-#: src/plugins/currency_gold/currency_gold.py:45
+#: src/plugins/currency_gold/currency_gold.py:46
 msgid "22k Bracelet Gold (gram)"
 msgstr "22 Ayar Bilezik (gram)"
 
-#: src/plugins/currency_gold/currency_gold.py:46
+#: src/plugins/currency_gold/currency_gold.py:47
 msgid "18k Gold (gram)"
 msgstr "18 Ayar Altın (gram)"
 
-#: src/plugins/currency_gold/currency_gold.py:47
+#: src/plugins/currency_gold/currency_gold.py:48
 msgid "14k Gold (gram)"
 msgstr "14 Ayar Altın (gram)"
 
-#: src/plugins/currency_gold/currency_gold.py:48
+#: src/plugins/currency_gold/currency_gold.py:49
 msgid "Silver (gram)"
 msgstr "Gümüş (gram)"
 
-#: src/plugins/currency_gold/currency_gold.py:62
+#: src/plugins/currency_gold/currency_gold.py:63
 msgid "Pure Au gr"
 msgstr "Has gr"
 
-#: src/plugins/currency_gold/currency_gold.py:63
+#: src/plugins/currency_gold/currency_gold.py:64
 msgid "Quarter"
 msgstr "Çeyrek"
 
-#: src/plugins/currency_gold/currency_gold.py:64
+#: src/plugins/currency_gold/currency_gold.py:65
 msgid "Half"
 msgstr "Yarım"
 
-#: src/plugins/currency_gold/currency_gold.py:65
+#: src/plugins/currency_gold/currency_gold.py:66
+#: src/plugins/weather/settings.html:49
 msgid "Full"
 msgstr "Tam"
 
-#: src/plugins/currency_gold/currency_gold.py:66
+#: src/plugins/currency_gold/currency_gold.py:67
 msgid "Republic"
 msgstr "Cumh."
 
-#: src/plugins/currency_gold/currency_gold.py:76
+#: src/plugins/currency_gold/currency_gold.py:74
 msgid "Currencies"
 msgstr "Döviz"
 
-#: src/plugins/currency_gold/currency_gold.py:76
+#: src/plugins/currency_gold/currency_gold.py:74
 msgid "Gold & Precious Metals"
 msgstr "Altın ve Değerli Metaller"
 
-#: src/plugins/currency_gold/currency_gold.py:103
+#: src/plugins/currency_gold/currency_gold.py:101
 msgid "Could not fetch exchange rates or gold prices."
 msgstr "Döviz kurları veya altın fiyatları alınamadı."
 
-#: src/plugins/currency_gold/currency_gold.py:115
+#: src/plugins/currency_gold/currency_gold.py:113
 #: src/plugins/currency_gold/settings.html:4 src/utils/i18n_strings.py:9
 msgid "Currency & Gold"
 msgstr "Döviz ve Altın"
 
-#: src/plugins/currency_gold/currency_gold.py:207
+#: src/plugins/currency_gold/currency_gold.py:195
 msgid "spot gold (calculated)"
 msgstr "ons altın (hesaplanan)"
 
@@ -1068,7 +1069,7 @@ msgstr "Enlem"
 msgid "Longitude"
 msgstr "Boylam"
 
-#: src/plugins/weather/settings.html:14 src/plugins/weather/settings.html:111
+#: src/plugins/weather/settings.html:14 src/plugins/weather/settings.html:121
 msgid "Select Location"
 msgstr "Konum Seç"
 
@@ -1100,55 +1101,73 @@ msgstr "Konum"
 msgid "Custom"
 msgstr "Özel"
 
+#: src/plugins/weather/settings.html:48
+msgid "Automatic (compact when small)"
+msgstr "Otomatik (küçükken kısa)"
+
 #: src/plugins/weather/settings.html:50
+msgid "Compact (icon and temperature)"
+msgstr "Kısa (ikon ve sıcaklık)"
+
+#: src/plugins/weather/settings.html:52
+msgid ""
+"The compact layout shows only the location, icon, temperature and today's"
+" high/low (plus a short forecast if enabled and there is room), so a "
+"small dashboard widget stays readable."
+msgstr ""
+"Kısa görünümde yalnızca konum, ikon, sıcaklık ve günün en yüksek/en düşük"
+" değerleri gösterilir (tahmin açıksa ve yer varsa birkaç günlük kısa "
+"tahmin de); böylece küçük bir pano bileşeni okunaklı kalır."
+
+#: src/plugins/weather/settings.html:60
 msgid "Refresh Time"
 msgstr "Yenileme Saati"
 
-#: src/plugins/weather/settings.html:55
+#: src/plugins/weather/settings.html:65
 msgid "Metrics"
 msgstr "Metrikler"
 
-#: src/plugins/weather/settings.html:60
+#: src/plugins/weather/settings.html:70
 msgid "Weather Graph"
 msgstr "Hava Durumu Grafiği"
 
-#: src/plugins/weather/settings.html:65
+#: src/plugins/weather/settings.html:75
 msgid "Rain Amount"
 msgstr "Yağış Miktarı"
 
-#: src/plugins/weather/settings.html:71
+#: src/plugins/weather/settings.html:81
 msgid "Moon Phase"
 msgstr "Ayın Evresi"
 
-#: src/plugins/weather/settings.html:76
+#: src/plugins/weather/settings.html:86
 msgid "Graph icons every"
 msgstr "Grafik simge sıklığı:"
 
-#: src/plugins/weather/settings.html:84
+#: src/plugins/weather/settings.html:94
 msgid "hours"
 msgstr "saat"
 
-#: src/plugins/weather/settings.html:89
+#: src/plugins/weather/settings.html:99
 msgid "Forecast"
 msgstr "Tahmin"
 
-#: src/plugins/weather/settings.html:95
+#: src/plugins/weather/settings.html:105
 msgid "days"
 msgstr "gün"
 
-#: src/plugins/weather/settings.html:99 src/templates/settings.html:212
+#: src/plugins/weather/settings.html:109 src/templates/settings.html:212
 msgid "Time Zone:"
 msgstr "Saat Dilimi:"
 
-#: src/plugins/weather/settings.html:101
+#: src/plugins/weather/settings.html:111
 msgid "Use Location Time Zone"
 msgstr "Konum Saat Dilimini Kullan"
 
-#: src/plugins/weather/settings.html:102
+#: src/plugins/weather/settings.html:112
 msgid "Use Local Time Zone"
 msgstr "Yerel Saat Dilimini Kullan"
 
-#: src/plugins/weather/settings.html:114 src/templates/apikeys.html:252
+#: src/plugins/weather/settings.html:124 src/templates/apikeys.html:252
 #: src/templates/inky.html:184 src/templates/playlist.html:494
 #: src/templates/playlist.html:511 src/templates/plugin.html:415
 #: src/templates/plugin.html:448 src/templates/plugin.html:487
@@ -1156,12 +1175,12 @@ msgstr "Yerel Saat Dilimini Kullan"
 msgid "Save"
 msgstr "Kaydet"
 
-#: src/plugins/weather/render/weather.html:9
+#: src/plugins/weather/render/weather.html:34
 #, python-format
 msgid "Last refresh: %(time)s"
 msgstr "Son yenileme: %(time)s"
 
-#: src/plugins/weather/render/weather.html:24
+#: src/plugins/weather/render/weather.html:49
 #, python-format
 msgid "Feels Like %(temperature)s"
 msgstr "Hissedilen: %(temperature)s"

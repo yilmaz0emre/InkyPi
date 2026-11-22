@@ -3,6 +3,31 @@
 {% block content %}
 <div id="units-container" data-units="{{ units }}"></div>
 
+{% if compact %}
+<!-- Compact layout (small screens / dashboard widgets): location, icon, temperature, today's high/low -->
+{% set degree = "°" if units != "standard" else "" %}
+<div class="weather-compact{% if compact_forecast %} with-forecast{% endif %}">
+  {% if title %}<div class="wc-title">{{ title }}</div>{% endif %}
+  <div class="wc-now">
+    <img class="wc-icon" src="{{ current_day_icon }}" alt="">
+    <div class="wc-temps">
+      <div class="wc-temp">{{ current_temperature }}{{ degree }}</div>
+      <div class="wc-minmax">▲{{ forecast[0].high }}{{ degree }} ▼{{ forecast[0].low }}{{ degree }}</div>
+    </div>
+  </div>
+  {% if compact_forecast %}
+  <div class="wc-forecast">
+    {% for day in compact_forecast %}
+    <div class="wc-day">
+      <div class="wc-day-name">{{ day.day }}</div>
+      <img class="wc-day-icon" src="{{ day.icon }}" alt="">
+      <div class="wc-day-temps">{{ day.high }}{{ degree }} / {{ day.low }}{{ degree }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% else %}
 
 <div class="weather-dashboard">
   {% if plugin_settings.displayRefreshTime == "true" %}
@@ -310,4 +335,5 @@
     chart.update();
   });
 </script>
+{% endif %}
 {% endblock %}

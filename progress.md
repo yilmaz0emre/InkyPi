@@ -133,8 +133,12 @@ wake (PiSugar / RTC-based power board).
   refreshes on tab focus via `GET /dashboard_instances`, the unsaved layout is kept
 - [x] Currency & Gold compact layout: label style auto/full/short; auto switches below 450×260 px to
   symbols ($, €, Au gr, Çeyrek), no title/group headings, arrow-only change column
-- [ ] Other plugins are not designed for small boxes (e.g. weather text gets very small); consider
-  compact layouts for them too
+- [x] Weather compact layout (layout style auto/full/short): location, big icon + temperature, today's
+  ▲high ▼low, optional 2–3 day mini forecast when the box is tall enough. Shared size rule in
+  `src/utils/compact_layout.py` (also used by Currency & Gold)
+- [ ] Other plugins (calendar, RSS, to-do, ...) have no compact layout yet
+- Note: standalone renders narrower than ~500 px get cut off because headless Chrome will not open a
+  narrower window; inside a dashboard each widget is an exact-size iframe, so this does not apply there
 - [ ] Measure render time on a Pi Zero 2 W
 
 ## Notes

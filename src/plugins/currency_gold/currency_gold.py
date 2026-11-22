@@ -13,6 +13,7 @@ from babel.numbers import format_decimal
 
 from plugins.base_plugin.base_plugin import BasePlugin
 from utils import i18n
+from utils.compact_layout import use_compact_layout
 from utils.http_client import get_http_session
 from utils.i18n import N_
 
@@ -69,10 +70,7 @@ SHORT_LABELS = {
     "14AYARALTIN": "14K gr",
     "GUMUS": "Ag gr",
 }
-LABEL_STYLES = ("auto", "full", "short")
-# "auto" switches to short labels below this size (e.g. a narrow dashboard widget)
-COMPACT_MAX_WIDTH = 450
-COMPACT_MAX_HEIGHT = 260
+
 GROUP_LABELS = {"currency": N_("Currencies"), "gold": N_("Gold & Precious Metals")}
 DEFAULT_ITEMS = ["USD", "EUR", "GBP", "GRA", "CEYREKALTIN"]
 
@@ -125,16 +123,6 @@ class CurrencyGold(BasePlugin):
         template_params["row_count"] = sum(len(group["rows"]) + (0 if compact else 1) for group in template_params["groups"])
 
         return self.render_image(dimensions, "currency_gold.html", "currency_gold.css", template_params)
-
-
-def use_compact_layout(label_style, dimensions):
-    """Short labels and no headings: forced by the setting, or automatic for small screens/widgets."""
-    if label_style == "short":
-        return True
-    if label_style == "full":
-        return False
-    width, height = dimensions
-    return width < COMPACT_MAX_WIDTH or height < COMPACT_MAX_HEIGHT
 
 
 def get_selected_items(settings):

@@ -115,6 +115,35 @@ wake (PiSugar / RTC-based power board).
   - Tests: `tests/test_currency_gold.py` (parsing, fallback, formatting, Turkish render)
 - [ ] Check on real hardware: readability on the actual panel (colour vs. black/white), vertical orientation
 
+## Dashboard plugin (`feature/dashboard`)
+
+- [x] `src/plugins/dashboard/`: several saved plugin instances on one screen, with a web layout editor
+  - Widgets reference saved instances; new per-instance flag **"Only use inside dashboards"**
+    (`PluginInstance.dashboard_only`) keeps them out of the playlist rotation
+  - **Single browser render:** `render_image()` has a capture mode (`capture_rendered_html()` in
+    `base_plugin.py`) returning the HTML instead of screenshotting; each HTML widget is loaded in its own
+    `<iframe src=file://…>` (not `srcdoc`, which forces standards mode and broke the weather layout),
+    PIL widgets are embedded as data URIs, then one screenshot. 3 widgets ≈ 1–2 s on a Mac
+  - Editor: 12×12 grid, drag to move, corner to resize, overlap warning, gap + borders; **Preview**
+    via new generic `POST /preview_plugin` (returns PNG, display untouched)
+  - A failing widget shows an error box instead of failing the whole dashboard
+  - Tests: `tests/test_dashboard.py`; editor drag/resize verified in headless Chrome
+- [x] Any installed plugin can be added: editor lists saved widgets plus "Create new widget" for every
+  plugin (opens its page with `?for_dashboard=1`, "Only use inside dashboards" pre-ticked); the list
+  refreshes on tab focus via `GET /dashboard_instances`, the unsaved layout is kept
+- [x] Currency & Gold compact layout: label style auto/full/short; auto switches below 450×260 px to
+  symbols ($, €, Au gr, Çeyrek), no title/group headings, arrow-only change column
+- [x] Currency & Gold strip layout ("like a TV ticker"): one row of short label + selling price + arrow;
+  auto for boxes ≥ 3× wider than tall and < 200 px high (e.g. 12×2); wraps onto 2 rows when that gives
+  bigger text (many items); vertical padding scaled to the box so 12×1 strips still render
+- [x] Weather compact layout (layout style auto/full/short): location, big icon + temperature, today's
+  ▲high ▼low, optional 2–3 day mini forecast when the box is tall enough. Shared size rule in
+  `src/utils/compact_layout.py` (also used by Currency & Gold)
+- [ ] Other plugins (calendar, RSS, to-do, ...) have no compact layout yet
+- Note: standalone renders narrower than ~500 px get cut off because headless Chrome will not open a
+  narrower window; inside a dashboard each widget is an exact-size iframe, so this does not apply there
+- [ ] Measure render time on a Pi Zero 2 W
+
 ## Notes
 
 - Use `venv/` for tests; system `python3` lacks pytest.

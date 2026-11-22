@@ -46,6 +46,8 @@
                 const data = new FormData();
                 data.append("plugin_id", "{{ plugin.id }}");
                 data.append("refresh_settings", JSON.stringify(formData));
+                const dashboardOnly = document.getElementById('edit-dashboard-only');
+                if (dashboardOnly) data.append("dashboard_only", dashboardOnly.checked ? "true" : "false");
 
                 const response = await fetch("{{ url_for('plugin.update_plugin_instance', instance_name='') }}" + pluginInstanceName, {
                     method: 'PUT',
@@ -308,6 +310,12 @@
         </div>
         <div class="separator"></div>
 
+        {% if for_dashboard %}
+        <div class="form-group" style="background-color: var(--input-bg); border-left: 4px solid var(--accent-primary); padding: 10px 12px; border-radius: 4px;">
+            {{ _('Creating a dashboard widget: configure it below and save it with "Add to Playlist". "Only use inside dashboards" is already ticked, so it will not show up on its own. Then return to the Dashboard tab; the widget appears in its list.') }}
+        </div>
+        {% endif %}
+
         <!-- Include plugin settings -->
         <form id = "settingsForm" class="settings-form" onsubmit="return false;">
             <div class="settings-container">
@@ -427,6 +435,14 @@
             <form id="refreshSettingsForm" class="settings-form">
                 {% set prefix = "edit" %}
                 {% include 'refresh_settings_form.html' %}
+
+                {% if plugin.id != 'dashboard' %}
+                <div class="form-group nowrap">
+                    <input type="checkbox" id="edit-dashboard-only" name="dashboardOnly"{% if dashboard_only %} checked{% endif %}>
+                    <label for="edit-dashboard-only" class="form-label">{{ _('Only use inside dashboards') }}</label>
+                    <span title="{{ _('The instance is not shown on its own in the playlist rotation; it can still be placed as a widget in a Dashboard.') }}">ⓘ</span>
+                </div>
+                {% endif %}
             </form>
             <div class="buttons-container">
                 <button type="button" onclick="saveRefreshSettings()" class="action-button">{{ _('Save') }}</button>
@@ -457,6 +473,14 @@
 
                 {% set prefix = "add" %}
                 {% include 'refresh_settings_form.html' %}
+
+                {% if plugin.id != 'dashboard' %}
+                <div class="form-group nowrap">
+                    <input type="checkbox" id="add-dashboard-only" name="dashboardOnly"{% if for_dashboard %} checked{% endif %}>
+                    <label for="add-dashboard-only" class="form-label">{{ _('Only use inside dashboards') }}</label>
+                    <span title="{{ _('The instance is not shown on its own in the playlist rotation; it can still be placed as a widget in a Dashboard.') }}">ⓘ</span>
+                </div>
+                {% endif %}
 
             </form>
             <div class="buttons-container">

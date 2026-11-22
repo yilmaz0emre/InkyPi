@@ -45,6 +45,8 @@ docs/                  # development.md, building_plugins.md, …
 tests/                 # test_i18n.py, test_power_manager.py, test_model.py, test_image_loader.py
 ```
 
+Plugins render via `BasePlugin.render_image()` → `render_html()` + headless Chrome screenshot. Inside `capture_rendered_html()` the screenshot is skipped and the HTML is collected instead — the Dashboard plugin uses this to compose several widgets into one render (widget HTML must be loaded via `<iframe src>`, not `srcdoc`, because plugin templates rely on quirks mode).
+
 Shared app objects live in `app.config`: `DEVICE_CONFIG`, `DISPLAY_MANAGER`, `REFRESH_TASK`, `POWER_MANAGER`. Read optional ones with `.get()` (blueprints do `current_app.config.get('POWER_MANAGER')`).
 
 ## i18n conventions

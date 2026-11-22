@@ -1,0 +1,415 @@
+<style>
+    .dash-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .dash-toolbar select {
+        flex: 1;
+        min-width: 200px;
+    }
+    .dash-canvas {
+        position: relative;
+        width: 100%;
+        border: 2px solid var(--text-primary, #000);
+        background-color: #fff;
+        background-size: cover;
+        background-position: center;
+        touch-action: none;
+        user-select: none;
+        overflow: hidden;
+    }
+    .dash-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            linear-gradient(to right, rgba(0, 0, 0, 0.12) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 1px, transparent 1px);
+    }
+    .dash-preview {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        pointer-events: none;
+    }
+    .dash-widget {
+        position: absolute;
+        box-sizing: border-box;
+        border: 2px solid #2c66b1;
+        background: rgba(44, 102, 177, 0.12);
+        cursor: move;
+    }
+    .dash-canvas.has-preview .dash-widget {
+        background: transparent;
+    }
+    .dash-widget.overlap {
+        border-color: #d32f2f;
+    }
+    .dash-widget.missing {
+        border-style: dashed;
+        border-color: #d32f2f;
+    }
+    .dash-widget-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        max-width: calc(100% - 24px);
+        padding: 2px 6px;
+        background: #2c66b1;
+        color: #fff;
+        font-size: 0.8rem;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .dash-widget.overlap .dash-widget-label,
+    .dash-widget.missing .dash-widget-label {
+        background: #d32f2f;
+    }
+    .dash-widget-size {
+        position: absolute;
+        left: 4px;
+        bottom: 2px;
+        font-size: 0.75rem;
+        color: #2c66b1;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 0 3px;
+    }
+    .dash-widget-remove {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 22px;
+        height: 22px;
+        border: 0;
+        background: #d32f2f;
+        color: #fff;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 22px;
+        padding: 0;
+    }
+    .dash-widget-resize {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 18px;
+        height: 18px;
+        cursor: nwse-resize;
+        background: linear-gradient(135deg, transparent 50%, #2c66b1 50%);
+    }
+    .dash-hint {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #666);
+        margin-top: 6px;
+    }
+</style>
+
+<input type="hidden" id="dashLayout" name="layout" value="">
+<input type="hidden" id="showBorders" name="showBorders" value="true">
+
+<div class="form-group">
+    <label class="form-label">{{ _('Widgets:') }}</label>
+    <div class="dash-toolbar">
+        <!-- Filled by the script: saved instances, then every installed plugin to create a new widget -->
+        <select id="dashInstanceSelect" class="form-input"></select>
+        <button type="button" class="header-button" onclick="dashboardEditor.addSelected()">
+            + {{ _('Add Widget') }}
+        </button>
+        <button type="button" class="header-button" onclick="dashboardEditor.refreshInstances()" title="{{ _('Reload the list of saved widgets') }}">
+            ↻
+        </button>
+        <button type="button" class="header-button" id="dashPreviewButton" onclick="dashboardEditor.preview()">
+            {{ _('Preview') }}
+        </button>
+    </div>
+
+    <div class="dash-hint" style="margin: -4px 0 8px 0;">
+        {{ _('Any plugin can be a widget: pick it under "Create new widget", configure it in the tab that opens and save it with "Add to Playlist" ("Only use inside dashboards" is ticked). Back on this tab the list updates by itself and your layout is kept.') }}
+    </div>
+
+    <div id="dashCanvas" class="dash-canvas" style="aspect-ratio: {{ dashboard_resolution[0] }} / {{ dashboard_resolution[1] }};">
+        <img id="dashPreviewImage" class="dash-preview" alt="" hidden>
+        <div class="dash-grid" style="background-size: calc(100% / {{ dashboard_grid.columns }}) calc(100% / {{ dashboard_grid.rows }});"></div>
+    </div>
+    <div class="dash-hint">
+        {{ _('Drag a widget to move it, drag its bottom-right corner to resize it. Widgets snap to a %(columns)s × %(rows)s grid. Use Preview to see the real result without updating the display.', columns=dashboard_grid.columns, rows=dashboard_grid.rows) }}
+    </div>
+    <div id="dashOverlapWarning" class="dash-hint" style="color: #d32f2f;" hidden>
+        {{ _('Some widgets overlap; the later one is drawn on top.') }}
+    </div>
+</div>
+
+<div class="form-group nowrap">
+    <label for="dashGap" class="form-label">{{ _('Gap between widgets:') }}</label>
+    <input type="number" id="dashGap" name="gap" class="form-input" min="0" max="40" step="1" value="6" style="max-width: 90px;">
+    <span>{{ _('px') }}</span>
+</div>
+<div class="form-group">
+    <label for="showBordersToggle" class="form-label">{{ _('Widget Borders:') }}</label>
+    <div class="toggle-container">
+        <input type="checkbox" id="showBordersToggle" class="toggle-checkbox" checked
+            onchange="document.getElementById('showBorders').value = this.checked ? 'true' : 'false'">
+        <label for="showBordersToggle" class="toggle-label"></label>
+    </div>
+</div>
+
+<script>
+    const dashboardEditor = (() => {
+        const GRID = {{ dashboard_grid | tojson }};
+        const PLUGINS = {{ dashboard_plugins | tojson }};
+        let instances = {{ dashboard_instances | tojson }};
+        const TEXT = {
+            savedGroup: {{ _('Saved widgets') | tojson }},
+            newGroup: {{ _('Create new widget') | tojson }},
+            noSaved: {{ _('No saved widgets yet') | tojson }},
+            dashboardOnly: {{ _('dashboard only') | tojson }},
+            missing: {{ _('not found') | tojson }},
+            remove: {{ _('Remove') | tojson }},
+            previewing: {{ _('Rendering…') | tojson }},
+            preview: {{ _('Preview') | tojson }},
+            previewFailed: {{ _('Preview failed') | tojson }},
+        };
+
+        const canvas = document.getElementById('dashCanvas');
+        const layoutInput = document.getElementById('dashLayout');
+        const previewImage = document.getElementById('dashPreviewImage');
+        let widgets = [];
+
+        const findInstance = (w) => instances.find(i => i.plugin_id === w.plugin_id && i.name === w.name);
+
+        function fillSelect() {
+            const select = document.getElementById('dashInstanceSelect');
+            const previous = select.value;
+            select.innerHTML = '';
+
+            const saved = document.createElement('optgroup');
+            saved.label = TEXT.savedGroup;
+            instances.forEach((instance, index) => {
+                const option = new Option(`${instance.plugin_name} – ${instance.name}` + (instance.dashboard_only ? ` (${TEXT.dashboardOnly})` : ''), `saved:${index}`);
+                saved.appendChild(option);
+            });
+            if (!instances.length) {
+                const empty = new Option(TEXT.noSaved, '');
+                empty.disabled = true;
+                saved.appendChild(empty);
+            }
+            select.appendChild(saved);
+
+            const create = document.createElement('optgroup');
+            create.label = TEXT.newGroup;
+            PLUGINS.forEach(plugin => create.appendChild(new Option(`+ ${plugin.name}`, `new:${plugin.id}`)));
+            select.appendChild(create);
+
+            if ([...select.options].some(o => o.value === previous && !o.disabled)) {
+                select.value = previous;
+            } else {
+                const firstEnabled = [...select.options].find(o => !o.disabled);
+                if (firstEnabled) select.value = firstEnabled.value;
+            }
+        }
+
+        async function refreshInstances() {
+            try {
+                const response = await fetch("{{ url_for('plugin.dashboard_instances') }}", { cache: 'no-store' });
+                if (!response.ok) return;
+                instances = await response.json();
+                fillSelect();
+                render();  // widgets whose instance was missing may exist now
+            } catch (e) {
+                console.error('Could not refresh dashboard widgets', e);
+            }
+        }
+        const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
+
+        function save() {
+            layoutInput.value = JSON.stringify({ columns: GRID.columns, rows: GRID.rows, widgets });
+        }
+
+        function overlaps(a, b) {
+            return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+        }
+
+        let boxes = [];
+
+        // Rebuild the widget boxes (after adding, removing or loading widgets)
+        function render() {
+            boxes.forEach(box => box.remove());
+            boxes = widgets.map((w, index) => {
+                const instance = findInstance(w);
+                const box = document.createElement('div');
+                box.className = 'dash-widget' + (instance ? '' : ' missing');
+
+                const label = document.createElement('div');
+                label.className = 'dash-widget-label';
+                label.textContent = instance ? `${instance.plugin_name} – ${instance.name}` : `${w.name} (${TEXT.missing})`;
+                box.appendChild(label);
+
+                const size = document.createElement('div');
+                size.className = 'dash-widget-size';
+                box.appendChild(size);
+
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'dash-widget-remove';
+                remove.title = TEXT.remove;
+                remove.textContent = '×';
+                remove.addEventListener('pointerdown', e => e.stopPropagation());
+                remove.addEventListener('click', () => { widgets.splice(index, 1); save(); render(); });
+                box.appendChild(remove);
+
+                const handle = document.createElement('div');
+                handle.className = 'dash-widget-resize';
+                box.appendChild(handle);
+
+                box.addEventListener('pointerdown', e => startDrag(e, index, e.target === handle ? 'resize' : 'move'));
+                canvas.appendChild(box);
+                return box;
+            });
+            position();
+        }
+
+        // Move/resize the existing boxes in place, so a drag in progress keeps its pointer capture
+        function position() {
+            let anyOverlap = false;
+            widgets.forEach((w, index) => {
+                const box = boxes[index];
+                const overlapping = widgets.some((other, j) => j !== index && overlaps(w, other));
+                anyOverlap = anyOverlap || overlapping;
+                box.classList.toggle('overlap', overlapping);
+                box.style.left = (w.x / GRID.columns * 100) + '%';
+                box.style.top = (w.y / GRID.rows * 100) + '%';
+                box.style.width = (w.w / GRID.columns * 100) + '%';
+                box.style.height = (w.h / GRID.rows * 100) + '%';
+                box.querySelector('.dash-widget-size').textContent = `${w.w} × ${w.h}`;
+            });
+            document.getElementById('dashOverlapWarning').hidden = !anyOverlap;
+        }
+
+        function startDrag(event, index, mode) {
+            if (event.button !== 0) return;
+            event.preventDefault();
+            const target = event.currentTarget;
+            try {
+                target.setPointerCapture(event.pointerId);
+            } catch (e) {
+                // capture is only an improvement (keeps the drag when the pointer leaves the box)
+            }
+
+            const start = { x: event.clientX, y: event.clientY, widget: { ...widgets[index] } };
+            const cellWidth = canvas.clientWidth / GRID.columns;
+            const cellHeight = canvas.clientHeight / GRID.rows;
+
+            const onMove = (e) => {
+                const dx = Math.round((e.clientX - start.x) / cellWidth);
+                const dy = Math.round((e.clientY - start.y) / cellHeight);
+                const w = widgets[index];
+                if (mode === 'move') {
+                    w.x = clamp(start.widget.x + dx, 0, GRID.columns - w.w);
+                    w.y = clamp(start.widget.y + dy, 0, GRID.rows - w.h);
+                } else {
+                    w.w = clamp(start.widget.w + dx, 1, GRID.columns - w.x);
+                    w.h = clamp(start.widget.h + dy, 1, GRID.rows - w.y);
+                }
+                // Only redraw when the snapped position actually changed
+                if (w.x !== start.last?.x || w.y !== start.last?.y || w.w !== start.last?.w || w.h !== start.last?.h) {
+                    start.last = { ...w };
+                    save();
+                    position();
+                }
+            };
+            const onUp = () => {
+                target.removeEventListener('pointermove', onMove);
+                target.removeEventListener('pointerup', onUp);
+                target.removeEventListener('pointercancel', onUp);
+            };
+            target.addEventListener('pointermove', onMove);
+            target.addEventListener('pointerup', onUp);
+            target.addEventListener('pointercancel', onUp);
+        }
+
+        function freeSpot(width, height) {
+            for (let y = 0; y + height <= GRID.rows; y++) {
+                for (let x = 0; x + width <= GRID.columns; x++) {
+                    const candidate = { x, y, w: width, h: height };
+                    if (!widgets.some(other => overlaps(candidate, other))) return candidate;
+                }
+            }
+            return { x: 0, y: 0, w: width, h: height };
+        }
+
+        function addSelected() {
+            const value = document.getElementById('dashInstanceSelect').value || '';
+            if (value.startsWith('new:')) {
+                // Configure and save the new widget in its own tab; this tab refreshes the list on focus
+                const pluginId = value.slice(4);
+                window.open("{{ url_for('plugin.plugin_page', plugin_id='') }}" + encodeURIComponent(pluginId) + '?for_dashboard=1', '_blank');
+                return;
+            }
+            const instance = instances[parseInt(value.replace('saved:', ''), 10)];
+            if (!instance) return;
+            const size = Math.max(2, Math.floor(Math.min(GRID.columns, GRID.rows) / 2));
+            widgets.push({ plugin_id: instance.plugin_id, name: instance.name, ...freeSpot(size, size) });
+            save();
+            render();
+        }
+
+        async function preview() {
+            const button = document.getElementById('dashPreviewButton');
+            button.disabled = true;
+            button.textContent = TEXT.previewing;
+            try {
+                const formData = new FormData(document.getElementById('settingsForm'));
+                const response = await fetch("{{ url_for('plugin.preview_plugin') }}", { method: 'POST', body: formData });
+                if (!response.ok) {
+                    const result = await response.json().catch(() => ({}));
+                    throw new Error(result.error || response.statusText);
+                }
+                const blob = await response.blob();
+                if (previewImage.src) URL.revokeObjectURL(previewImage.src);
+                previewImage.src = URL.createObjectURL(blob);
+                previewImage.hidden = false;
+                canvas.classList.add('has-preview');
+            } catch (e) {
+                showResponseModal('failure', `${TEXT.previewFailed}: ${e.message}`);
+            } finally {
+                button.disabled = false;
+                button.textContent = TEXT.preview;
+            }
+        }
+
+        function load(settings) {
+            try {
+                const layout = settings.layout ? JSON.parse(settings.layout) : {};
+                widgets = (layout.widgets || []).map(w => ({
+                    plugin_id: w.plugin_id, name: w.name,
+                    x: w.x | 0, y: w.y | 0, w: Math.max(1, w.w | 0), h: Math.max(1, w.h | 0),
+                }));
+            } catch (e) {
+                console.error('Invalid dashboard layout', e);
+                widgets = [];
+            }
+            if (settings.gap !== undefined) document.getElementById('dashGap').value = settings.gap;
+            const borders = settings.showBorders !== 'false';
+            document.getElementById('showBordersToggle').checked = borders;
+            document.getElementById('showBorders').value = borders ? 'true' : 'false';
+            save();
+            render();
+        }
+
+        fillSelect();
+        window.addEventListener('focus', refreshInstances);
+
+        return { load, addSelected, preview, refreshInstances };
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        dashboardEditor.load(loadPluginSettings ? pluginSettings : {});
+    });
+</script>

@@ -200,3 +200,91 @@ def test_generate_image_raises_when_no_data(monkeypatch):
 
     with pytest.raises(RuntimeError):
         plugin.generate_image({}, MagicMock())
+
+
+# --- compact layout (short labels) ---
+
+@pytest.mark.parametrize("style, dimensions, expected", [
+    ("auto", (800, 480), False),
+    ("auto", (397, 480), True),   # narrow dashboard widget
+    ("auto", (800, 200), True),   # short dashboard widget
+    ("full", (300, 200), False),
+    ("short", (800, 480), True),
+    ("bogus", (800, 480), False),
+])
+def test_use_compact_layout(style, dimensions, expected):
+    assert cg.use_compact_layout(style, dimensions) is expected
+
+
+def test_build_rows_short_labels():
+    quotes = {key: {"buying": 1.0, "selling": 2.0, "change": 0.1} for key in ["USD", "EUR", "GRA", "CEYREKALTIN"]}
+
+    groups = cg.build_rows(["USD", "EUR", "GRA", "CEYREKALTIN"], quotes, "tr", short_labels=True)
+
+    assert [row["label"] for group in groups for row in group["rows"]] == ["$", "€", "Au gr", "Çeyrek"]
+    assert set(cg.SHORT_LABELS) == set(cg.ITEMS)
+
+
+def test_compact_render_hides_headings():
+    config = MagicMock()
+    config.get_config.side_effect = lambda key=None, default=None: {"language": "tr"}.get(key, default)
+    i18n.init(config)
+    try:
+        plugin = cg.CurrencyGold({"id": "currency_gold"})
+        groups = cg.build_rows(["USD", "GRA"], {
+            "USD": {"buying": 50.56, "selling": 50.57, "change": 0.22},
+            "GRA": {"buying": 5730.97, "selling": 5731.95, "change": -3.48},
+        }, "tr", short_labels=True)
+        html = plugin.env.get_template("currency_gold.html").render(
+            title="Döviz ve Altın", compact=True, groups=groups, show_change=True, updated="22 Kas 14:41",
+            source="Truncgil Finans", font_scale=1, row_count=2, plugin_settings={})
+    finally:
+        i18n.init(None)
+
+    assert 'class="currency-gold compact"' in html
+    assert ">$<" in html and ">Au gr<" in html
+    for hidden in ["Döviz ve Altın", "group-row", "Son güncelleme", "Truncgil Finans"]:
+        assert hidden not in html, hidden
+    assert "22 Kas 14:41" in html
+    assert "%0,22" not in html and "▲" in html  # compact change column shows only the arrow
+
+
+# --- strip layout (one row, like a TV ticker) ---
+
+@pytest.mark.parametrize("style, dimensions, expected", [
+    ("auto", (790, 70), "strip"),     # 12x2 dashboard widget
+    ("auto", (790, 30), "strip"),     # 12x1
+    ("auto", (600, 210), "compact"),  # wide but too tall for a strip
+    ("auto", (397, 480), "compact"),
+    ("auto", (800, 480), "full"),
+    ("strip", (800, 480), "strip"),
+    ("short", (790, 70), "compact"),
+    ("full", (790, 70), "full"),
+])
+def test_choose_layout(style, dimensions, expected):
+    assert cg.choose_layout(style, dimensions) == expected
+
+
+def test_strip_render_puts_items_in_one_row():
+    config = MagicMock()
+    config.get_config.side_effect = lambda key=None, default=None: {"language": "tr"}.get(key, default)
+    i18n.init(config)
+    try:
+        plugin = cg.CurrencyGold({"id": "currency_gold"})
+        groups = cg.build_rows(["USD", "GRA"], {
+            "USD": {"buying": 50.56, "selling": 50.57, "change": 0.22},
+            "GRA": {"buying": 5730.97, "selling": 5731.95, "change": -3.48},
+        }, "tr", short_labels=True)
+        html = plugin.env.get_template("currency_gold.html").render(
+            title="Döviz ve Altın", layout="strip", compact=False, groups=groups, show_change=True,
+            updated="22 Kas 14:41", source="Truncgil Finans", font_scale=1, row_count=2, plugin_settings={})
+    finally:
+        i18n.init(None)
+
+    assert 'class="currency-strip"' in html
+    assert html.count('class="strip-item"') == 2
+    assert ">$<" in html and "50,5700" in html and ">Au gr<" in html and "5.731,95" in html
+    assert "▲" in html and "▼" in html
+    # buying prices, table and headings are not part of the strip
+    for hidden in ["50,5600", "<table", "Alış", "Döviz ve Altın", "Son güncelleme"]:
+        assert hidden not in html, hidden

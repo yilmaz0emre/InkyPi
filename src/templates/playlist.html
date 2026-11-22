@@ -412,6 +412,9 @@
                             <div class="plugin-info" id="{{plugin_instance.name}}">
                                 <img src="{{ url_for('plugin.image', plugin_id=plugin_instance.plugin_id, filename='icon.png') }}" alt="Plugin Icon" class="plugin-icon">
                                 <span class="plugin-instance">{{ plugin_instance.name }}</span>
+                                {% if plugin_instance.dashboard_only %}
+                                <span class="api-key-label" title="{{ _('Not shown on its own; used as a widget inside dashboards.') }}">{{ _('Dashboard only') }}</span>
+                                {% endif %}
 
                                 <!-- Thumbnail preview - only show if image has been generated -->
                                 {% if plugin_instance.latest_refresh_time %}

@@ -1,8 +1,48 @@
 {% extends "plugin.html" %}
 
 {% block content %}
-<div class="currency-gold" style="--font-scale: {{ font_scale }}; --rows: {{ row_count }};">
-    {% if title %}<div class="title">{{ title }}</div>{% endif %}
+{% if layout == "strip" %}
+<!-- Strip layout: all items in one row, like a TV ticker -->
+<style>
+  /* The base template pads by 1.5vw, which leaves almost no height in a very low strip */
+  body { padding: 6dvh 1.5vw !important; }
+</style>
+<div class="currency-strip" style="--font-scale: {{ font_scale }};">
+    {% for group in groups %}{% for row in group.rows %}
+    <div class="strip-item">
+        <span class="strip-label">{{ row.label }}</span>
+        <span class="strip-price">{{ row.selling }}</span>
+        {% if show_change and row.arrow %}<span class="strip-change {{ row.direction }}">{{ row.arrow }}</span>{% endif %}
+    </div>
+    {% endfor %}{% endfor %}
+</div>
+
+<script>
+  // Largest text that fits: try one row, then wrapping onto several rows (many items), keep the bigger
+  window.addEventListener("load", () => {
+    const strip = document.querySelector(".currency-strip");
+    const overflowing = () => strip.scrollWidth > strip.clientWidth || strip.scrollHeight > strip.clientHeight;
+    const largestFit = () => {
+      let fit = 1;
+      strip.style.setProperty("--fit", fit);
+      while (overflowing() && fit > 0.2) {
+        fit -= 0.025;
+        strip.style.setProperty("--fit", fit.toFixed(3));
+      }
+      return fit;
+    };
+    const oneRow = largestFit();
+    strip.classList.add("wrap");
+    const wrapped = largestFit();
+    if (wrapped <= oneRow * 1.15) {
+      strip.classList.remove("wrap");
+      strip.style.setProperty("--fit", oneRow.toFixed(3));
+    }
+  });
+</script>
+{% else %}
+<div class="currency-gold{% if compact %} compact{% endif %}" style="--font-scale: {{ font_scale }}; --rows: {{ row_count }};">
+    {% if title and not compact %}<div class="title">{{ title }}</div>{% endif %}
 
     <table class="quotes">
         <thead>
@@ -10,20 +50,22 @@
                 <th class="name"></th>
                 <th class="price">{{ _('Buying') }}</th>
                 <th class="price">{{ _('Selling') }}</th>
-                {% if show_change %}<th class="change">{{ _('Change') }}</th>{% endif %}
+                {% if show_change %}<th class="change">{% if not compact %}{{ _('Change') }}{% endif %}</th>{% endif %}
             </tr>
         </thead>
         {% for group in groups %}
         <tbody>
+            {% if not compact %}
             <tr class="group-row">
                 <td colspan="{{ 4 if show_change else 3 }}">{{ group.label }}</td>
             </tr>
+            {% endif %}
             {% for row in group.rows %}
             <tr class="quote-row">
                 <td class="name">{{ row.label }}</td>
                 <td class="price">{{ row.buying }}</td>
                 <td class="price selling">{{ row.selling }}</td>
-                {% if show_change %}<td class="change {{ row.direction }}">{{ row.change }}</td>{% endif %}
+                {% if show_change %}<td class="change {{ row.direction }}">{{ row.arrow if compact else row.change }}</td>{% endif %}
             </tr>
             {% endfor %}
         </tbody>
@@ -31,20 +73,27 @@
     </table>
 
     <div class="footer">
+        {% if compact %}
+        {{ updated }}
+        {% else %}
         {% if updated %}{{ _('Last update: %(time)s', time=updated) }}{% endif %}
         {% if source %}<span class="source">· {{ source }}</span>{% endif %}
+        {% endif %}
     </div>
 </div>
 
 <script>
-  // Shrink text until the table and footer fit (many selected items / large font sizes)
+  // Shrink text until the table and footer fit, in height and width (many items, large fonts, small widgets)
   window.addEventListener("load", () => {
     const container = document.querySelector(".currency-gold");
     let fit = 1;
-    while (container.scrollHeight > container.clientHeight && fit > 0.4) {
+    const table = container.querySelector(".quotes");
+    const overflowing = () => container.scrollHeight > container.clientHeight || table.scrollWidth > container.clientWidth;
+    while (overflowing() && fit > 0.3) {
       fit -= 0.05;
       container.style.setProperty("--fit", fit.toFixed(2));
     }
   });
 </script>
+{% endif %}
 {% endblock %}

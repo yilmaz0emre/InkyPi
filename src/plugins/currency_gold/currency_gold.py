@@ -13,6 +13,7 @@ from babel.numbers import format_decimal
 
 from plugins.base_plugin.base_plugin import BasePlugin
 from utils import i18n
+from utils.compact_layout import use_compact_layout
 from utils.http_client import get_http_session
 from utils.i18n import N_
 
@@ -47,6 +48,33 @@ ITEMS = {
     "14AYARALTIN": (N_("14k Gold (gram)"), "gold"),
     "GUMUS": (N_("Silver (gram)"), "gold"),
 }
+# "auto" switches to the one-row strip layout for boxes at least this wide relative to their height
+STRIP_MIN_ASPECT = 3
+STRIP_MAX_HEIGHT = 200
+
+# Short labels for the compact layout (small dashboard widgets). Symbols are not translated.
+SHORT_LABELS = {
+    "USD": "$",
+    "EUR": "€",
+    "GBP": "£",
+    "CHF": "CHF",
+    "CAD": "C$",
+    "AUD": "A$",
+    "SAR": "SAR",
+    "CNY": "CN¥",
+    "RUB": "₽",
+    "GRA": "Au gr",
+    "HAS": N_("Pure Au gr"),
+    "CEYREKALTIN": N_("Quarter"),
+    "YARIMALTIN": N_("Half"),
+    "TAMALTIN": N_("Full"),
+    "CUMHURIYETALTINI": N_("Republic"),
+    "YIA": "22K gr",
+    "18AYARALTIN": "18K gr",
+    "14AYARALTIN": "14K gr",
+    "GUMUS": "Ag gr",
+}
+
 GROUP_LABELS = {"currency": N_("Currencies"), "gold": N_("Gold & Precious Metals")}
 DEFAULT_ITEMS = ["USD", "EUR", "GBP", "GRA", "CEYREKALTIN"]
 
@@ -84,18 +112,37 @@ class CurrencyGold(BasePlugin):
         time_format = device_config.get_config("time_format", default="24h")
         language = i18n.get_language()
 
+        layout = choose_layout(settings.get("labelStyle", "auto"), dimensions)
+        compact = layout == "compact"
         template_params = {
             "title": settings.get("title") or i18n.gettext("Currency & Gold"),
-            "groups": build_rows(selected, quotes, language),
+            "layout": layout,
+            "compact": compact,
+            "groups": build_rows(selected, quotes, language, short_labels=layout != "full"),
             "show_change": settings.get("showChange", "true") != "false",
             "updated": format_updated(updated_at, timezone, time_format, language),
             "source": source,
             "font_scale": FONT_SIZES.get(settings.get("fontSize", "normal"), 1),
             "plugin_settings": settings,
         }
-        template_params["row_count"] = sum(len(group["rows"]) + 1 for group in template_params["groups"])
+        # group header rows are hidden in the compact layout
+        template_params["row_count"] = sum(len(group["rows"]) + (0 if compact else 1) for group in template_params["groups"])
 
         return self.render_image(dimensions, "currency_gold.html", "currency_gold.css", template_params)
+
+
+def choose_layout(style, dimensions):
+    """Pick "full" (table), "compact" (table with short labels) or "strip" (one row, like a TV ticker).
+
+    "auto" uses the strip for wide, low boxes (e.g. a 12x2 dashboard widget) and the compact table
+    for other small boxes.
+    """
+    if style == "strip":
+        return "strip"
+    width, height = dimensions
+    if style == "auto" and width >= STRIP_MIN_ASPECT * height and height < STRIP_MAX_HEIGHT:
+        return "strip"
+    return "compact" if use_compact_layout(style, dimensions) else "full"
 
 
 def get_selected_items(settings):
@@ -199,7 +246,7 @@ def fetch_tcmb():
     return quotes, updated_at
 
 
-def build_rows(selected, quotes, language):
+def build_rows(selected, quotes, language, short_labels=False):
     """Group available quotes for the template, with localized labels and numbers."""
     groups = []
     for group_key, group_label in GROUP_LABELS.items():
@@ -212,10 +259,11 @@ def build_rows(selected, quotes, language):
             change = quote.get("change")
             rows.append({
                 "key": key,
-                "label": i18n.gettext(label, language=language),
+                "label": i18n.gettext(SHORT_LABELS[key] if short_labels else label, language=language),
                 "buying": format_price(quote.get("buying"), language, item_group),
                 "selling": format_price(quote.get("selling"), language, item_group),
                 "change": format_change(change, language),
+                "arrow": format_change(change, language).split(" ")[0] if change is not None else "",
                 "direction": "flat" if change is None or change == 0 else ("up" if change > 0 else "down"),
             })
         if rows:

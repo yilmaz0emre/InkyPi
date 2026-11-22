@@ -222,14 +222,24 @@ class Playlist:
         """Find a plugin instance by its plugin_id and name."""
         return next((p for p in self.plugins if p.plugin_id == plugin_id and p.name == name), None)
 
+    def has_rotating_plugins(self):
+        """True if at least one instance takes part in the playlist rotation."""
+        return any(not p.dashboard_only for p in self.plugins)
+
     def get_next_plugin(self):
-        """Returns the next plugin instance in the playlist and update the current_plugin_index."""
-        if self.current_plugin_index is None:
-            self.current_plugin_index = 0
-        else:
-            self.current_plugin_index = (self.current_plugin_index + 1) % len(self.plugins)
-        
-        return self.plugins[self.current_plugin_index]
+        """Returns the next plugin instance in the playlist and update the current_plugin_index.
+
+        Dashboard-only instances are skipped; returns None if every instance is dashboard-only.
+        """
+        if not any(not p.dashboard_only for p in self.plugins):
+            return None
+
+        index = self.current_plugin_index
+        while True:
+            index = 0 if index is None else (index + 1) % len(self.plugins)
+            if not self.plugins[index].dashboard_only:
+                self.current_plugin_index = index
+                return self.plugins[index]
 
     def get_priority(self):
         """Determine priority of a playlist, based on the time range"""
@@ -279,14 +289,16 @@ class PluginInstance:
         settings (dict): Settings associated with the plugin.
         refresh (dict): Refresh settings, such as interval and scheduled time.
         latest_refresh (str): ISO-formatted string representing the last refresh time.
+        dashboard_only (bool): Only shown as a widget inside dashboards, skipped in playlist rotation.
     """
 
-    def __init__(self, plugin_id, name, settings, refresh, latest_refresh_time=None):
+    def __init__(self, plugin_id, name, settings, refresh, latest_refresh_time=None, dashboard_only=False):
         self.plugin_id = plugin_id
         self.name = name
         self.settings = settings
         self.refresh = refresh
         self.latest_refresh_time = latest_refresh_time
+        self.dashboard_only = bool(dashboard_only)
 
     def update(self, updated_data):
         """Update attributes of the class with the dictionary values."""
@@ -346,6 +358,7 @@ class PluginInstance:
             "plugin_settings": self.settings,
             "refresh": self.refresh,
             "latest_refresh_time": self.latest_refresh_time,
+            "dashboard_only": self.dashboard_only,
         }
 
     @classmethod
@@ -356,4 +369,5 @@ class PluginInstance:
             settings=data["plugin_settings"],
             refresh=data["refresh"],
             latest_refresh_time=data.get("latest_refresh_time"),
+            dashboard_only=data.get("dashboard_only", False),
         )

@@ -9,8 +9,12 @@ import pytz
 from io import BytesIO
 import math
 from utils import i18n
+from utils.compact_layout import use_compact_layout
 
 logger = logging.getLogger(__name__)
+
+# Compact layout: show the mini forecast only when the widget is at least this tall
+COMPACT_FORECAST_MIN_HEIGHT = 190
         
 def get_moon_phase_name(phase_age: float) -> str:
     """Determines the name of the lunar phase based on the age of the moon."""
@@ -128,6 +132,8 @@ class Weather(BasePlugin):
             dimensions = dimensions[::-1]
 
         template_params["plugin_settings"] = settings
+        template_params["compact"] = use_compact_layout(settings.get("layoutStyle", "auto"), dimensions)
+        template_params["compact_forecast"] = self.get_compact_forecast(template_params, settings, dimensions)
 
         # Add last refresh time
         now = datetime.now(tz)
@@ -139,6 +145,21 @@ class Weather(BasePlugin):
         if not image:
             raise RuntimeError("Failed to take screenshot, please check logs.")
         return image
+
+    @staticmethod
+    def get_compact_forecast(template_params, settings, dimensions):
+        """Next days for the compact layout: only if the forecast is enabled and the box has room."""
+        if not template_params.get("compact") or settings.get("displayForecast") != "true":
+            return []
+        width, height = dimensions
+        if height < COMPACT_FORECAST_MIN_HEIGHT:
+            return []
+        try:
+            days = int(settings.get("forecastDays") or 3)
+        except ValueError:
+            days = 3
+        days = min(days, 3 if width >= 280 else 2)
+        return template_params.get("forecast", [])[1:days + 1]
 
     def parse_weather_data(self, weather_data, aqi_data, tz, units, time_format, lat):
         current = weather_data.get("current")

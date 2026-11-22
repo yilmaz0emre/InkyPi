@@ -202,8 +202,8 @@ class RefreshTask:
             return None, None
 
         playlist_manager.active_playlist = playlist.name
-        if not playlist.plugins:
-            logger.info(f"Active playlist '{playlist.name}' has no plugins.")
+        if not playlist.has_rotating_plugins():
+            logger.info(f"Active playlist '{playlist.name}' has no plugins to rotate (empty or dashboard-only).")
             return None, None
 
         latest_refresh_dt = latest_refresh_info.get_refresh_datetime()

@@ -7,10 +7,32 @@ from utils import i18n
 from utils.i18n import N_
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
+from contextlib import contextmanager
+from contextvars import ContextVar
+from PIL import Image
 import asyncio
 import base64
 
 logger = logging.getLogger(__name__)
+
+# When set (see capture_rendered_html), render_image() records the rendered HTML instead of
+# taking a browser screenshot, so a dashboard can compose several plugins into a single render.
+_html_capture = ContextVar("html_capture", default=None)
+
+
+@contextmanager
+def capture_rendered_html():
+    """Collect the HTML of every render_image() call made inside this block.
+
+    Yields a list of {"html": str, "dimensions": (w, h)} entries. While active, render_image()
+    returns a blank placeholder image instead of screenshotting.
+    """
+    captured = []
+    token = _html_capture.set(captured)
+    try:
+        yield captured
+    finally:
+        _html_capture.reset(token)
 
 STATIC_DIR = resolve_path("static")
 PLUGINS_DIR = resolve_path("plugins")
@@ -95,6 +117,17 @@ class BasePlugin:
         return template_params
 
     def render_image(self, dimensions, html_file, css_file=None, template_params={}):
+        rendered_html = self.render_html(dimensions, html_file, css_file, template_params)
+
+        captured = _html_capture.get()
+        if captured is not None:
+            captured.append({"html": rendered_html, "dimensions": tuple(dimensions)})
+            return Image.new("RGB", tuple(dimensions), "white")
+
+        return take_screenshot_html(rendered_html, dimensions)
+
+    def render_html(self, dimensions, html_file, css_file=None, template_params={}):
+        """Render the plugin template to a standalone HTML document (no screenshot)."""
         # load the base plugin and current plugin css files
         css_files = [os.path.join(BASE_PLUGIN_RENDER_DIR, "plugin.css")]
         if css_file:
@@ -110,6 +143,4 @@ class BasePlugin:
 
         # load and render the given html template
         template = self.env.get_template(html_file)
-        rendered_html = template.render(template_params)
-
-        return take_screenshot_html(rendered_html, dimensions)
+        return template.render(template_params)

@@ -214,6 +214,21 @@ def test_power_save_after_boot_window(make_client):
     power.exit_low_power_mode.assert_called_once()
 
 
+def test_boot_window_ends_mid_wait(make_client):
+    # hourly polls: the device must not stay awake a whole hour after booting
+    power = MagicMock()
+    client, _, _, clock = make_client([], power_manager=power, power_save=True, boot_awake=600, poll_interval=3600)
+    start = clock.now()
+    power.enter_low_power_mode.side_effect = lambda: entered.append(clock.now() - start)
+    entered = []
+
+    client.wait_for_next_poll()
+
+    assert entered == [600]  # low power as soon as the boot window is over
+    power.exit_low_power_mode.assert_called_once()
+    assert clock.now() - start == 3600
+
+
 def test_power_save_disabled_only_sleeps(make_client):
     power = MagicMock()
     client, _, _, clock = make_client([], power_manager=power, power_save=False, boot_awake=0, poll_interval=120)

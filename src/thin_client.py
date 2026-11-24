@@ -233,15 +233,19 @@ class ThinClient:
     # --- main loop ---
 
     def wait_for_next_poll(self):
-        in_boot_window = self.now() - self.started_at < self.boot_awake
-        if self.power_save and self.power_manager and not in_boot_window:
+        if not (self.power_save and self.power_manager):
+            self.sleep(self.poll_interval)
+            return
+        # stay awake only until the boot window ends, then save power for the rest of the wait
+        awake = min(self.poll_interval, max(0, self.started_at + self.boot_awake - self.now()))
+        if awake:
+            self.sleep(awake)
+        if self.poll_interval - awake > 0:
             self.power_manager.enter_low_power_mode()
             try:
-                self.sleep(self.poll_interval)
+                self.sleep(self.poll_interval - awake)
             finally:
                 self.power_manager.exit_low_power_mode()
-        else:
-            self.sleep(self.poll_interval)
 
     def run(self):
         logger.info(f"Thin client polling {self.image_url} every {self.poll_interval}s "
